@@ -7,11 +7,11 @@ import androidx.room.*
 interface ItemDao {
 
     @Query("SELECT * FROM item ORDER BY id ASC")
-    fun getAll(): LiveData<List<Item>>
+    fun getAll(): LiveData<List<ItemEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(item: Item)
+    fun insert(itemEntity: ItemEntity)
 
     @Delete
-    fun delete(item: Item)
+    fun delete(itemEntity: ItemEntity)
 }

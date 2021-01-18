@@ -1,20 +1,20 @@
 package com.haero_kim.pickmeup.data
 
-import android.graphics.Bitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "item")
-data class Item(
+data class ItemEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Long?,
 
     @ColumnInfo(name = "name")
     var name: String,
 
+    // 사용할 때 Uri.parse() 를 통해 Uri 형태로 변환해야함
     @ColumnInfo(name = "image")
-    var image: Bitmap?,
+    var image: String?,
 
     @ColumnInfo(name = "price")
     var price: Long,
