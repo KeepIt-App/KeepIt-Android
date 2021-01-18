@@ -3,4 +3,5 @@
     <string name="fab_string">추가하기</string>
     <string name="search">검색</string>
     <string name="filter">필터</string>
+    <string name="add_item">Add Item</string>
 </resources>

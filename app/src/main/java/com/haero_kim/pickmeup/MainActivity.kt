@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomappbar.BottomAppBar
 import com.haero_kim.pickmeup.AddActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.adapter.ItemListAdapter
 import com.haero_kim.pickmeup.data.ItemEntity
@@ -18,10 +19,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var itemViewModel: ItemViewModel
     private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
     private lateinit var recyclerView: RecyclerView
+    private lateinit var bottomAppBar: BottomAppBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        recyclerView = findViewById(R.id.recyclerView)
+        bottomAppBar = findViewById(R.id.bottomAppBar)
 
         val adapter = ItemListAdapter(
             // OnClickListener
@@ -30,12 +35,11 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra(EXTRA_ITEM, it)
                 startActivity(intent)
             },
-
+            // OnLongClickListener
             {
-                // OnLongClickListener
+                deleteDialog(it)
             })
 
-        recyclerView = findViewById(R.id.recyclerView)
         recyclerView.apply {
             this.adapter = adapter
             this.layoutManager = GridLayoutManager(context, 2)
@@ -53,6 +57,25 @@ class MainActivity : AppCompatActivity() {
         itemViewModel.getAll().observe(this, Observer {
             adapter.setItems(it)
         })
+
+        // BottomAppBar - 설정 버튼 눌렀을 때
+        bottomAppBar.setNavigationOnClickListener {
+
+        }
+
+        // BottomAppBar - 검색, 필터 버튼 눌렀을 때
+        bottomAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.search -> {  // 검색 버튼 눌렀을 때 아이템 검색 기능 제공
+                    true
+                }
+                R.id.filter -> {  // 필터 버튼 눌렀을 때 정렬 기준 기능 제공
+                    true
+                }
+                else -> false
+            }
+        }
+
     }
 
     /**
