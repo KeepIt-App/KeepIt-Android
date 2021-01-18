@@ -11,10 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.haero_kim.pickmeup.R
-import com.haero_kim.pickmeup.ui.AddActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.adapter.ItemListAdapter
 import com.haero_kim.pickmeup.data.ItemEntity
+import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +24,8 @@ class MainActivity : AppCompatActivity() {
     private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var bottomAppBar: BottomAppBar
-    private lateinit var noticeEmptyList: TextView
+    private lateinit var addButton: FloatingActionButton
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         bottomAppBar = findViewById(R.id.bottomAppBar)
-        noticeEmptyList = findViewById(R.id.noticeEmptyList)
+        addButton = findViewById(R.id.addButton)
 
         val adapter = ItemListAdapter(
             // OnClickListener
@@ -77,8 +79,16 @@ class MainActivity : AppCompatActivity() {
                 R.id.filter -> {  // 필터 버튼 눌렀을 때 정렬 기준 기능 제공
                     true
                 }
+                R.id.delete -> {  // 삭제 버튼 눌렀을 때 선택 삭제 기능 제공
+                    true
+                }
                 else -> false
             }
+        }
+
+        addButton.setOnClickListener {
+            val intent = Intent(this, AddActivity::class.java)
+            startActivity(intent)
         }
 
     }

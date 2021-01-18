@@ -16,7 +16,7 @@
 
         <ImageView
             android:scaleType="centerCrop"
-            android:background="#6A6A6A"
+            android:background="@drawable/placeholder"
             android:id="@+id/itemImage"
             android:layout_width="match_parent"
             android:layout_height="150dp"/>

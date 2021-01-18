@@ -9,4 +9,8 @@ class ItemDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_detail)
     }
+
+    companion object{
+        const val EXTRA_ITEM = "EXTRA_ITEM"
+    }
 }

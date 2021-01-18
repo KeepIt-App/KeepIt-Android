@@ -11,7 +11,4 @@ class AddActivity : AppCompatActivity() {
 
     }
 
-    companion object{
-        const val EXTRA_ITEM = "EXTRA_ITEM"
-    }
 }
