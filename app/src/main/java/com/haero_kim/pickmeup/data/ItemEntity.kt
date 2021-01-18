@@ -1,8 +1,11 @@
 package com.haero_kim.pickmeup.data
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "item")
 data class ItemEntity(
@@ -28,6 +31,6 @@ data class ItemEntity(
     @ColumnInfo(name = "note")
     var note: String?
 
-) {
+) : Serializable {
     constructor() : this(null, "", null, 0, "", 1, "")
 }

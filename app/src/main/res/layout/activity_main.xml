@@ -12,7 +12,11 @@
         android:clipToPadding="false"
         android:paddingBottom="100dp">
 
-        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            tools:listitem="@layout/recycler_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </androidx.core.widget.NestedScrollView>
 
@@ -22,15 +26,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:padding="5dp"
         app:hideOnScroll="true"
         app:menu="@menu/bottom_app_bar"
         app:navigationIcon="@drawable/ic_baseline_menu_24" />
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/fab_string"
-        app:icon="@drawable/ic_baseline_add_24"
-        app:layout_anchor="@id/bottomAppBar" />
+        app:layout_anchor="@id/bottomAppBar"
+        app:srcCompat="@drawable/ic_baseline_add_24" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
