@@ -1,15 +1,18 @@
-package com.haero_kim.pickmeup
+package com.haero_kim.pickmeup.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomappbar.BottomAppBar
-import com.haero_kim.pickmeup.AddActivity.Companion.EXTRA_ITEM
+import com.haero_kim.pickmeup.R
+import com.haero_kim.pickmeup.ui.AddActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.adapter.ItemListAdapter
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
@@ -20,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var bottomAppBar: BottomAppBar
+    private lateinit var noticeEmptyList: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,11 +31,12 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         bottomAppBar = findViewById(R.id.bottomAppBar)
+        noticeEmptyList = findViewById(R.id.noticeEmptyList)
 
         val adapter = ItemListAdapter(
             // OnClickListener
             {
-                val intent = Intent(this, AddActivity::class.java)
+                val intent = Intent(this, ItemDetailActivity::class.java)
                 intent.putExtra(EXTRA_ITEM, it)
                 startActivity(intent)
             },

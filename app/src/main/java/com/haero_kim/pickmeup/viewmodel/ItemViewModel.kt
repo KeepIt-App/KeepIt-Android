@@ -1,6 +1,7 @@
 package com.haero_kim.pickmeup.viewmodel
 
 import android.app.Application
+import androidx.databinding.Bindable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import com.haero_kim.pickmeup.data.ItemEntity
@@ -20,5 +21,9 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
 
     fun delete(itemEntity: ItemEntity) {
         repository.delete(itemEntity)
+    }
+
+    fun isEmpty(): Boolean{
+        return items.value!!.isEmpty()
     }
 }

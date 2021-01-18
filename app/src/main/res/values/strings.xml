@@ -4,4 +4,7 @@
     <string name="search">검색</string>
     <string name="filter">필터</string>
     <string name="add_item">Add Item</string>
+    <string name="delete">삭제</string>
+    <string name="if_list_empty">아직 목록이 없습니다!</string>
+    <string name="main_title">My Pick</string>
 </resources>
