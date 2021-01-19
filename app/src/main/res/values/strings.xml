@@ -8,9 +8,9 @@
     <string name="if_list_empty">아직 목록이 없습니다!</string>
     <string name="main_title">My Pick</string>
     <string name="add_title">추가하기</string>
-    <string name="itemNameHint">이름을 입력해주세요</string>
+    <string name="itemNameHint">이름을 입력해주세요 (필수)</string>
     <string name="itemLinkHint">링크를 입력해주세요</string>
-    <string name="itemPriceHint">가격을 입력해주세요 (원)</string>
+    <string name="itemPriceHint">가격을 입력해주세요 (단위 : 원, 필수)</string>
     <string name="itemMemoHint">메모를 남겨주세요</string>
     <string name="completeButton">완료</string>
 </resources>

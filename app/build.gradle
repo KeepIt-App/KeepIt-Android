@@ -72,4 +72,6 @@ dependencies {
     // for new API replaced startActivityForResult
     implementation 'androidx.fragment:fragment-ktx:1.3.0-beta02'
 
+    api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
+
 }

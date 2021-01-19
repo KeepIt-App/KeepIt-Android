@@ -1,17 +1,21 @@
 package com.haero_kim.pickmeup.adapter
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.haero_kim.pickmeup.MyApplication
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
+import com.haero_kim.pickmeup.ui.ItemDetailActivity
 
 class ItemListAdapter(
-    val contactItemClick: (ItemEntity) -> Unit,
-    val contactItemLongClick: (ItemEntity) -> Unit
+    val itemClick: (ItemEntity) -> Unit,
+    val itemLongClick: (ItemEntity) -> Unit
 ) : RecyclerView.Adapter<ItemListAdapter.ViewHolder>() {
     private var items: List<ItemEntity> = listOf()
 
@@ -38,11 +42,18 @@ class ItemListAdapter(
             name.text = item.name
             price.text = "${item.price}원"
 
-            itemView.setOnClickListener {
+            if (item.image.isEmpty()) {
+                image.visibility = View.GONE
+            } else {
+                image.setImageURI(Uri.parse(item.image))
+            }
 
+            itemView.setOnClickListener {
+                itemClick(item)
             }
 
             itemView.setOnLongClickListener {
+                itemLongClick(item)
                 true
             }
         }

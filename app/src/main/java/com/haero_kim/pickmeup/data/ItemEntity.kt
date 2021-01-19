@@ -17,7 +17,7 @@ data class ItemEntity(
 
     // 사용할 때 Uri.parse() 를 통해 Uri 형태로 변환해야함
     @ColumnInfo(name = "image")
-    var image: String?,
+    var image: String,
 
     @ColumnInfo(name = "price")
     var price: Long,
@@ -32,5 +32,5 @@ data class ItemEntity(
     var note: String?
 
 ) : Serializable {
-    constructor() : this(null, "", null, 0, "", 1, "")
+    constructor() : this(null, "", "", 0, "", 1, "")
 }
