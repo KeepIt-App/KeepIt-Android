@@ -82,6 +82,10 @@ class MainActivity : AppCompatActivity() {
             this.setHasFixedSize(true)
         }
 
+        /**
+         * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
+         * 받아온 LiveData 를 적절히 정렬(가공) 하여 RecyclerView Adapter 에 적용
+         */
         itemViewModel.getAll().observe(this, Observer { list->
             if (list.isEmpty()) {
                 textNoticeEmptyList.visibility = View.VISIBLE

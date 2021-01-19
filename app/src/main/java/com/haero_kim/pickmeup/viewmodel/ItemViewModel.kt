@@ -36,6 +36,9 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
         repository.delete(itemEntity)
     }
 
+    /**
+     * 최신 순 정렬 버튼을 눌렀을 때 동작
+     */
     fun onClickSetFilterLatest() {
         // RecyclerView 정렬을 위한 변수
         sortFilter.value = SORT_BY_LATEST
@@ -45,7 +48,9 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
         isSortedByPriority.set(false)
         isSortedByPrice.set(false)
     }
-
+    /**
+     * 중요도 순 정렬 버튼을 눌렀을 때 동작
+     */
     fun onClickSetFilterPriority() {
         // RecyclerView 정렬을 위한 변수
         sortFilter.value = SORT_BY_PRIORITY
@@ -56,6 +61,9 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
         isSortedByPrice.set(false)
     }
 
+    /**
+     * 가격 순 정렬 버튼을 눌렀을 때 동작
+     */
     fun onClickSetFilterPrice() {
         // RecyclerView 정렬을 위한 변수
         sortFilter.value = SORT_BY_PRICE

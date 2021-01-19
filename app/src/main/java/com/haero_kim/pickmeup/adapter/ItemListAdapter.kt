@@ -9,20 +9,21 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.haero_kim.pickmeup.MyApplication
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.ui.ItemDetailActivity
 
 class ItemListAdapter(
-    val itemClick: (ItemEntity) -> Unit,
-    val itemLongClick: (ItemEntity) -> Unit
+        val itemClick: (ItemEntity) -> Unit,
+        val itemLongClick: (ItemEntity) -> Unit
 ) : RecyclerView.Adapter<ItemListAdapter.ViewHolder>() {
     private var items: List<ItemEntity> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.recycler_item, parent, false)
+                LayoutInflater.from(parent.context).inflate(R.layout.recycler_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -46,7 +47,10 @@ class ItemListAdapter(
             if (item.image == "null") {
                 image.visibility = View.GONE
             } else {
-                image.setImageURI(Uri.parse(item.image))
+                image.visibility = View.VISIBLE
+                Glide.with(itemView)
+                        .load(item.image)
+                        .into(image)
             }
 
             itemView.setOnClickListener {
