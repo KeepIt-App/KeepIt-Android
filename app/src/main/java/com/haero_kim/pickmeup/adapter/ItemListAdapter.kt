@@ -2,6 +2,7 @@ package com.haero_kim.pickmeup.adapter
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,7 +43,9 @@ class ItemListAdapter(
             name.text = item.name
             price.text = "${item.price}원"
 
-            if (item.image.isEmpty()) {
+            Log.d("Item", item.image)
+
+            if (item.image == "null") {
                 image.visibility = View.GONE
             } else {
                 image.setImageURI(Uri.parse(item.image))

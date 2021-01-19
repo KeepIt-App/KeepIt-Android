@@ -3,11 +3,15 @@ package com.haero_kim.pickmeup.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.renderscript.ScriptIntrinsicYuvToRGB
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.haero_kim.pickmeup.R
@@ -22,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var bottomAppBar: BottomAppBar
+    private lateinit var textNoticeEmptyList: TextView
     private lateinit var addButton: FloatingActionButton
 
 
@@ -31,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         bottomAppBar = findViewById(R.id.bottomAppBar)
+        textNoticeEmptyList = findViewById(R.id.noticeEmptyList)
         addButton = findViewById(R.id.addButton)
 
         val adapter = ItemListAdapter(
@@ -47,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.apply {
             this.adapter = adapter
-            this.layoutManager = GridLayoutManager(context, 2)
+            this.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             this.setHasFixedSize(true)
         }
 
@@ -61,6 +67,11 @@ class MainActivity : AppCompatActivity() {
 
         itemViewModel.getAll().observe(this, Observer {
             adapter.setItems(it)
+            if (it.isEmpty()) {
+                textNoticeEmptyList.visibility = View.VISIBLE
+            } else {
+                textNoticeEmptyList.visibility = View.GONE
+            }
         })
 
         // BottomAppBar - 설정 버튼 눌렀을 때
@@ -72,9 +83,6 @@ class MainActivity : AppCompatActivity() {
         bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.search -> {  // 검색 버튼 눌렀을 때 아이템 검색 기능 제공
-                    true
-                }
-                R.id.filter -> {  // 필터 버튼 눌렀을 때 정렬 기준 기능 제공
                     true
                 }
                 R.id.delete -> {  // 삭제 버튼 눌렀을 때 선택 삭제 기능 제공

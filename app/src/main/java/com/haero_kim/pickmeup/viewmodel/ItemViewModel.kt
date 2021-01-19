@@ -19,6 +19,22 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
         return this.items
     }
 
+    fun getSortedList(filter: String){
+        when(filter){
+            SORT_BY_LATEST-> {
+
+            }
+
+            SORT_BY_PRIORITY-> {
+
+            }
+
+            SORT_BY_PRICE -> {
+
+            }
+        }
+    }
+
     fun insert(itemEntity: ItemEntity) {
         repository.insert(itemEntity)
     }
@@ -27,11 +43,10 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
         repository.delete(itemEntity)
     }
 
-    /**
-     * 만약 목록이 비어있으면 Notice 메시지 보이게 함
-     */
-    fun isEmpty(): Boolean{
-        return items.value!!.isEmpty()
+    companion object{
+        const val SORT_BY_LATEST = "LATEST"
+        const val SORT_BY_PRIORITY = "PRIORITY"
+        const val SORT_BY_PRICE = "PRICE"
     }
 
 }

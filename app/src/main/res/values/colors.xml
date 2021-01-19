@@ -8,6 +8,8 @@
     <color name="black">#303030</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="background">#F9F9F9</color>
+
 <!--    EditText-->
     <color name="boxStroke">#607D8B</color>
     <color name="errorStroke">#970000</color>

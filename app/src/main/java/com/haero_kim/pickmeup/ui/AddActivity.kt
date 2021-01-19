@@ -25,6 +25,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.lang.Math.abs
+import kotlin.random.Random
+import kotlin.random.nextUInt
 
 class AddActivity : AppCompatActivity() {
 
@@ -33,6 +35,9 @@ class AddActivity : AppCompatActivity() {
     private var itemImage: Uri? = null
     private lateinit var imageViewItemImage: ImageView
 
+    /**
+     * 사용자가 이미지 선택을 완료하면 실행됨
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -56,10 +61,10 @@ class AddActivity : AppCompatActivity() {
     /**  Bitmap 이미지를 Local에 저장하고, URI를 반환함  **/
     private fun bitmapToFile(bitmap: Bitmap): Uri {
         val wrapper = ContextWrapper(this)
-
+        val randomNumber = Random.nextInt(0, 1000000000).toString()
         // Bitmap 파일 저장을 위한 File 객체
         var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
-        file = File(file, "write_image.jpg")
+        file = File(file, "item_${randomNumber}.jpg")
         try {
             // Bitmap 파일을 JPEG 형태로 압축해서 출력
             val stream: OutputStream = FileOutputStream(file)
@@ -68,7 +73,7 @@ class AddActivity : AppCompatActivity() {
             stream.close()
         } catch (e: IOException) {
             e.printStackTrace()
-            Log.e("Error Saving Image", e.message)
+            Log.e("Error Saving Image", e.message!!)
         }
         return Uri.parse(file.absolutePath)
     }
@@ -106,7 +111,7 @@ class AddActivity : AppCompatActivity() {
             val itemImage = itemImage.toString()  // Uri 를 String 으로 변환한 형태
             val itemLink = editTextItemLink.text.toString().trim()
             val itemPrice = editTextItemPrice.text.toString().trim()
-            val itemPriority = 6 - ratingItemPriority.rating.toInt()
+            val itemPriority = ratingItemPriority.rating.toInt()
             val itemMemo = editTextItemMemo.text.toString().trim()
 
             if (itemName.isEmpty()) {

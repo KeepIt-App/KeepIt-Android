@@ -9,13 +9,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/filter"
-        android:contentDescription="@string/filter"
-        android:icon="@drawable/ic_baseline_filter_list_24"
-        android:title="@string/filter"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/delete"
         android:contentDescription="@string/delete"
         android:icon="@drawable/ic_baseline_delete_forever_24"
