@@ -7,6 +7,7 @@ import android.renderscript.ScriptIntrinsicYuvToRGB
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.adapter.ItemListAdapter
 import com.haero_kim.pickmeup.data.ItemEntity
+import com.haero_kim.pickmeup.databinding.ActivityMainBinding
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 
@@ -33,6 +35,20 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // ViewModelFactory 를 통해서 ViewModel 을 찍어내야 함
+        if (viewModelFactory == null) {
+            viewModelFactory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        }
+
+        // 생성한 ViewModelFactory 를 통해 ViewModelProvider 호출
+        itemViewModel = ViewModelProvider(this, viewModelFactory!!).get(ItemViewModel::class.java)
+
+        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(
+                this,
+                R.layout.activity_main
+        )
+        binding.viewModel = itemViewModel
 
         recyclerView = findViewById(R.id.recyclerView)
         bottomAppBar = findViewById(R.id.bottomAppBar)
@@ -56,14 +72,6 @@ class MainActivity : AppCompatActivity() {
             this.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             this.setHasFixedSize(true)
         }
-
-        // ViewModelFactory 를 통해서 ViewModel 을 찍어내야 함
-        if (viewModelFactory == null) {
-            viewModelFactory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-        }
-
-        // 생성한 ViewModelFactory 를 통해 ViewModelProvider 호출
-        itemViewModel = ViewModelProvider(this, viewModelFactory!!).get(ItemViewModel::class.java)
 
         itemViewModel.getAll().observe(this, Observer {
             adapter.setItems(it)
@@ -96,7 +104,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
         }
-
     }
 
     /**

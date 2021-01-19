@@ -1,87 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background"
-    tools:context=".ui.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <FrameLayout
+    <data>
+        <variable
+            name="viewModel"
+            type="com.haero_kim.pickmeup.viewmodel.ItemViewModel" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        tools:context=".ui.MainActivity">
 
-        <TextView
-            android:id="@+id/noticeEmptyList"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/if_list_empty"
-            android:textSize="16sp"
-            android:visibility="gone" />
-
-        <androidx.core.widget.NestedScrollView
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="100dp">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/noticeEmptyList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/if_list_empty"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:clipToPadding="false"
+                android:paddingBottom="100dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="36dp"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/main_title"
-                    android:textColor="@color/black"
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:overScrollMode="never"
-                    tools:listitem="@layout/recycler_item" />
+                    android:orientation="vertical">
 
-            </LinearLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="36dp"
+                        android:layout_marginBottom="16dp">
 
-        </androidx.core.widget.NestedScrollView>
-
-    </FrameLayout>
-
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottomAppBar"
-        style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:paddingStart="10dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        app:fabAlignmentMode="end"
-        app:fabCradleMargin="8dp"
-        app:hideOnScroll="true"
-        app:menu="@menu/bottom_app_bar"
-        app:navigationIcon="@drawable/ic_baseline_settings_24" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/add_item"
-        app:layout_anchor="@+id/bottomAppBar"
-        app:srcCompat="@drawable/ic_baseline_add_24" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="24dp"
+                            android:layout_marginEnd="24dp"
+                            android:text="@string/main_title"
+                            android:textColor="@color/black"
+                            android:textSize="25sp"
+                            android:textStyle="bold" />
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/sortLatest"
+                            android:layout_width="60dp"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@+id/sortPriority"
+                            android:background="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:text="최신순"
+                            android:textColor="@{viewModel.getSortByLatestColor()}"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/sortPriority"
+                            android:layout_width="70dp"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@+id/sortPrice"
+                            android:background="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:text="중요도순"
+                            android:textColor="@{viewModel.getSortByPriorityColor()}"
+                            android:textSize="14sp" />
+
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/sortPrice"
+                            android:layout_width="60dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="16dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:text="가격순"
+                            android:textColor="@{viewModel.getSortByPriceColor()}"
+                            android:textSize="14sp" />
+
+
+                    </RelativeLayout>
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:overScrollMode="never"
+                        tools:listitem="@layout/recycler_item" />
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </FrameLayout>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar"
+            style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            app:fabAlignmentMode="end"
+            app:fabCradleMargin="8dp"
+            app:hideOnScroll="true"
+            app:menu="@menu/bottom_app_bar"
+            app:navigationIcon="@drawable/ic_baseline_settings_24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/add_item"
+            app:layout_anchor="@+id/bottomAppBar"
+            app:srcCompat="@drawable/ic_baseline_add_24" />
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+</layout>
