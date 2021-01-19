@@ -4,12 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <variable
-            name="viewModel"
-            type="com.haero_kim.pickmeup.viewmodel.ItemViewModel" />
-    </data>
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -67,22 +61,23 @@
                             android:background="?attr/selectableItemBackground"
                             android:gravity="center"
                             android:text="최신순"
-                            android:textColor="@{viewModel.getSortByLatestColor()}"
+                            android:textColor="@{viewModel.isSortedByLatest()?ContextCompat.getColor(viewModel.application, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
                             android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textStyle='@{viewModel.isSortedByLatest()?"bold":"normal"}' />
 
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/sortPriority"
-                            android:layout_width="70dp"
+                            android:layout_width="80dp"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_toLeftOf="@+id/sortPrice"
                             android:background="?attr/selectableItemBackground"
                             android:gravity="center"
                             android:text="중요도순"
-                            android:textColor="@{viewModel.getSortByPriorityColor()}"
-                            android:textSize="14sp" />
+                            android:textColor="@{viewModel.isSortedByPriority()?ContextCompat.getColor(viewModel.application, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
+                            android:textSize="14sp"
+                            android:textStyle='@{viewModel.isSortedByPriority()?"bold":"normal"}' />
 
 
                         <androidx.appcompat.widget.AppCompatButton
@@ -95,8 +90,9 @@
                             android:background="?attr/selectableItemBackground"
                             android:gravity="center"
                             android:text="가격순"
-                            android:textColor="@{viewModel.getSortByPriceColor()}"
-                            android:textSize="14sp" />
+                            android:textColor="@{viewModel.isSortedByPrice()?ContextCompat.getColor(viewModel.application, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
+                            android:textSize="14sp"
+                            android:textStyle='@{viewModel.isSortedByPrice()?"bold":"normal"}' />
 
 
                     </RelativeLayout>
@@ -142,6 +138,23 @@
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <data>
+
+        <import type="androidx.core.content.ContextCompat" />
+
+        <import type="android.graphics.Typeface" />
+
+        <import type="com.haero_kim.pickmeup.MyApplication" />
+
+        <import type="com.haero_kim.pickmeup.R" />
+
+        <import type="android.app.Application" />
+
+        <variable
+            name="viewModel"
+            type="com.haero_kim.pickmeup.viewmodel.ItemViewModel" />
+    </data>
 
 
 </layout>

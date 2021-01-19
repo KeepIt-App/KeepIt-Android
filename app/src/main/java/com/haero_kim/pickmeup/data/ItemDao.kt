@@ -6,8 +6,8 @@ import androidx.room.*
 @Dao
 interface ItemDao {
 
-    @Query("SELECT * FROM item ORDER BY id ASC")
-    fun getAll(): LiveData<List<ItemEntity>>
+    @Query("SELECT * FROM item ORDER BY id DESC")
+    fun getList(): LiveData<List<ItemEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(itemEntity: ItemEntity)

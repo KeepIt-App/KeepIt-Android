@@ -7,10 +7,12 @@ import java.lang.Exception
 class ItemRepository(application: Application) {
     private val itemDatabase = ItemDatabase.getInstance(application)!!
     private val itemDao = itemDatabase.itemDao()
-    private val items: LiveData<List<ItemEntity>> = itemDao.getAll()
 
-    fun getAll(): LiveData<List<ItemEntity>> {
-        return items
+    private val list: LiveData<List<ItemEntity>> = itemDao.getList()
+
+
+    fun getList(): LiveData<List<ItemEntity>>{
+        return this.list
     }
 
     // Room DB 를 메인 쓰레드에서 접근하게 되면 크래쉬 발생 우려

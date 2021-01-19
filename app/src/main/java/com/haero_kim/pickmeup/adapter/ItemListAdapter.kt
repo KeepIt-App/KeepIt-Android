@@ -43,8 +43,6 @@ class ItemListAdapter(
             name.text = item.name
             price.text = "${item.price}원"
 
-            Log.d("Item", item.image)
-
             if (item.image == "null") {
                 image.visibility = View.GONE
             } else {
