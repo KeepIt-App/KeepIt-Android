@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonSetFilterPriority: Button
     private lateinit var buttonSetFilterPrice: Button
 
+    private lateinit var itemList: List<ItemEntity>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -80,17 +82,27 @@ class MainActivity : AppCompatActivity() {
             this.setHasFixedSize(true)
         }
 
-        // TODO 이 부분 고쳐야 함 (필터링 모드에 따른 Observer 교체)
-        val observer = itemViewModel.getAll().observe(this, Observer {
-            if (it.isEmpty()) {
+        itemViewModel.getAll().observe(this, Observer { list->
+            if (list.isEmpty()) {
                 textNoticeEmptyList.visibility = View.VISIBLE
             } else {
                 textNoticeEmptyList.visibility = View.GONE
             }
-
+            itemList = list
             // 필터에 따라 정렬된 리스트를 어댑터로 보낼 것
-            adapter.setItems(it)
-
+            itemViewModel.sortFilter.observe(this, Observer { filter->
+                when (filter) {
+                    SORT_BY_LATEST -> {
+                        adapter.setItems(sortByLatest(itemList))
+                    }
+                    SORT_BY_PRIORITY -> {
+                        adapter.setItems(sortByPriority(itemList))
+                    }
+                    SORT_BY_PRICE -> {
+                        adapter.setItems(sortByPrice(itemList))
+                    }
+                }
+            })
         })
 
         // BottomAppBar - 설정 버튼 눌렀을 때
@@ -119,7 +131,10 @@ class MainActivity : AppCompatActivity() {
 
         // 최신 순으로 리스트를 정렬
         buttonSetFilterLatest.setOnClickListener {
-            itemViewModel.sortFilter.set(SORT_BY_LATEST)
+            // RecyclerView 정렬을 위한 변수
+            itemViewModel.sortFilter.value = SORT_BY_LATEST
+
+            // XML 변경을 위한 변수 (TextColor, TextStyle)
             itemViewModel.isSortedByLatest.set(true)
             itemViewModel.isSortedByPriority.set(false)
             itemViewModel.isSortedByPrice.set(false)
@@ -127,7 +142,10 @@ class MainActivity : AppCompatActivity() {
 
         // 중요도 순으로 리스트를 정렬
         buttonSetFilterPriority.setOnClickListener {
-            itemViewModel.sortFilter.set(SORT_BY_PRIORITY)
+            // RecyclerView 정렬을 위한 변수
+            itemViewModel.sortFilter.value = SORT_BY_PRIORITY
+
+            // XML 변경을 위한 변수 (TextColor, TextStyle)
             itemViewModel.isSortedByLatest.set(false)
             itemViewModel.isSortedByPriority.set(true)
             itemViewModel.isSortedByPrice.set(false)
@@ -135,11 +153,30 @@ class MainActivity : AppCompatActivity() {
 
         // 가격 순으로 리스트를 정렬
         buttonSetFilterPrice.setOnClickListener {
-            itemViewModel.sortFilter.set(SORT_BY_PRICE)
+            // RecyclerView 정렬을 위한 변수
+            itemViewModel.sortFilter.value = SORT_BY_PRICE
+
+            // XML 변경을 위한 변수 (TextColor, TextStyle)
             itemViewModel.isSortedByLatest.set(false)
             itemViewModel.isSortedByPriority.set(false)
             itemViewModel.isSortedByPrice.set(true)
         }
+    }
+
+    /**
+     * 필터에 따른 각종 정렬 메소드 (등록 순, 중요도 순, 가격 순)
+     */
+
+    private fun sortByLatest(itemList: List<ItemEntity>): List<ItemEntity>{
+        return itemList.sortedByDescending { it.id }
+    }
+
+    private fun sortByPriority(itemList: List<ItemEntity>): List<ItemEntity>{
+        return itemList.sortedByDescending { it.priority }
+    }
+
+    private fun sortByPrice(itemList: List<ItemEntity>): List<ItemEntity>{
+        return itemList.sortedByDescending { it.price }
     }
 
     /**
