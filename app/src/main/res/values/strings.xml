@@ -13,4 +13,7 @@
     <string name="itemPriceHint">가격을 입력해주세요 (단위 : 원, 필수)</string>
     <string name="itemMemoHint">메모를 남겨주세요</string>
     <string name="completeButton">완료</string>
+    <string name="filter_latest">최신순</string>
+    <string name="filter_priority">중요도순</string>
+    <string name="filter_price">가격순</string>
 </resources>

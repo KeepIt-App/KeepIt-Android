@@ -36,6 +36,37 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
         repository.delete(itemEntity)
     }
 
+    fun onClickSetFilterLatest() {
+        // RecyclerView 정렬을 위한 변수
+        sortFilter.value = SORT_BY_LATEST
+
+        // XML 변경을 위한 변수 (TextColor, TextStyle)
+        isSortedByLatest.set(true)
+        isSortedByPriority.set(false)
+        isSortedByPrice.set(false)
+    }
+
+    fun onClickSetFilterPriority() {
+        // RecyclerView 정렬을 위한 변수
+        sortFilter.value = SORT_BY_PRIORITY
+
+        // XML 변경을 위한 변수 (TextColor, TextStyle)
+        isSortedByLatest.set(false)
+        isSortedByPriority.set(true)
+        isSortedByPrice.set(false)
+    }
+
+    fun onClickSetFilterPrice() {
+        // RecyclerView 정렬을 위한 변수
+        sortFilter.value = SORT_BY_PRICE
+
+        // XML 변경을 위한 변수 (TextColor, TextStyle)
+        isSortedByLatest.set(false)
+        isSortedByPriority.set(false)
+        isSortedByPrice.set(true)
+    }
+
+
     companion object {
         const val SORT_BY_LATEST = 1
         const val SORT_BY_PRIORITY = 2

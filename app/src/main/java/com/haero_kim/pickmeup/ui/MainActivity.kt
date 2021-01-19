@@ -89,6 +89,7 @@ class MainActivity : AppCompatActivity() {
                 textNoticeEmptyList.visibility = View.GONE
             }
             itemList = list
+
             // 필터에 따라 정렬된 리스트를 어댑터로 보낼 것
             itemViewModel.sortFilter.observe(this, Observer { filter->
                 when (filter) {
@@ -113,10 +114,10 @@ class MainActivity : AppCompatActivity() {
         // BottomAppBar - 검색, 필터 버튼 눌렀을 때
         bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.search -> {  // 검색 버튼 눌렀을 때 아이템 검색 기능 제공
+                R.id.search -> {  // 검색 버튼 눌렀을 때 아이템 검색 기능 제공 예정
                     true
                 }
-                R.id.delete -> {  // 삭제 버튼 눌렀을 때 선택 삭제 기능 제공
+                R.id.delete -> {  // 삭제 버튼 눌렀을 때 선택 삭제 기능 제공 예정
                     true
                 }
                 else -> false
@@ -127,39 +128,6 @@ class MainActivity : AppCompatActivity() {
         addButton.setOnClickListener {
             val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
-        }
-
-        // 최신 순으로 리스트를 정렬
-        buttonSetFilterLatest.setOnClickListener {
-            // RecyclerView 정렬을 위한 변수
-            itemViewModel.sortFilter.value = SORT_BY_LATEST
-
-            // XML 변경을 위한 변수 (TextColor, TextStyle)
-            itemViewModel.isSortedByLatest.set(true)
-            itemViewModel.isSortedByPriority.set(false)
-            itemViewModel.isSortedByPrice.set(false)
-        }
-
-        // 중요도 순으로 리스트를 정렬
-        buttonSetFilterPriority.setOnClickListener {
-            // RecyclerView 정렬을 위한 변수
-            itemViewModel.sortFilter.value = SORT_BY_PRIORITY
-
-            // XML 변경을 위한 변수 (TextColor, TextStyle)
-            itemViewModel.isSortedByLatest.set(false)
-            itemViewModel.isSortedByPriority.set(true)
-            itemViewModel.isSortedByPrice.set(false)
-        }
-
-        // 가격 순으로 리스트를 정렬
-        buttonSetFilterPrice.setOnClickListener {
-            // RecyclerView 정렬을 위한 변수
-            itemViewModel.sortFilter.value = SORT_BY_PRICE
-
-            // XML 변경을 위한 변수 (TextColor, TextStyle)
-            itemViewModel.isSortedByLatest.set(false)
-            itemViewModel.isSortedByPriority.set(false)
-            itemViewModel.isSortedByPrice.set(true)
         }
     }
 
