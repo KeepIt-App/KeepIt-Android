@@ -10,6 +10,8 @@ class ItemDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_item_detail)
     }
 
+
+
     companion object{
         const val EXTRA_ITEM = "EXTRA_ITEM"
     }

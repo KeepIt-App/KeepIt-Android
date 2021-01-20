@@ -121,7 +121,7 @@
             app:fabAlignmentMode="end"
             app:fabCradleMargin="8dp"
             app:hideOnScroll="true"
-            app:menu="@menu/bottom_app_bar"
+            app:menu="@menu/main_bottom_app_bar"
             app:navigationIcon="@drawable/ic_baseline_settings_24" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

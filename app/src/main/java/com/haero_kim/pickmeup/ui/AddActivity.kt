@@ -20,6 +20,8 @@ import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
+import com.haero_kim.pickmeup.util.Util
+import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -121,21 +123,15 @@ class AddActivity : AppCompatActivity() {
             // Valid Check
             if (itemName.isEmpty() || itemPrice.isEmpty()) {
                 if (itemName.isEmpty()) {
-                    YoYo.with(Techniques.Shake)
-                        .duration(400)
-                        .playOn(editTextItemName)
-                    editTextItemName.error = "이름은 필수 입력 항목입니다"
+                    setErrorOnEditText(editTextItemName, resources.getText(R.string.itemNameError))
                 }
                 if (itemPrice.isEmpty()) {
-                    YoYo.with(Techniques.Shake)
-                        .duration(400)
-                        .playOn(editTextItemPrice)
-                    editTextItemPrice.error = "가격은 필수 입력 항목입니다"
+                    setErrorOnEditText(editTextItemPrice, resources.getText(R.string.itemPriceError))
                 }
             } else {
                 val builder = AlertDialog.Builder(this)
                 builder.apply {
-                    this.setMessage("작성을 완료하시겠습니까?")
+                    this.setMessage(resources.getText(R.string.completeDialog))
                     this.setNegativeButton("NO") { _, _ -> }
                     this.setPositiveButton("YES") { _, _ ->
                         val newItem = ItemEntity(
@@ -152,10 +148,7 @@ class AddActivity : AppCompatActivity() {
                     }
                 }
                 builder.show()
-
             }
         }
-
     }
-
 }

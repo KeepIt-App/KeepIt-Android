@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,6 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/background"
         android:padding="24dp"
         tools:context=".ui.AddActivity">
 
@@ -125,7 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/custom_input"
-            android:backgroundTint="#F6F6F6"
+            android:backgroundTint="#E8E8E8"
             android:ems="10"
             android:hint="@string/itemMemoHint"
             android:minHeight="60dp"
