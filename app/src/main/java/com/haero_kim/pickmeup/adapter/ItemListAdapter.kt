@@ -52,7 +52,7 @@ class ItemListAdapter(
             val itemPrice = decimalFormat.format(item.price)
 
             name.text = item.name
-            price.text = "${itemPrice}원"
+            price.text = "₩${itemPrice}원"
 
             if (item.image == "null") {
                 image.visibility = View.GONE

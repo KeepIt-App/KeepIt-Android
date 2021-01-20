@@ -121,6 +121,8 @@ class AddActivity : AppCompatActivity() {
             val itemMemo = editTextItemMemo.text.toString().trim()
 
             // Valid Check
+            // TODO : 코드가 비효율적으로 보이지만, 이렇게 해야 두 EditText 가 모두 비었을 때 둘 다 에러가 적용된다.
+            //  (더 효율적인 방법을 찾아봐야겠다)
             if (itemName.isEmpty() || itemPrice.isEmpty()) {
                 if (itemName.isEmpty()) {
                     setErrorOnEditText(editTextItemName, resources.getText(R.string.itemNameError))

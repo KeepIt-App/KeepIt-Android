@@ -31,13 +31,14 @@
 
             <TextView
                 android:id="@+id/title"
+                android:layout_gravity="center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:text="@string/add_title"
                 android:textColor="@color/black"
-                android:textSize="25sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
         </LinearLayout>
 

@@ -1,13 +1,14 @@
 package com.haero_kim.pickmeup.ui
 
 import android.content.ClipData
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.TextView
+import android.util.Patterns
+import android.webkit.URLUtil
+import android.widget.*
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModelProvider
@@ -33,6 +34,7 @@ class ItemDetailActivity : AppCompatActivity() {
     private lateinit var itemLink: TextView
     private lateinit var itemMemo: TextView
     private lateinit var itemPriority: RatingBar
+    private lateinit var itemLinkLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,7 @@ class ItemDetailActivity : AppCompatActivity() {
         itemLink = findViewById(R.id.itemLink)
         itemMemo = findViewById(R.id.itemMemo)
         itemPriority = findViewById(R.id.itemRatingBar)
+        itemLinkLayout = findViewById(R.id.itemLinkLayout)
 
 
         val item = intent.getSerializableExtra(EXTRA_ITEM) as ItemEntity
@@ -55,20 +58,33 @@ class ItemDetailActivity : AppCompatActivity() {
         val itemPriceFormatted = decimalFormat.format(item.price)
 
         itemName.text = item.name
-        itemPrice.text = "${itemPriceFormatted}원"
+        itemPrice.text = "₩${itemPriceFormatted}원"
 
-        if(item.link.isEmpty()){
+        if (item.link.isEmpty()) {
             itemLink.text = "링크가 없습니다"
-        }else{
+        } else {
             itemLink.text = item.link
-            itemLink.setOnClickListener {
-
+            itemLinkLayout.setOnClickListener {
+                when {
+                    // HTTP Url 이 맞을 때
+                    URLUtil.isHttpUrl(item.link) -> {
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(item.link)))
+                    }
+                    // Url 은 맞지만 HTTP Url 이 아닐 때
+                    !URLUtil.isHttpUrl(item.link) and Patterns.WEB_URL.matcher(item.link).matches() -> {
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://" + item.link)))
+                    }
+                    // 아예 Url 형태가 아닐 때
+                    else -> {
+                        Toast.makeText(this, "올바르지 않은 URL 입니다", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         }
 
-        if(item.note.isEmpty()){
+        if (item.note.isEmpty()) {
             itemMemo.text = "메모가 없습니다"
-        }else{
+        } else {
             itemMemo.text = item.note
         }
 
