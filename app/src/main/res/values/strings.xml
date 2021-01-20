@@ -20,4 +20,5 @@
     <string name="filter_priority">중요도순</string>
     <string name="filter_price">가격순</string>
     <string name="edit">수정</string>
+    <string name="detailTitle">자세히 보기</string>
 </resources>

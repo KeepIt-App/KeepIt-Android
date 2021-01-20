@@ -26,6 +26,7 @@ import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_LATEST
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_PRICE
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_PRIORITY
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         bottomAppBar = findViewById(R.id.bottomAppBar)
         textNoticeEmptyList = findViewById(R.id.noticeEmptyList)
-        addButton = findViewById(R.id.addButton)
+        addButton = findViewById(R.id.shareButton)
         buttonSetFilterLatest = findViewById(R.id.sortLatest)
         buttonSetFilterPriority = findViewById(R.id.sortPriority)
         buttonSetFilterPrice = findViewById(R.id.sortPrice)

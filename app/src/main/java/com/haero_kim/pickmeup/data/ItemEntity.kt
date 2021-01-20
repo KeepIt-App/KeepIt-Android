@@ -29,7 +29,7 @@ data class ItemEntity(
     var priority: Int,
 
     @ColumnInfo(name = "note")
-    var note: String?
+    var note: String
 
 ) : Serializable {
     constructor() : this(null, "", "", 0, "", 1, "")

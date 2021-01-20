@@ -5,7 +5,6 @@ import androidx.room.*
 
 @Dao
 interface ItemDao {
-
     @Query("SELECT * FROM item ORDER BY id DESC")
     fun getList(): LiveData<List<ItemEntity>>
 
