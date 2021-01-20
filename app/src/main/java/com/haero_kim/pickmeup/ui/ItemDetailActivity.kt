@@ -27,7 +27,6 @@ import java.text.DecimalFormat
 class ItemDetailActivity : AppCompatActivity() {
     private lateinit var bottomAppBar: BottomAppBar
     private lateinit var shareButton: FloatingActionButton
-    private lateinit var backButton: ImageButton
     private lateinit var itemImage: ImageView
     private lateinit var itemName: TextView
     private lateinit var itemPrice: TextView
@@ -42,7 +41,6 @@ class ItemDetailActivity : AppCompatActivity() {
 
         bottomAppBar = findViewById(R.id.bottomAppBar)
         shareButton = findViewById(R.id.shareButton)
-        backButton = findViewById(R.id.backButton)
         itemImage = findViewById(R.id.itemImage)
         itemName = findViewById(R.id.itemName)
         itemPrice = findViewById(R.id.itemPrice)
@@ -93,9 +91,6 @@ class ItemDetailActivity : AppCompatActivity() {
         Glide.with(this)
             .load(item.image)
             .into(itemImage)
-
-        backButton.setOnClickListener { finish() }
-
     }
 
 

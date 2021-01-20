@@ -19,35 +19,6 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/backButton"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_gravity="center_vertical"
-                        android:background="?attr/selectableItemBackground"
-                        android:src="@drawable/ic_baseline_arrow_back_24" />
-
-                    <TextView
-                        android:id="@+id/title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/detailTitle"
-                        android:textColor="@color/black"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
                 <androidx.cardview.widget.CardView
                     android:id="@+id/itemImageCard"
                     android:layout_width="match_parent"
@@ -71,13 +42,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:ellipsize="end"
-                    android:maxLines="1"
+                    android:maxLines="2"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:text="NAME"
                     android:fontFamily="@font/nanum_extrabold"
                     android:textColor="@color/black"
-                    android:textSize="25sp"
+                    android:textSize="28sp"
                     android:textStyle="bold" />
 
                 <TextView

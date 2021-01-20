@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
 import androidx.appcompat.app.AlertDialog
@@ -94,6 +95,7 @@ class AddActivity : AppCompatActivity() {
         val ratingItemPriority = findViewById<RatingBar>(R.id.itemRatingBar)
         val editTextItemMemo = findViewById<EditText>(R.id.itemMemo)
         val completeButton = findViewById<CardView>(R.id.completeButton)
+        val backButton = findViewById<ImageButton>(R.id.backButton)
 
         if (viewModelFactory == null) {
             viewModelFactory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
@@ -109,6 +111,10 @@ class AddActivity : AppCompatActivity() {
                 .setCropMenuCropButtonTitle("완료")
                 .setRequestedSize(1280, 900)
                 .start(this)
+        }
+
+        backButton.setOnClickListener {
+            finish()
         }
 
         // 작성 완료 버튼을 눌렀을 때
