@@ -2,9 +2,12 @@ package com.haero_kim.pickmeup.ui
 
 import android.content.ClipData
 import android.content.Intent
+import android.graphics.Paint
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.util.Patterns
 import android.webkit.URLUtil
@@ -17,7 +20,6 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
-import com.haero_kim.pickmeup.databinding.ActivityItemDetailBinding
 import com.haero_kim.pickmeup.databinding.ActivityMainBinding
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import org.koin.android.ext.android.bind
@@ -61,7 +63,10 @@ class ItemDetailActivity : AppCompatActivity() {
         if (item.link.isEmpty()) {
             itemLink.text = "링크가 없습니다"
         } else {
-            itemLink.text = item.link
+            // URL UnderLine 처리
+            val content: SpannableString = SpannableString(item.link)
+            content.setSpan(UnderlineSpan(), 0, item.link.length, 0)
+            itemLink.text = content
             itemLinkLayout.setOnClickListener {
                 when {
                     // HTTP Url 이 맞을 때
@@ -79,6 +84,7 @@ class ItemDetailActivity : AppCompatActivity() {
                 }
             }
         }
+
 
         if (item.note.isEmpty()) {
             itemMemo.text = "메모가 없습니다"

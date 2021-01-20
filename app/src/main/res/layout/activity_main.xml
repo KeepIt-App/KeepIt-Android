@@ -38,7 +38,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="36dp"
-                        android:layout_marginBottom="16dp">
+                        android:layout_marginBottom="8dp">
 
                         <TextView
                             android:fontFamily="@font/nanum_extrabold"
@@ -102,7 +102,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="30dp"
+                        android:paddingBottom="30dp"
                         tools:listitem="@layout/recycler_item" />
 
                 </LinearLayout>

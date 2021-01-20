@@ -21,10 +21,11 @@
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/itemImageCard"
+                    app:cardUseCompatPadding="true"
                     android:layout_width="match_parent"
                     android:layout_height="250dp"
                     android:layout_marginTop="16dp"
-                    android:elevation="0dp"
+                    app:cardElevation="8dp"
                     app:cardCornerRadius="16dp">
 
                     <ImageView
@@ -40,7 +41,7 @@
                     android:id="@+id/itemName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="28dp"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:paddingStart="8dp"
@@ -88,7 +89,7 @@
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
                         android:text="Link"
-                        android:textColor="@color/gray"
+                        android:textColor="@color/rating_color"
                         android:textSize="20sp"
                         android:fontFamily="@font/nanum_regular"
                         android:textStyle="bold" />
