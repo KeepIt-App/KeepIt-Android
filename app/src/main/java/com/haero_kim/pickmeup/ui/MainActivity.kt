@@ -12,6 +12,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.daimajia.androidanimations.library.Techniques
+import com.daimajia.androidanimations.library.YoYo
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.haero_kim.pickmeup.R
@@ -23,6 +25,7 @@ import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_LATEST
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_PRICE
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_PRIORITY
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 
 class MainActivity : AppCompatActivity() {
 
@@ -64,6 +67,10 @@ class MainActivity : AppCompatActivity() {
         buttonSetFilterPriority = findViewById(R.id.sortPriority)
         buttonSetFilterPrice = findViewById(R.id.sortPrice)
 
+        YoYo.with(Techniques.ZoomIn)
+                .duration(400)
+                .playOn(addButton)
+
         val adapter = ItemListAdapter(
                 // OnClickListener
                 {
@@ -81,6 +88,8 @@ class MainActivity : AppCompatActivity() {
             this.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             this.setHasFixedSize(true)
         }
+
+        OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
 
         /**
          * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라

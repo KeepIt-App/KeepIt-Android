@@ -10,10 +10,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.daimajia.androidanimations.library.Techniques
+import com.daimajia.androidanimations.library.YoYo
 import com.haero_kim.pickmeup.MyApplication
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.ui.ItemDetailActivity
+import java.text.DecimalFormat
 
 class ItemListAdapter(
         val itemClick: (ItemEntity) -> Unit,
@@ -41,8 +44,15 @@ class ItemListAdapter(
         private val image = itemView.findViewById<ImageView>(R.id.itemImage)
 
         fun bind(item: ItemEntity) {
+            YoYo.with(Techniques.ZoomIn)
+                    .duration(250)
+                    .playOn(itemView)
+            // 화폐 단위 표시 포맷
+            val decimalFormat = DecimalFormat("#,###")
+            val itemPrice = decimalFormat.format(item.price)
+
             name.text = item.name
-            price.text = "${item.price}원"
+            price.text = "${itemPrice}원"
 
             if (item.image == "null") {
                 image.visibility = View.GONE

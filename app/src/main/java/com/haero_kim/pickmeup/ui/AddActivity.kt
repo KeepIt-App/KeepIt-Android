@@ -16,6 +16,8 @@ import android.widget.RatingBar
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
+import com.daimajia.androidanimations.library.Techniques
+import com.daimajia.androidanimations.library.YoYo
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
@@ -49,7 +51,7 @@ class AddActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 val resultUri = result.uri
                 val bitmap =
-                        MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
+                    MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
                 itemImage = bitmapToFile(bitmap!!) // Uri
                 imageViewItemImage.setImageURI(itemImage)
 
@@ -99,12 +101,12 @@ class AddActivity : AppCompatActivity() {
 
         imageViewItemImage.setOnClickListener {
             CropImage.activity()
-                    .setGuidelines(CropImageView.Guidelines.ON)
-                    .setActivityTitle("이미지 추가")
-                    .setCropShape(CropImageView.CropShape.RECTANGLE)
-                    .setCropMenuCropButtonTitle("완료")
-                    .setRequestedSize(1280, 900)
-                    .start(this)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setActivityTitle("이미지 추가")
+                .setCropShape(CropImageView.CropShape.RECTANGLE)
+                .setCropMenuCropButtonTitle("완료")
+                .setRequestedSize(1280, 900)
+                .start(this)
         }
 
         // 작성 완료 버튼을 눌렀을 때
@@ -117,10 +119,19 @@ class AddActivity : AppCompatActivity() {
             val itemMemo = editTextItemMemo.text.toString().trim()
 
             // Valid Check
-            if (itemName.isEmpty()) {
-                editTextItemName.error = "이름은 필수 입력 항목입니다"
-            } else if (itemPrice.isEmpty()) {
-                editTextItemPrice.error = "가격은 필수 입력 항목입니다"
+            if (itemName.isEmpty() || itemPrice.isEmpty()) {
+                if (itemName.isEmpty()) {
+                    YoYo.with(Techniques.Shake)
+                        .duration(400)
+                        .playOn(editTextItemName)
+                    editTextItemName.error = "이름은 필수 입력 항목입니다"
+                }
+                if (itemPrice.isEmpty()) {
+                    YoYo.with(Techniques.Shake)
+                        .duration(400)
+                        .playOn(editTextItemPrice)
+                    editTextItemPrice.error = "가격은 필수 입력 항목입니다"
+                }
             } else {
                 val builder = AlertDialog.Builder(this)
                 builder.apply {
@@ -128,13 +139,13 @@ class AddActivity : AppCompatActivity() {
                     this.setNegativeButton("NO") { _, _ -> }
                     this.setPositiveButton("YES") { _, _ ->
                         val newItem = ItemEntity(
-                                id = null,
-                                name = itemName,
-                                image = itemImage,
-                                price = itemPrice.toLong(),
-                                link = itemLink,
-                                priority = itemPriority,
-                                note = itemMemo
+                            id = null,
+                            name = itemName,
+                            image = itemImage,
+                            price = itemPrice.toLong(),
+                            link = itemLink,
+                            priority = itemPriority,
+                            note = itemMemo
                         )
                         itemViewModel.insert(newItem)
                         finish()
