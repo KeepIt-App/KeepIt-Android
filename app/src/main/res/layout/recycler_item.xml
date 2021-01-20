@@ -30,6 +30,7 @@
             android:paddingBottom="16dp">
 
             <TextView
+                android:fontFamily="@font/nanum_extrabold"
                 android:id="@+id/itemName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,10 +41,12 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:fontFamily="@font/nanum_regular"
                 android:id="@+id/itemPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
+                android:layout_marginTop="4dp"
                 android:ellipsize="end"
                 android:textSize="15sp" />
         </LinearLayout>
