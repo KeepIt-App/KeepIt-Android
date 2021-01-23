@@ -3,10 +3,13 @@ package com.haero_kim.pickmeup.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.SearchView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -41,6 +44,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonSetFilterPriority: Button
     private lateinit var buttonSetFilterPrice: Button
 
+    private lateinit var searchViewLayout: CardView
+    private lateinit var searchView: androidx.appcompat.widget.SearchView
+
     private lateinit var itemList: List<ItemEntity>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +73,8 @@ class MainActivity : AppCompatActivity() {
         buttonSetFilterLatest = findViewById(R.id.sortLatest)
         buttonSetFilterPriority = findViewById(R.id.sortPriority)
         buttonSetFilterPrice = findViewById(R.id.sortPrice)
+        searchViewLayout = findViewById(R.id.searchViewLayout)
+        searchView = findViewById(R.id.searchView)
 
         YoYo.with(Techniques.ZoomIn)
                 .duration(400)
@@ -96,7 +104,7 @@ class MainActivity : AppCompatActivity() {
          * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
          * 받아온 LiveData 를 적절히 정렬(가공) 하여 RecyclerView Adapter 에 적용
          */
-        itemViewModel.getAll().observe(this, Observer { list->
+        itemViewModel.getAll().observe(this, Observer { list ->
             if (list.isEmpty()) {
                 textNoticeEmptyList.visibility = View.VISIBLE
             } else {
@@ -105,7 +113,7 @@ class MainActivity : AppCompatActivity() {
             itemList = list
 
             // 필터에 따라 정렬된 리스트를 어댑터로 보낼 것
-            itemViewModel.sortFilter.observe(this, Observer { filter->
+            itemViewModel.sortFilter.observe(this, Observer { filter ->
                 when (filter) {
                     SORT_BY_LATEST -> {
                         adapter.setItems(sortByLatest(itemList))
@@ -129,6 +137,12 @@ class MainActivity : AppCompatActivity() {
         bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.search -> {  // 검색 버튼 눌렀을 때 아이템 검색 기능 제공 예정
+                    YoYo.with(Techniques.Landing)
+                            .duration(600)
+                            .playOn(searchViewLayout)
+
+                    // 검색 버튼 눌렀을 때마다 모드 전환
+                    itemViewModel.isSearchMode.set(!itemViewModel.isSearchMode.get()!!)
                     true
                 }
                 R.id.delete -> {  // 삭제 버튼 눌렀을 때 선택 삭제 기능 제공 예정
@@ -149,15 +163,15 @@ class MainActivity : AppCompatActivity() {
      * 필터에 따른 각종 정렬 메소드 (등록 순, 중요도 순, 가격 순)
      */
 
-    private fun sortByLatest(itemList: List<ItemEntity>): List<ItemEntity>{
+    private fun sortByLatest(itemList: List<ItemEntity>): List<ItemEntity> {
         return itemList.sortedByDescending { it.id }
     }
 
-    private fun sortByPriority(itemList: List<ItemEntity>): List<ItemEntity>{
+    private fun sortByPriority(itemList: List<ItemEntity>): List<ItemEntity> {
         return itemList.sortedByDescending { it.priority }
     }
 
-    private fun sortByPrice(itemList: List<ItemEntity>): List<ItemEntity>{
+    private fun sortByPrice(itemList: List<ItemEntity>): List<ItemEntity> {
         return itemList.sortedByDescending { it.price }
     }
 

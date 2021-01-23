@@ -21,6 +21,8 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
 
     var sortFilter: MutableLiveData<Int> = MutableLiveData<Int>(1)
 
+    var isSearchMode: ObservableField<Boolean> = ObservableField<Boolean>(false)
+
     /**
      * 현재 사용자가 선택한 필터에 따른 알맞은 리스트 반환
      */

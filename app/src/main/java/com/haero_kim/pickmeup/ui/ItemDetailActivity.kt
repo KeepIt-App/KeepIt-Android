@@ -10,6 +10,7 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.util.Log
 import android.util.Patterns
+import android.view.View
 import android.webkit.URLUtil
 import android.widget.*
 import androidx.core.content.ContextCompat
@@ -86,7 +87,6 @@ class ItemDetailActivity : AppCompatActivity() {
             }
         }
 
-
         if (item.note.isEmpty()) {
             itemMemo.text = "메모가 없습니다"
         } else {
@@ -96,10 +96,9 @@ class ItemDetailActivity : AppCompatActivity() {
         itemPriority.rating = item.priority.toFloat()
 
         Glide.with(this)
-            .load(item.image)
-            .into(itemImage)
+                .load(item.image)
+                .into(itemImage)
     }
-
 
     companion object {
         const val EXTRA_ITEM = "EXTRA_ITEM"
