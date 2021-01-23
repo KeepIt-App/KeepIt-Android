@@ -12,6 +12,7 @@ import android.util.Log
 import android.util.Patterns
 import android.webkit.URLUtil
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModelProvider
@@ -51,7 +52,6 @@ class ItemDetailActivity : AppCompatActivity() {
         itemPriority = findViewById(R.id.itemRatingBar)
         itemLinkLayout = findViewById(R.id.itemLinkLayout)
 
-
         val item = intent.getSerializableExtra(EXTRA_ITEM) as ItemEntity
 
         val decimalFormat = DecimalFormat("#,###")
@@ -62,6 +62,7 @@ class ItemDetailActivity : AppCompatActivity() {
 
         if (item.link.isEmpty()) {
             itemLink.text = "링크가 없습니다"
+            itemLink.setTextColor(ContextCompat.getColor(this, R.color.gray))
         } else {
             // URL UnderLine 처리
             val content: SpannableString = SpannableString(item.link)
