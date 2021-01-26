@@ -1,9 +1,10 @@
 package com.haero_kim.pickmeup.ui
 
-import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -39,7 +40,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity() {
 
     private lateinit var itemViewModel: ItemViewModel
     private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
@@ -88,6 +89,7 @@ class MainActivity : AppCompatActivity(){
         buttonSetFilterPrice = findViewById(R.id.sortPrice)
         searchViewLayout = findViewById(R.id.searchViewLayout)
         searchEditText = findViewById(R.id.searchView)
+        searchEditTextClearButton = findViewById(R.id.textClearButton)
 
         YoYo.with(Techniques.ZoomIn)
             .duration(400)
@@ -125,9 +127,9 @@ class MainActivity : AppCompatActivity(){
 
             // EditText 에 포커스가 갔을 때 ClearButton 활성화
             this.setOnFocusChangeListener { v, hasFocus ->
-                if(hasFocus){
+                if (hasFocus) {
                     searchEditTextClearButton.visibility = View.VISIBLE
-                }else{
+                } else {
                     searchEditTextClearButton.visibility = View.GONE
                 }
             }
@@ -186,8 +188,9 @@ class MainActivity : AppCompatActivity(){
             })
         })
 
+        // ClearButton 눌렀을 때
         searchEditTextClearButton.setOnClickListener {
-            searchEditText.text = null
+            searchEditText.text.clear()
         }
 
         // BottomAppBar - 설정 버튼 눌렀을 때

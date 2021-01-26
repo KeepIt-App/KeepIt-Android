@@ -1,6 +1,7 @@
 package com.haero_kim.pickmeup.ui
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -10,10 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.RatingBar
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
@@ -38,8 +36,17 @@ class AddActivity : AppCompatActivity() {
 
     private lateinit var itemViewModel: ItemViewModel
     private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
+    var itemId: Long? = null
     private var itemImage: Uri? = null
     private lateinit var imageViewItemImage: ImageView
+
+    lateinit var editTextItemName: EditText
+    lateinit var editTextItemLink: EditText
+    lateinit var editTextItemPrice: EditText
+    lateinit var ratingItemPriority: RatingBar
+    lateinit var editTextItemMemo: EditText
+    lateinit var completeButton: CardView
+    lateinit var backButton: ImageButton
 
     /**
      * 사용자가 이미지 선택을 완료하면 실행됨
@@ -88,20 +95,27 @@ class AddActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add)
 
-        val editTextItemName = findViewById<EditText>(R.id.itemName)
+        editTextItemName = findViewById<EditText>(R.id.itemName)
         imageViewItemImage = findViewById<ImageView>(R.id.itemImage)
-        val editTextItemLink = findViewById<EditText>(R.id.itemLink)
-        val editTextItemPrice = findViewById<EditText>(R.id.itemPrice)
-        val ratingItemPriority = findViewById<RatingBar>(R.id.itemRatingBar)
-        val editTextItemMemo = findViewById<EditText>(R.id.itemMemo)
-        val completeButton = findViewById<CardView>(R.id.completeButton)
-        val backButton = findViewById<ImageButton>(R.id.backButton)
+        editTextItemLink = findViewById<EditText>(R.id.itemLink)
+        editTextItemPrice = findViewById<EditText>(R.id.itemPrice)
+        ratingItemPriority = findViewById<RatingBar>(R.id.itemRatingBar)
+        editTextItemMemo = findViewById<EditText>(R.id.itemMemo)
+        completeButton = findViewById<CardView>(R.id.completeButton)
+        backButton = findViewById<ImageButton>(R.id.backButton)
 
         if (viewModelFactory == null) {
             viewModelFactory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         }
 
         itemViewModel = ViewModelProvider(this, viewModelFactory!!).get(ItemViewModel::class.java)
+
+        /**
+         * 아이템 편집 기능을 통해 들어온 것이라면 기존 정보 적용
+         */
+        if (intent != null && intent.hasExtra(EDIT_ITEM)) {
+            applyExistingInfo(intent.getSerializableExtra(EDIT_ITEM) as ItemEntity)
+        }
 
         imageViewItemImage.setOnClickListener {
             CropImage.activity()
@@ -113,9 +127,7 @@ class AddActivity : AppCompatActivity() {
                 .start(this)
         }
 
-        backButton.setOnClickListener {
-            finish()
-        }
+        backButton.setOnClickListener { finish() }
 
         // 작성 완료 버튼을 눌렀을 때
         completeButton.setOnClickListener {
@@ -134,7 +146,10 @@ class AddActivity : AppCompatActivity() {
                     setErrorOnEditText(editTextItemName, resources.getText(R.string.itemNameError))
                 }
                 if (itemPrice.isEmpty()) {
-                    setErrorOnEditText(editTextItemPrice, resources.getText(R.string.itemPriceError))
+                    setErrorOnEditText(
+                        editTextItemPrice,
+                        resources.getText(R.string.itemPriceError)
+                    )
                 }
             } else {
                 val builder = AlertDialog.Builder(this)
@@ -143,7 +158,7 @@ class AddActivity : AppCompatActivity() {
                     this.setNegativeButton("NO") { _, _ -> }
                     this.setPositiveButton("YES") { _, _ ->
                         val newItem = ItemEntity(
-                            id = null,
+                            id = itemId,  // 새로운 Item 이면 Null 들어감 (자동 값 적용)
                             name = itemName,
                             image = itemImage,
                             price = itemPrice.toLong(),
@@ -158,5 +173,20 @@ class AddActivity : AppCompatActivity() {
                 builder.show()
             }
         }
+    }
+
+    private fun applyExistingInfo(item: ItemEntity) {
+        itemId = item.id
+        editTextItemName.setText(item.name)
+        editTextItemLink.setText(item.link)
+        editTextItemPrice.setText(item.price.toString())
+        ratingItemPriority.rating = item.priority.toFloat()
+        editTextItemMemo.setText(item.note)
+        itemImage = Uri.parse(item.image)
+        imageViewItemImage.setImageURI(itemImage)
+    }
+
+    companion object {
+        const val EDIT_ITEM: String = "EDIT_ITEM"
     }
 }
