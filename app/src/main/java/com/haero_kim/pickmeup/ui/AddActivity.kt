@@ -1,25 +1,26 @@
 package com.haero_kim.pickmeup.ui
 
 import android.app.Activity
-import android.content.ClipData
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
-import com.daimajia.androidanimations.library.Techniques
-import com.daimajia.androidanimations.library.YoYo
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
-import com.haero_kim.pickmeup.util.Util
+import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import com.theartofdev.edmodo.cropper.CropImage
@@ -28,9 +29,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.lang.Math.abs
 import kotlin.random.Random
-import kotlin.random.nextUInt
+
 
 class AddActivity : AppCompatActivity() {
 
@@ -40,6 +40,7 @@ class AddActivity : AppCompatActivity() {
     private var itemImage: Uri? = null
     private lateinit var imageViewItemImage: ImageView
 
+    lateinit var titleText: TextView
     lateinit var editTextItemName: EditText
     lateinit var editTextItemLink: EditText
     lateinit var editTextItemPrice: EditText
@@ -95,6 +96,7 @@ class AddActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add)
 
+        titleText = findViewById(R.id.title)
         editTextItemName = findViewById<EditText>(R.id.itemName)
         imageViewItemImage = findViewById<ImageView>(R.id.itemImage)
         editTextItemLink = findViewById<EditText>(R.id.itemLink)
@@ -140,16 +142,13 @@ class AddActivity : AppCompatActivity() {
 
             // Valid Check
             // TODO : 코드가 비효율적으로 보이지만, 이렇게 해야 두 EditText 가 모두 비었을 때 둘 다 에러가 적용된다.
-            //  (더 효율적인 방법을 찾아봐야겠다)
+            //  setErrorOnEditText() 는 해당 EditText 에 특정 Error 를 뿌려줌
             if (itemName.isEmpty() || itemPrice.isEmpty()) {
                 if (itemName.isEmpty()) {
                     setErrorOnEditText(editTextItemName, resources.getText(R.string.itemNameError))
                 }
                 if (itemPrice.isEmpty()) {
-                    setErrorOnEditText(
-                        editTextItemPrice,
-                        resources.getText(R.string.itemPriceError)
-                    )
+                    setErrorOnEditText(editTextItemPrice, resources.getText(R.string.itemPriceError))
                 }
             } else {
                 val builder = AlertDialog.Builder(this)
@@ -167,6 +166,11 @@ class AddActivity : AppCompatActivity() {
                             note = itemMemo
                         )
                         itemViewModel.insert(newItem)
+
+                        // 수정된 내용을 사용자게에 보여줌
+                        val intent = Intent(context, ItemDetailActivity::class.java)
+                        intent.putExtra(EXTRA_ITEM, newItem)
+                        startActivity(intent)
                         finish()
                     }
                 }
@@ -175,7 +179,31 @@ class AddActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * EditText 가 아닌 곳을 터치하면 키보드 내림
+     */
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val focusView: View? = currentFocus
+        if (focusView != null) {
+            val rect = Rect()
+            focusView.getGlobalVisibleRect(rect)
+            val x = ev.x.toInt()
+            val y = ev.y.toInt()
+            if (!rect.contains(x, y)) {
+                val imm: InputMethodManager =
+                    getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(focusView.windowToken, 0)
+                focusView.clearFocus()
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    /**
+     * 아이템 신규 생성이 아닌 편집 기능인 경우 기존 정보 채워줌
+     */
     private fun applyExistingInfo(item: ItemEntity) {
+        titleText.text = "수정하기"
         itemId = item.id
         editTextItemName.setText(item.name)
         editTextItemLink.setText(item.link)

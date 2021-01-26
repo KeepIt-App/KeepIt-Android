@@ -139,6 +139,8 @@ class ItemDetailActivity : AppCompatActivity() {
             val intent = Intent(this, AddActivity::class.java)
             intent.putExtra(EDIT_ITEM, item)
             startActivity(intent)
+
+            finish()  // 편집 후 복귀했을 때 정보 동기화를 위해 기존 정보 페이지는 닫아줌
         }
     }
 
