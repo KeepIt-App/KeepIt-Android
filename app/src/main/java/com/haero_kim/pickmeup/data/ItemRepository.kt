@@ -1,6 +1,7 @@
 package com.haero_kim.pickmeup.data
 
 import android.app.Application
+import android.app.DownloadManager
 import androidx.lifecycle.LiveData
 import java.lang.Exception
 
@@ -11,8 +12,12 @@ class ItemRepository(application: Application) {
     private val list: LiveData<List<ItemEntity>> = itemDao.getList()
 
 
-    fun getList(): LiveData<List<ItemEntity>>{
+    fun getList(): LiveData<List<ItemEntity>> {
         return this.list
+    }
+
+    fun searchItem(query: String?): LiveData<List<ItemEntity>> {
+        return itemDao.searchByName(query)
     }
 
     // Room DB 를 메인 쓰레드에서 접근하게 되면 크래쉬 발생 우려

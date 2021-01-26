@@ -1,17 +1,19 @@
 package com.haero_kim.pickmeup.viewmodel
 
 import android.app.Application
+import android.text.TextUtils
+import androidx.arch.core.util.Function
 import androidx.databinding.ObservableField
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
+import androidx.room.Query
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.data.ItemRepository
 
 
 class ItemViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = ItemRepository(application)
 
+    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private val repository = ItemRepository(application)
     private val list = repository.getList()
 
     // Data Binding 을 위한 Boolean 변수들 (TextStyle, TextColor 지정에 필요)
@@ -26,8 +28,23 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 현재 사용자가 선택한 필터에 따른 알맞은 리스트 반환
      */
-    fun getAll(): LiveData<List<ItemEntity>> {
-        return this.list
+    fun getAll(): LiveData<List<ItemEntity>> = Transformations.switchMap<CharSequence?, List<ItemEntity>>(
+            savedStateHandle.getLiveData("QUERY", null),
+            Function<CharSequence?, LiveData<List<ItemEntity>>> { query: CharSequence? ->
+                if (TextUtils.isEmpty(query)) {
+                    return@Function repository.getList()
+                } else {
+                    return@Function repository.searchItem("*$query*")
+                }
+            }
+    )
+
+    fun onChangeQuery(searchQuery: String) {
+        setQuery(searchQuery)
+    }
+
+    fun setQuery(query: CharSequence?) {
+        savedStateHandle.set("QUERY", query)
     }
 
     fun insert(itemEntity: ItemEntity) {
@@ -50,6 +67,7 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
         isSortedByPriority.set(false)
         isSortedByPrice.set(false)
     }
+
     /**
      * 중요도 순 정렬 버튼을 눌렀을 때 동작
      */

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -28,10 +29,20 @@ import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_LATEST
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_PRICE
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_PRIORITY
+import com.jakewharton.rxbinding4.widget.textChanges
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.concurrent.TimeUnit
+import kotlin.coroutines.coroutineContext
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),
+    androidx.appcompat.widget.SearchView.OnQueryTextListener {
 
     private lateinit var itemViewModel: ItemViewModel
     private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
@@ -45,7 +56,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonSetFilterPrice: Button
 
     private lateinit var searchViewLayout: CardView
-    private lateinit var searchView: androidx.appcompat.widget.SearchView
+    private lateinit var searchEditText: EditText
+
+    // Disposable 을 모두 한번에 관리하는 CompositeDisposable
+    // 옵저버블 통합 제거를 위해 사용 (메모리 릭 방지하기 위해 onDestroy() 에서 clear() 필요)
+    private var compositeDisposable = CompositeDisposable()
 
     private lateinit var itemList: List<ItemEntity>
 
@@ -61,8 +76,8 @@ class MainActivity : AppCompatActivity() {
         itemViewModel = ViewModelProvider(this, viewModelFactory!!).get(ItemViewModel::class.java)
 
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(
-                this,
-                R.layout.activity_main
+            this,
+            R.layout.activity_main
         )
         binding.viewModel = itemViewModel
 
@@ -74,23 +89,23 @@ class MainActivity : AppCompatActivity() {
         buttonSetFilterPriority = findViewById(R.id.sortPriority)
         buttonSetFilterPrice = findViewById(R.id.sortPrice)
         searchViewLayout = findViewById(R.id.searchViewLayout)
-        searchView = findViewById(R.id.searchView)
+        searchEditText = findViewById(R.id.searchView)
 
         YoYo.with(Techniques.ZoomIn)
-                .duration(400)
-                .playOn(addButton)
+            .duration(400)
+            .playOn(addButton)
 
         val adapter = ItemListAdapter(
-                // OnClickListener
-                {
-                    val intent = Intent(this, ItemDetailActivity::class.java)
-                    intent.putExtra(EXTRA_ITEM, it)
-                    startActivity(intent)
-                },
-                // OnLongClickListener
-                {
-                    deleteDialog(it)
-                })
+            // OnClickListener
+            {
+                val intent = Intent(this, ItemDetailActivity::class.java)
+                intent.putExtra(EXTRA_ITEM, it)
+                startActivity(intent)
+            },
+            // OnLongClickListener
+            {
+                deleteDialog(it)
+            })
 
         recyclerView.apply {
             this.adapter = adapter
@@ -98,7 +113,41 @@ class MainActivity : AppCompatActivity() {
             this.setHasFixedSize(true)
         }
 
-        OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+        OverScrollDecoratorHelper.setUpOverScroll(
+            recyclerView,
+            OverScrollDecoratorHelper.ORIENTATION_VERTICAL
+        )
+
+        searchEditText.apply {
+            this.hint = "검색어를 입력해주세요"
+
+            val editTextChangeObservable = searchEditText.textChanges()
+
+            val searchEditTextSubscription: Disposable =
+                // 생성한 Observable 에 Operator 추가
+                editTextChangeObservable
+                    // 마지막 글자 입력 0.8초 후에 onNext 이벤트로 데이터 스트리밍
+                    .debounce(800, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.io())
+                    // 구독을 통해 이벤트 응답 처리
+                    .subscribeBy(
+                        onNext = {
+                            Log.d("Rx", "onNext : $it")
+                            runOnUiThread {
+                                itemViewModel.onChangeQuery(searchQuery = it.toString())
+                            }
+                        },
+                        onComplete = {
+                            Log.d("Rx", "onComplete")
+                        },
+                        onError = {
+                            Log.d("Rx", "onError : $it")
+                        }
+                    )
+            // CompositeDisposable 에 추가
+            compositeDisposable.add(searchEditTextSubscription)
+        }
+
 
         /**
          * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
@@ -130,16 +179,16 @@ class MainActivity : AppCompatActivity() {
 
         // BottomAppBar - 설정 버튼 눌렀을 때
         bottomAppBar.setNavigationOnClickListener {
-
+            TODO()
         }
 
         // BottomAppBar - 검색, 필터 버튼 눌렀을 때
         bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.search -> {  // 검색 버튼 눌렀을 때 아이템 검색 기능 제공 예정
-                    YoYo.with(Techniques.Landing)
-                            .duration(600)
-                            .playOn(searchViewLayout)
+                    YoYo.with(Techniques.FadeInLeft)
+                        .duration(400)
+                        .playOn(searchViewLayout)
 
                     // 검색 버튼 눌렀을 때마다 모드 전환
                     itemViewModel.isSearchMode.set(!itemViewModel.isSearchMode.get()!!)
@@ -157,6 +206,14 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return true
     }
 
     /**
@@ -191,5 +248,8 @@ class MainActivity : AppCompatActivity() {
         builder.show()
     }
 
-
+    override fun onDestroy() {
+        this.compositeDisposable.clear()
+        super.onDestroy()
+    }
 }
