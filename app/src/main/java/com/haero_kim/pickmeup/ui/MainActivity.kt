@@ -38,8 +38,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(),
-    androidx.appcompat.widget.SearchView.OnQueryTextListener {
+class MainActivity : AppCompatActivity(){
 
     private lateinit var itemViewModel: ItemViewModel
     private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
@@ -115,6 +114,10 @@ class MainActivity : AppCompatActivity(),
             OverScrollDecoratorHelper.ORIENTATION_VERTICAL
         )
 
+        /**
+         * EditText 에 RxJava (feat. RxBinding, RxKotlin) 을 적용하여
+         * 사용자의 검색 Query 에 즉각적으로 LiveData 가 변경될 수 있도록 함 (Debounce 를 적용하여 리소스 낭비 방지)
+         */
         searchEditText.apply {
             this.hint = "검색어를 입력해주세요"
 
@@ -205,14 +208,6 @@ class MainActivity : AppCompatActivity(),
             val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
         }
-    }
-
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        return true
-    }
-
-    override fun onQueryTextChange(newText: String?): Boolean {
-        return true
     }
 
     /**

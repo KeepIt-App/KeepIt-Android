@@ -13,6 +13,7 @@ import android.util.Patterns
 import android.view.View
 import android.webkit.URLUtil
 import android.widget.*
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
@@ -37,7 +38,7 @@ class ItemDetailActivity : AppCompatActivity() {
     private lateinit var itemLink: TextView
     private lateinit var itemMemo: TextView
     private lateinit var itemPriority: RatingBar
-    private lateinit var itemLinkLayout: LinearLayout
+    private lateinit var itemLinkLayout: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
