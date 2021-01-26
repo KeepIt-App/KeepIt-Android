@@ -8,6 +8,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity(){
 
     private lateinit var searchViewLayout: CardView
     private lateinit var searchEditText: EditText
+    private lateinit var searchEditTextClearButton: ImageButton
 
     // Disposable 을 모두 한번에 관리하는 CompositeDisposable
     // 옵저버블 통합 제거를 위해 사용 (메모리 릭 방지하기 위해 onDestroy() 에서 clear() 필요)
@@ -121,8 +123,16 @@ class MainActivity : AppCompatActivity(){
         searchEditText.apply {
             this.hint = "검색어를 입력해주세요"
 
-            val editTextChangeObservable = searchEditText.textChanges()
+            // EditText 에 포커스가 갔을 때 ClearButton 활성화
+            this.setOnFocusChangeListener { v, hasFocus ->
+                if(hasFocus){
+                    searchEditTextClearButton.visibility = View.VISIBLE
+                }else{
+                    searchEditTextClearButton.visibility = View.GONE
+                }
+            }
 
+            val editTextChangeObservable = searchEditText.textChanges()
             val searchEditTextSubscription: Disposable =
                 // 생성한 Observable 에 Operator 추가
                 editTextChangeObservable
@@ -147,7 +157,6 @@ class MainActivity : AppCompatActivity(){
             // CompositeDisposable 에 추가
             compositeDisposable.add(searchEditTextSubscription)
         }
-
 
         /**
          * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
@@ -176,6 +185,10 @@ class MainActivity : AppCompatActivity(){
                 }
             })
         })
+
+        searchEditTextClearButton.setOnClickListener {
+            searchEditText.text = null
+        }
 
         // BottomAppBar - 설정 버튼 눌렀을 때
         bottomAppBar.setNavigationOnClickListener {

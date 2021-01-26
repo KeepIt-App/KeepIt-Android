@@ -19,6 +19,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.daimajia.androidanimations.library.Techniques
+import com.daimajia.androidanimations.library.YoYo
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.haero_kim.pickmeup.R
@@ -54,10 +56,9 @@ class ItemDetailActivity : AppCompatActivity() {
         itemPriority = findViewById(R.id.itemRatingBar)
         itemLinkLayout = findViewById(R.id.itemLinkLayout)
 
-        this.window.statusBarColor = ContextCompat.getColor(this, R.color.box_stroke)
+//        this.window.statusBarColor = ContextCompat.getColor(this, R.color.box_stroke)
 
         val item = intent.getSerializableExtra(EXTRA_ITEM) as ItemEntity
-
         val decimalFormat = DecimalFormat("#,###")
         val itemPriceFormatted = decimalFormat.format(item.price)
 

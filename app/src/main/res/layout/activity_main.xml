@@ -105,19 +105,37 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_height="wrap_content">
-
-                        <EditText
-                            android:gravity="center_vertical"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:drawableStart="@drawable/ic_baseline_search_24"
-                            android:drawablePadding="8dp"
-                            android:background="@android:color/transparent"
-                            android:id="@+id/searchView"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
+                        
+                        <LinearLayout
+                            android:orientation="horizontal"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"/>
+                            android:layout_height="match_parent">
+
+                            <EditText
+                                android:gravity="center_vertical"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="8dp"
+                                android:drawableStart="@drawable/ic_baseline_search_24"
+                                android:drawablePadding="8dp"
+                                android:background="@android:color/transparent"
+                                android:id="@+id/searchView"
+                                android:textSize="14sp"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:layout_width="0dp"
+                                android:layout_height="50dp"/>
+                            
+                            <ImageButton
+                                android:visibility="gone"
+                                android:layout_gravity="center"
+                                android:layout_marginHorizontal="12dp"
+                                android:gravity="center"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:background="@null"
+                                android:src="@drawable/ic_baseline_cancel_24"/>
+
+                        </LinearLayout>
 
                     </androidx.cardview.widget.CardView>
 

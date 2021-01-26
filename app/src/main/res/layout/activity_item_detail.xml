@@ -17,10 +17,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:background="@color/box_stroke" />
+<!--                <View-->
+<!--                    android:id="@+id/banner"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:background="@color/box_stroke" />-->
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/mainCard"
