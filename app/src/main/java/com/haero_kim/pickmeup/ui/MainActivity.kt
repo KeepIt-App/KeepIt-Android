@@ -182,32 +182,18 @@ class MainActivity : AppCompatActivity(),
         // BottomAppBar - 검색, 필터 버튼 눌렀을 때
         bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.search -> {  // 검색 버튼 눌렀을 때 아이템 검색 기능 제공 예정
+                R.id.search -> {
                     val isSearchMode = itemViewModel.isSearchMode.get()!!
-                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
                     YoYo.with(Techniques.FadeInLeft)
                         .duration(400)
                         .playOn(searchViewLayout)
 
                     // 검색 버튼 눌렀을 때마다 모드 전환
                     itemViewModel.isSearchMode.set(!isSearchMode)
-
-                    // EditText 자동 포커스 및 키보드 자동 올리
-                    if (isSearchMode) {
-                        searchEditText.requestFocus()
-                        searchEditText.isCursorVisible = true
-                        imm.toggleSoftInput(
-                            InputMethodManager.SHOW_FORCED,
-                            InputMethodManager.HIDE_IMPLICIT_ONLY
-                        )
-                    } else {
-                        searchEditText.isCursorVisible = false
-                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
-                    }
-
                     true
                 }
-                R.id.delete -> {  // 삭제 버튼 눌렀을 때 선택 삭제 기능 제공 예정
+                R.id.delete -> {  // TODO : 삭제 버튼 눌렀을 때 선택 삭제 기능 제공 예정
                     true
                 }
                 else -> false
