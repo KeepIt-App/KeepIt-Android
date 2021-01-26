@@ -1,15 +1,16 @@
 package com.haero_kim.pickmeup.ui
 
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.SearchView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -34,12 +35,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.coroutineContext
 
 class MainActivity : AppCompatActivity(),
     androidx.appcompat.widget.SearchView.OnQueryTextListener {
@@ -186,12 +183,28 @@ class MainActivity : AppCompatActivity(),
         bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.search -> {  // 검색 버튼 눌렀을 때 아이템 검색 기능 제공 예정
+                    val isSearchMode = itemViewModel.isSearchMode.get()!!
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     YoYo.with(Techniques.FadeInLeft)
                         .duration(400)
                         .playOn(searchViewLayout)
 
                     // 검색 버튼 눌렀을 때마다 모드 전환
-                    itemViewModel.isSearchMode.set(!itemViewModel.isSearchMode.get()!!)
+                    itemViewModel.isSearchMode.set(!isSearchMode)
+
+                    // EditText 자동 포커스 및 키보드 자동 올리
+                    if (isSearchMode) {
+                        searchEditText.requestFocus()
+                        searchEditText.isCursorVisible = true
+                        imm.toggleSoftInput(
+                            InputMethodManager.SHOW_FORCED,
+                            InputMethodManager.HIDE_IMPLICIT_ONLY
+                        )
+                    } else {
+                        searchEditText.isCursorVisible = false
+                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+                    }
+
                     true
                 }
                 R.id.delete -> {  // 삭제 버튼 눌렀을 때 선택 삭제 기능 제공 예정

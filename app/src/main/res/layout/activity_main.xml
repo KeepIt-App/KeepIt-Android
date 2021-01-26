@@ -107,11 +107,17 @@
                         android:layout_height="wrap_content">
 
                         <EditText
+                            android:gravity="center_vertical"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:drawableStart="@drawable/ic_baseline_search_24"
+                            android:drawablePadding="8dp"
+                            android:background="@android:color/transparent"
                             android:id="@+id/searchView"
                             android:layout_marginStart="8dp"
                             android:layout_marginEnd="8dp"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="50dp"/>
 
                     </androidx.cardview.widget.CardView>
 
