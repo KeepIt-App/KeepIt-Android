@@ -54,6 +54,8 @@ class ItemDetailActivity : AppCompatActivity() {
         itemPriority = findViewById(R.id.itemRatingBar)
         itemLinkLayout = findViewById(R.id.itemLinkLayout)
 
+        this.window.statusBarColor = ContextCompat.getColor(this, R.color.box_stroke)
+
         val item = intent.getSerializableExtra(EXTRA_ITEM) as ItemEntity
 
         val decimalFormat = DecimalFormat("#,###")
@@ -66,10 +68,7 @@ class ItemDetailActivity : AppCompatActivity() {
             itemLink.text = "링크가 없습니다"
             itemLink.setTextColor(ContextCompat.getColor(this, R.color.gray))
         } else {
-            // URL UnderLine 처리
-            val content: SpannableString = SpannableString(item.link)
-            content.setSpan(UnderlineSpan(), 0, item.link.length, 0)
-            itemLink.text = content
+            itemLink.text = "등록한 링크로 이동하기"
             itemLinkLayout.setOnClickListener {
                 when {
                     // HTTP Url 이 맞을 때

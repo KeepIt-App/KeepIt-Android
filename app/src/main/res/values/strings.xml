@@ -14,7 +14,7 @@
     <string name="itemNameError">이름은 필수 입력 항목입니다</string>
     <string name="itemPriceError">가격은 필수 입력 항목입니다</string>
     <string name="completeDialog">작성을 완료하시겠습니까?</string>
-    <string name="itemMemoHint">메모를 남겨주세요</string>
+    <string name="itemMemoHint">간단한 메모를 남겨주세요</string>
     <string name="completeButton">완료</string>
     <string name="filter_latest">최신순</string>
     <string name="filter_priority">중요도순</string>
