@@ -25,6 +25,7 @@ import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -34,8 +35,9 @@ import kotlin.random.Random
 
 class AddActivity : AppCompatActivity() {
 
-    private lateinit var itemViewModel: ItemViewModel
-    private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
+    // Koin 모듈을 활용한 ViewModel 인스턴스 생성
+    private val itemViewModel: ItemViewModel by viewModel()
+
     var itemId: Long? = null
     private var itemImage: Uri? = null
     private lateinit var imageViewItemImage: ImageView
@@ -72,7 +74,9 @@ class AddActivity : AppCompatActivity() {
         }
     }
 
-    /**  Bitmap 이미지를 Local에 저장하고, URI를 반환함  **/
+    /**
+     * Bitmap 이미지를 Local 에 저장하고, URI 를 반환함
+     **/
     private fun bitmapToFile(bitmap: Bitmap): Uri {
         val wrapper = ContextWrapper(this)
         val randomNumber = Random.nextInt(0, 1000000000).toString()
@@ -106,12 +110,6 @@ class AddActivity : AppCompatActivity() {
         completeButton = findViewById<CardView>(R.id.completeButton)
         backButton = findViewById<ImageButton>(R.id.backButton)
 
-        if (viewModelFactory == null) {
-            viewModelFactory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-        }
-
-        itemViewModel = ViewModelProvider(this, viewModelFactory!!).get(ItemViewModel::class.java)
-
         /**
          * 아이템 편집 기능을 통해 들어온 것이라면 기존 정보 적용
          */
@@ -119,6 +117,7 @@ class AddActivity : AppCompatActivity() {
             applyExistingInfo(intent.getSerializableExtra(EDIT_ITEM) as ItemEntity)
         }
 
+        // ImageView 를 눌렀을 때 이미지 추가 액티비티로 이동
         imageViewItemImage.setOnClickListener {
             CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)
@@ -141,7 +140,7 @@ class AddActivity : AppCompatActivity() {
             val itemMemo = editTextItemMemo.text.toString().trim()
 
             // Valid Check
-            // TODO : 코드가 비효율적으로 보이지만, 이렇게 해야 두 EditText 가 모두 비었을 때 둘 다 에러가 적용된다.
+            // TODO : 코드가 비효율적으로 보이지만, 이렇게 해야 두 EditText 가 모두 비었을 때 둘 다 에러가 적용된다. (더 나은 방법 탐색 필요)
             //  setErrorOnEditText() 는 해당 EditText 에 특정 Error 를 뿌려줌
             if (itemName.isEmpty() || itemPrice.isEmpty()) {
                 if (itemName.isEmpty()) {

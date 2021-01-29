@@ -1,12 +1,9 @@
 package com.haero_kim.pickmeup.ui
 
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -16,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.daimajia.androidanimations.library.Techniques
@@ -42,8 +39,9 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var itemViewModel: ItemViewModel
-    private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
+    // Koin 모듈을 활용한 ViewModel 인스턴스 생성
+    private val itemViewModel: ItemViewModel by viewModel()
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var bottomAppBar: BottomAppBar
     private lateinit var textNoticeEmptyList: TextView
@@ -65,14 +63,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // ViewModelFactory 를 통해서 ViewModel 을 찍어내야 함
-        if (viewModelFactory == null) {
-            viewModelFactory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-        }
-
-        // 생성한 ViewModelFactory 를 통해 ViewModelProvider 호출
-        itemViewModel = ViewModelProvider(this, viewModelFactory!!).get(ItemViewModel::class.java)
 
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(
             this,

@@ -177,14 +177,12 @@
             app:layout_anchor="@+id/bottomAppBar"
             app:srcCompat="@drawable/ic_baseline_add_24" />
 
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <data>
         <import type="android.view.View"/>
         <import type="androidx.core.content.ContextCompat" />
         <import type="android.graphics.Typeface" />
-        <import type="com.haero_kim.pickmeup.MyApplication" />
         <import type="com.haero_kim.pickmeup.R" />
         <import type="android.app.Application" />
         <variable

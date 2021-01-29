@@ -2,6 +2,7 @@ package com.haero_kim.pickmeup
 
 import android.app.Application
 import android.content.Context
+import com.haero_kim.pickmeup.data.ItemRepository
 import com.haero_kim.pickmeup.di.repositoryModule
 import com.haero_kim.pickmeup.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
@@ -18,6 +19,9 @@ class MyApplication : Application() {
         lateinit var instance: MyApplication
         fun applicationContext(): Context {
             return instance.applicationContext
+        }
+        fun getRepository(): ItemRepository{
+            return ItemRepository.getInstance()
         }
     }
 

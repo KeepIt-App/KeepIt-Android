@@ -1,6 +1,5 @@
 package com.haero_kim.pickmeup.di
 
-import androidx.lifecycle.SavedStateHandle
 import com.haero_kim.pickmeup.MyApplication
 import com.haero_kim.pickmeup.data.ItemRepository
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel

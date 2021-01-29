@@ -1,8 +1,5 @@
 package com.haero_kim.pickmeup.adapter
 
-import android.content.Intent
-import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
-import com.haero_kim.pickmeup.MyApplication
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
-import com.haero_kim.pickmeup.ui.ItemDetailActivity
 import java.text.DecimalFormat
 
 class ItemListAdapter(

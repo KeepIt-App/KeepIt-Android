@@ -1,41 +1,29 @@
 package com.haero_kim.pickmeup.ui
 
-import android.content.ClipData
 import android.content.Intent
-import android.graphics.Paint
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.style.UnderlineSpan
-import android.util.Log
 import android.util.Patterns
-import android.view.View
 import android.webkit.URLUtil
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableField
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.daimajia.androidanimations.library.Techniques
-import com.daimajia.androidanimations.library.YoYo
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
-import com.haero_kim.pickmeup.databinding.ActivityMainBinding
 import com.haero_kim.pickmeup.ui.AddActivity.Companion.EDIT_ITEM
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
-import org.koin.android.ext.android.bind
-import org.w3c.dom.Text
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DecimalFormat
 
 class ItemDetailActivity : AppCompatActivity() {
-    private lateinit var itemViewModel: ItemViewModel
-    private var viewModelFactory: ViewModelProvider.AndroidViewModelFactory? = null
+
+    // Koin 모듈을 활용한 ViewModel 인스턴스 생성
+    private val itemViewModel: ItemViewModel by viewModel()
 
     private lateinit var bottomAppBar: BottomAppBar
     private lateinit var shareButton: FloatingActionButton
@@ -51,14 +39,6 @@ class ItemDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_detail)
 
-        // ViewModelFactory 를 통해서 ViewModel 을 찍어내야 함
-        if (viewModelFactory == null) {
-            viewModelFactory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-        }
-
-        // 생성한 ViewModelFactory 를 통해 ViewModelProvider 호출
-        itemViewModel = ViewModelProvider(this, viewModelFactory!!).get(ItemViewModel::class.java)
-
         bottomAppBar = findViewById(R.id.bottomAppBar)
         shareButton = findViewById(R.id.shareButton)
         itemImage = findViewById(R.id.itemImage)
@@ -68,8 +48,6 @@ class ItemDetailActivity : AppCompatActivity() {
         itemMemo = findViewById(R.id.itemMemo)
         itemPriority = findViewById(R.id.itemRatingBar)
         itemLinkLayout = findViewById(R.id.itemLinkLayout)
-
-//        this.window.statusBarColor = ContextCompat.getColor(this, R.color.box_stroke)
 
         val item = intent.getSerializableExtra(EXTRA_ITEM) as ItemEntity
         val decimalFormat = DecimalFormat("#,###")
@@ -89,7 +67,7 @@ class ItemDetailActivity : AppCompatActivity() {
                     URLUtil.isHttpUrl(item.link) -> {
                         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(item.link)))
                     }
-                    // Url 은 맞지만 HTTP Url 이 아닐 때
+                    // Url 은 맞지만 HTTP 형식의 Url 이 아닐 때
                     !URLUtil.isHttpUrl(item.link) and Patterns.WEB_URL.matcher(item.link)
                         .matches() -> {
                         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://" + item.link)))

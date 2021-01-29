@@ -56,9 +56,11 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    // Koin
+    def koin_version = "2.2.2"
     implementation "org.koin:koin-android:$koin_version"
+    // Koin AndroidX Scope features
     implementation "org.koin:koin-androidx-scope:$koin_version"
+    // Koin AndroidX ViewModel features
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
 
     // Room

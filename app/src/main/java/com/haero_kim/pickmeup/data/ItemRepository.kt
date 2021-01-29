@@ -1,8 +1,8 @@
 package com.haero_kim.pickmeup.data
 
 import android.app.Application
-import android.app.DownloadManager
 import androidx.lifecycle.LiveData
+import com.haero_kim.pickmeup.MyApplication
 import java.lang.Exception
 
 class ItemRepository(application: Application) {
@@ -11,7 +11,17 @@ class ItemRepository(application: Application) {
 
     private val list: LiveData<List<ItemEntity>> = itemDao.getList()
 
-
+    companion object{
+        private var sInstance: ItemRepository? = null
+        fun getInstance(): ItemRepository {
+            return sInstance
+                ?: synchronized(this){
+                    val instance = ItemRepository(MyApplication.instance)
+                    sInstance = instance
+                    instance
+                }
+        }
+    }
     fun getList(): LiveData<List<ItemEntity>> {
         return this.list
     }
