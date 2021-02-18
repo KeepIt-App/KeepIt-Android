@@ -1,8 +1,12 @@
 package com.haero_kim.pickmeup.ui
 
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -13,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.daimajia.androidanimations.library.Techniques
@@ -35,6 +38,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -154,7 +158,8 @@ class MainActivity : AppCompatActivity() {
          * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
          * 받아온 LiveData 를 적절히 정렬(가공) 하여 RecyclerView Adapter 에 적용
          */
-        itemViewModel.getAll().observe(this, Observer { list ->
+        itemViewModel.getAll().observe(this, Observer
+        { list ->
             if (list.isEmpty()) {
                 textNoticeEmptyList.visibility = View.VISIBLE
             } else {
@@ -185,11 +190,12 @@ class MainActivity : AppCompatActivity() {
 
         // BottomAppBar - 설정 버튼 눌렀을 때
         bottomAppBar.setNavigationOnClickListener {
-            TODO()
+            val intent = Intent(this, SettingActivity::class.java)
+            startActivity(intent)
         }
 
         // BottomAppBar - 검색, 필터 버튼 눌렀을 때
-        bottomAppBar.setOnMenuItemClickListener { menuItem ->
+        bottomAppBar.setOnMenuItemClickListener{ menuItem ->
             when (menuItem.itemId) {
                 R.id.search -> {
                     val isSearchMode = itemViewModel.isSearchMode.get()!!
@@ -213,6 +219,34 @@ class MainActivity : AppCompatActivity() {
         addButton.setOnClickListener {
             val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    /**
+     * 앱이 백그라운드가 아닌 Focus 되어있는 상태에서만 클립보드 진입이 가능
+     */
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        // 앱이 포커싱되어 실행되는 상태라면
+        if (hasFocus){
+            // ClipboardManger 객체 생성
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            var pasteData: String = ""
+
+            // 클립보드에 아무것도 없거나 PlainText 가 아닌 데이터가 들어있을 경우 예외처리
+            if (!clipboard.hasPrimaryClip()) {
+                Log.d("CLIPBOARD", "클립보드 생성조차 안됨")
+            } else if ((clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN)) == false) {
+                Log.d("CLIPBOARD", "생성은 됐는데 텍스트가 아님")
+            } else {
+                // 클립보드에 PlainText 가 담겨있어 데이터를 가져올 수 있는 경우
+                val item = clipboard.primaryClip?.getItemAt(0)!!.coerceToText(applicationContext)
+                if (!item.isNullOrEmpty()){
+                    pasteData = item.toString()
+                }
+
+                Log.d("CLIPBOARD", pasteData)
+            }
         }
     }
 

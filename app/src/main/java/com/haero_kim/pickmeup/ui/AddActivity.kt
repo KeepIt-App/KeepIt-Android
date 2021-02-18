@@ -108,7 +108,6 @@ class AddActivity : AppCompatActivity() {
         ratingItemPriority = findViewById<RatingBar>(R.id.itemRatingBar)
         editTextItemMemo = findViewById<EditText>(R.id.itemMemo)
         completeButton = findViewById<CardView>(R.id.completeButton)
-        backButton = findViewById<ImageButton>(R.id.backButton)
 
         /**
          * 아이템 편집 기능을 통해 들어온 것이라면 기존 정보 적용
@@ -127,8 +126,6 @@ class AddActivity : AppCompatActivity() {
                 .setRequestedSize(1280, 900)
                 .start(this)
         }
-
-        backButton.setOnClickListener { finish() }
 
         // 작성 완료 버튼을 눌렀을 때
         completeButton.setOnClickListener {
