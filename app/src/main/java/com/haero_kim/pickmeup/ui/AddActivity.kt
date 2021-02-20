@@ -116,6 +116,13 @@ class AddActivity : AppCompatActivity() {
             applyExistingInfo(intent.getSerializableExtra(EDIT_ITEM) as ItemEntity)
         }
 
+        /**
+         * 링크 자동 인식 기능을 통해 들어온 것이라면 링크 정보 적용
+         */
+        if (intent != null && intent.hasExtra(AUTO_ITEM)) {
+            editTextItemLink.setText(intent.getStringExtra(AUTO_ITEM))
+        }
+
         // ImageView 를 눌렀을 때 이미지 추가 액티비티로 이동
         imageViewItemImage.setOnClickListener {
             CropImage.activity()
@@ -212,5 +219,6 @@ class AddActivity : AppCompatActivity() {
 
     companion object {
         const val EDIT_ITEM: String = "EDIT_ITEM"
+        const val AUTO_ITEM: String = "AUTO_ITEM"
     }
 }

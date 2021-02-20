@@ -152,6 +152,62 @@
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 
+            <androidx.cardview.widget.CardView
+                android:visibility="gone"
+                android:id="@+id/registerItemPopup"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/view_volor"
+                android:layout_gravity="bottom"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginBottom="102dp">
+
+                <RelativeLayout
+                    android:gravity="center_vertical"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="24dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:id="@+id/registerItemPopupButton"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:textColor="@color/white"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp"
+                            android:textFontWeight="900"
+                            android:text="쿠팡 링크가 발견되었습니다!"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:layout_marginTop="4dp"
+                            android:textColor="@color/white"
+                            android:text="해당 아이템 등록하기  >"/>
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/registerItemCancelButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_baseline_cancel_24"
+                        android:layout_alignParentEnd="true"
+                        app:tint="@color/white" />
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
         </FrameLayout>
 
         <com.google.android.material.bottomappbar.BottomAppBar

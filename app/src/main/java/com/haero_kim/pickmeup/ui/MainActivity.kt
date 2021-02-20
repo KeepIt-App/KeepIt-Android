@@ -7,10 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -59,6 +56,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchEditText: EditText
     private lateinit var searchEditTextClearButton: ImageButton
 
+    private lateinit var registerItemPopup: CardView
+    private lateinit var registerItemPopupButton: LinearLayout
+    private lateinit var registerItemCancelButton: ImageView
+
     // Disposable 을 모두 한번에 관리하는 CompositeDisposable
     // 옵저버블 통합 제거를 위해 사용 (메모리 릭 방지하기 위해 onDestroy() 에서 clear() 필요)
     private var compositeDisposable = CompositeDisposable()
@@ -69,8 +70,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(
-            this,
-            R.layout.activity_main
+                this,
+                R.layout.activity_main
         )
         binding.viewModel = itemViewModel
 
@@ -84,22 +85,25 @@ class MainActivity : AppCompatActivity() {
         searchViewLayout = findViewById(R.id.searchViewLayout)
         searchEditText = findViewById(R.id.searchView)
         searchEditTextClearButton = findViewById(R.id.textClearButton)
+        registerItemPopup = findViewById(R.id.registerItemPopup)
+        registerItemPopupButton = findViewById(R.id.registerItemPopupButton)
+        registerItemCancelButton = findViewById(R.id.registerItemCancelButton)
 
         YoYo.with(Techniques.ZoomIn)
-            .duration(400)
-            .playOn(addButton)
+                .duration(400)
+                .playOn(addButton)
 
         val adapter = ItemListAdapter(
-            // OnClickListener
-            {
-                val intent = Intent(this, ItemDetailActivity::class.java)
-                intent.putExtra(EXTRA_ITEM, it)
-                startActivity(intent)
-            },
-            // OnLongClickListener
-            {
-                deleteDialog(it)
-            })
+                // OnClickListener
+                {
+                    val intent = Intent(this, ItemDetailActivity::class.java)
+                    intent.putExtra(EXTRA_ITEM, it)
+                    startActivity(intent)
+                },
+                // OnLongClickListener
+                {
+                    deleteDialog(it)
+                })
 
         recyclerView.apply {
             this.adapter = adapter
@@ -108,8 +112,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         OverScrollDecoratorHelper.setUpOverScroll(
-            recyclerView,
-            OverScrollDecoratorHelper.ORIENTATION_VERTICAL
+                recyclerView,
+                OverScrollDecoratorHelper.ORIENTATION_VERTICAL
         )
 
         /**
@@ -130,26 +134,26 @@ class MainActivity : AppCompatActivity() {
 
             val editTextChangeObservable = searchEditText.textChanges()
             val searchEditTextSubscription: Disposable =
-                // 생성한 Observable 에 Operator 추가
-                editTextChangeObservable
-                    // 마지막 글자 입력 0.8초 후에 onNext 이벤트로 데이터 스트리밍
-                    .debounce(800, TimeUnit.MILLISECONDS)
-                    .subscribeOn(Schedulers.io())
-                    // 구독을 통해 이벤트 응답 처리
-                    .subscribeBy(
-                        onNext = {
-                            Log.d("Rx", "onNext : $it")
-                            runOnUiThread {
-                                itemViewModel.onChangeQuery(searchQuery = it.toString())
-                            }
-                        },
-                        onComplete = {
-                            Log.d("Rx", "onComplete")
-                        },
-                        onError = {
-                            Log.d("Rx", "onError : $it")
-                        }
-                    )
+                    // 생성한 Observable 에 Operator 추가
+                    editTextChangeObservable
+                            // 마지막 글자 입력 0.8초 후에 onNext 이벤트로 데이터 스트리밍
+                            .debounce(800, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            // 구독을 통해 이벤트 응답 처리
+                            .subscribeBy(
+                                    onNext = {
+                                        Log.d("Rx", "onNext : $it")
+                                        runOnUiThread {
+                                            itemViewModel.onChangeQuery(searchQuery = it.toString())
+                                        }
+                                    },
+                                    onComplete = {
+                                        Log.d("Rx", "onComplete")
+                                    },
+                                    onError = {
+                                        Log.d("Rx", "onError : $it")
+                                    }
+                            )
             // CompositeDisposable 에 추가
             compositeDisposable.add(searchEditTextSubscription)
         }
@@ -195,14 +199,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         // BottomAppBar - 검색, 필터 버튼 눌렀을 때
-        bottomAppBar.setOnMenuItemClickListener{ menuItem ->
+        bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.search -> {
                     val isSearchMode = itemViewModel.isSearchMode.get()!!
 
                     YoYo.with(Techniques.FadeInLeft)
-                        .duration(400)
-                        .playOn(searchViewLayout)
+                            .duration(400)
+                            .playOn(searchViewLayout)
 
                     // 검색 버튼 눌렀을 때마다 모드 전환
                     itemViewModel.isSearchMode.set(!isSearchMode)
@@ -222,7 +226,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    companion object{
+    companion object {
         val TAG = "MainActivity"
     }
 
@@ -232,7 +236,7 @@ class MainActivity : AppCompatActivity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         // 앱이 포커싱되어 실행되는 상태라면
-        if (hasFocus){
+        if (hasFocus) {
             // ClipboardManger 객체 생성
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             var pasteData: String = ""
@@ -245,12 +249,29 @@ class MainActivity : AppCompatActivity() {
             } else {
                 // 클립보드에 PlainText 가 담겨있어 데이터를 가져올 수 있는 경우
                 val item = clipboard.primaryClip?.getItemAt(0)!!.coerceToText(applicationContext)
-                if (!item.isNullOrEmpty()){
+                if (!item.isNullOrEmpty()) {
                     pasteData = item.toString()
+                    // 쇼핑몰 링크가 감지되면 사용자에게 아이템 등록 권유 메세지 표시
+                    for (link in ShoppingMallList.shoppingMallList) {
+                        if (pasteData.contains(link.key, true)) {
+                            Log.d(TAG, "쇼핑몰 링크 감지 : ${link.value}")
 
-                    for (mall in ShoppingMallList.shoppingMallList){
-                        if (pasteData.contains(mall.key, true)){
-                            Log.d(TAG,"쇼핑몰 링크 감지 : ${mall.value}")
+                            YoYo.with(Techniques.BounceInUp)
+                                    .duration(600)
+                                    .playOn(registerItemPopup)
+
+                            registerItemPopupButton.setOnClickListener {
+                                val intent = Intent(this, AddActivity::class.java)
+                                intent.putExtra(AddActivity.AUTO_ITEM, item)
+                                startActivity(intent)
+                            }
+
+                            registerItemCancelButton.setOnClickListener {
+                                YoYo.with(Techniques.FadeOutDown)
+                                        .duration(400)
+                                        .playOn(registerItemPopup)
+                            }
+                            registerItemPopup.visibility = View.VISIBLE
                         }
                     }
                 }
