@@ -5,6 +5,7 @@ import android.content.Context
 import com.haero_kim.pickmeup.data.ItemRepository
 import com.haero_kim.pickmeup.di.repositoryModule
 import com.haero_kim.pickmeup.di.viewModelModule
+import com.haero_kim.pickmeup.util.MySharedPreferences
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidFileProperties
 import org.koin.android.ext.koin.androidLogger
@@ -17,6 +18,7 @@ class MyApplication : Application() {
 
     companion object {
         lateinit var instance: MyApplication
+        lateinit var prefs: MySharedPreferences
         fun applicationContext(): Context {
             return instance.applicationContext
         }
@@ -26,6 +28,9 @@ class MyApplication : Application() {
     }
 
     override fun onCreate() {
+        // SharedPreferences 가 가장 먼저 생성되어야 데이터 저장에 문제 발생 안함
+        prefs = MySharedPreferences(applicationContext)
+
         super.onCreate()
 
         startKoin {

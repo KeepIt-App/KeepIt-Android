@@ -19,6 +19,7 @@ import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.haero_kim.pickmeup.MyApplication.Companion.prefs
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.adapter.ItemListAdapter
 import com.haero_kim.pickmeup.data.ItemEntity
@@ -57,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchEditTextClearButton: ImageButton
 
     private lateinit var registerItemPopup: CardView
+    private lateinit var registerItemPopupMessage: TextView
     private lateinit var registerItemPopupButton: LinearLayout
     private lateinit var registerItemCancelButton: ImageView
 
@@ -86,8 +88,10 @@ class MainActivity : AppCompatActivity() {
         searchEditText = findViewById(R.id.searchView)
         searchEditTextClearButton = findViewById(R.id.textClearButton)
         registerItemPopup = findViewById(R.id.registerItemPopup)
+        registerItemPopupMessage = findViewById(R.id.registerItemPopupMessage)
         registerItemPopupButton = findViewById(R.id.registerItemPopupButton)
         registerItemCancelButton = findViewById(R.id.registerItemCancelButton)
+
 
         YoYo.with(Techniques.ZoomIn)
                 .duration(400)
@@ -248,35 +252,43 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "생성은 됐는데 텍스트가 아님")
             } else {
                 // 클립보드에 PlainText 가 담겨있어 데이터를 가져올 수 있는 경우
-                val item = clipboard.primaryClip?.getItemAt(0)!!.coerceToText(applicationContext)
-                if (!item.isNullOrEmpty()) {
-                    pasteData = item.toString()
-                    // 쇼핑몰 링크가 감지되면 사용자에게 아이템 등록 권유 메세지 표시
+                val itemLink = clipboard.primaryClip?.getItemAt(0)!!.coerceToText(applicationContext)
+                if (!itemLink.isNullOrEmpty()) {
+                    pasteData = itemLink.toString()
+                    // 쇼핑몰 링크가 감지되면 사용자에게 아이템 등록 권유 메세지 표시 (단, 최근에 사용자에 의해 취소한 이력이 있는 링크라면 띄우지 않음)
                     for (link in ShoppingMallList.shoppingMallList) {
-                        if (pasteData.contains(link.key, true)) {
+                        if (pasteData.contains(link.key, true) && !pasteData.contentEquals(prefs.latestCanceledLink as CharSequence)) {
                             Log.d(TAG, "쇼핑몰 링크 감지 : ${link.value}")
-
-                            YoYo.with(Techniques.BounceInUp)
-                                    .duration(600)
-                                    .playOn(registerItemPopup)
-
-                            registerItemPopupButton.setOnClickListener {
-                                val intent = Intent(this, AddActivity::class.java)
-                                intent.putExtra(AddActivity.AUTO_ITEM, item)
-                                startActivity(intent)
-                            }
-
-                            registerItemCancelButton.setOnClickListener {
-                                YoYo.with(Techniques.FadeOutDown)
-                                        .duration(400)
-                                        .playOn(registerItemPopup)
-                            }
-                            registerItemPopup.visibility = View.VISIBLE
+                            showItemRegisterPopup(itemLink, link.value)
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun showItemRegisterPopup(siteLink: CharSequence, siteName: String) {
+        YoYo.with(Techniques.BounceInUp)
+                .duration(600)
+                .playOn(registerItemPopup)
+
+        registerItemPopupMessage.text = "$siteName 링크가 발견되었습니다!"
+
+        registerItemPopupButton.setOnClickListener {
+            val intent = Intent(this, AddActivity::class.java)
+            intent.putExtra(AddActivity.AUTO_ITEM, siteLink)
+            startActivity(intent)
+        }
+
+        registerItemCancelButton.setOnClickListener {
+            YoYo.with(Techniques.FadeOutDown)
+                    .duration(400)
+                    .playOn(registerItemPopup)
+
+            // 한 번 더 물어보는 일이 없도록 최근 자동 등록 취소된 링크에 추가
+            prefs.latestCanceledLink = siteLink.toString()
+        }
+        registerItemPopup.visibility = View.VISIBLE
     }
 
     /**

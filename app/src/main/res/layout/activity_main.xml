@@ -178,12 +178,13 @@
                         android:layout_height="match_parent">
 
                         <TextView
+                            android:id="@+id/registerItemPopupMessage"
                             android:textColor="@color/white"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="15sp"
                             android:textFontWeight="900"
-                            android:text="쿠팡 링크가 발견되었습니다!"/>
+                            android:text="사이트 링크가 발견되었습니다!"/>
 
                         <TextView
                             android:layout_width="wrap_content"
