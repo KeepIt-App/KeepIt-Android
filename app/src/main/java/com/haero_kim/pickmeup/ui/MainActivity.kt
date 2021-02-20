@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -28,6 +27,7 @@ import com.haero_kim.pickmeup.adapter.ItemListAdapter
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityMainBinding
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
+import com.haero_kim.pickmeup.util.ShoppingMallList
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_LATEST
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_PRICE
@@ -222,6 +222,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    companion object{
+        val TAG = "MainActivity"
+    }
+
     /**
      * 앱이 백그라운드가 아닌 Focus 되어있는 상태에서만 클립보드 진입이 가능
      */
@@ -235,17 +239,24 @@ class MainActivity : AppCompatActivity() {
 
             // 클립보드에 아무것도 없거나 PlainText 가 아닌 데이터가 들어있을 경우 예외처리
             if (!clipboard.hasPrimaryClip()) {
-                Log.d("CLIPBOARD", "클립보드 생성조차 안됨")
+                Log.d(TAG, "클립보드 생성조차 안됨")
             } else if ((clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN)) == false) {
-                Log.d("CLIPBOARD", "생성은 됐는데 텍스트가 아님")
+                Log.d(TAG, "생성은 됐는데 텍스트가 아님")
             } else {
                 // 클립보드에 PlainText 가 담겨있어 데이터를 가져올 수 있는 경우
                 val item = clipboard.primaryClip?.getItemAt(0)!!.coerceToText(applicationContext)
                 if (!item.isNullOrEmpty()){
                     pasteData = item.toString()
-                }
 
-                Log.d("CLIPBOARD", pasteData)
+                    for (mall in ShoppingMallList.shoppingMallList){
+                        if (pasteData.contains(mall, true)){
+                            Log.d(TAG,"쇼핑몰 링크입니다!")
+                        }else{
+                            Log.d(TAG, "쇼핑몰 링크가 아닙니다!")
+                        }
+                    }
+                }
+                Log.d(TAG, pasteData)
             }
         }
     }
