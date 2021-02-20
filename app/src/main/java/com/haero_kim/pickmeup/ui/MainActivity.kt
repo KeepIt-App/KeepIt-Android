@@ -239,7 +239,7 @@ class MainActivity : AppCompatActivity() {
 
             // 클립보드에 아무것도 없거나 PlainText 가 아닌 데이터가 들어있을 경우 예외처리
             if (!clipboard.hasPrimaryClip()) {
-                Log.d(TAG, "클립보드 생성조차 안됨")
+                Log.d(TAG, "클립보드 비어있음")
             } else if ((clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN)) == false) {
                 Log.d(TAG, "생성은 됐는데 텍스트가 아님")
             } else {
@@ -249,14 +249,11 @@ class MainActivity : AppCompatActivity() {
                     pasteData = item.toString()
 
                     for (mall in ShoppingMallList.shoppingMallList){
-                        if (pasteData.contains(mall, true)){
-                            Log.d(TAG,"쇼핑몰 링크입니다!")
-                        }else{
-                            Log.d(TAG, "쇼핑몰 링크가 아닙니다!")
+                        if (pasteData.contains(mall.key, true)){
+                            Log.d(TAG,"쇼핑몰 링크 감지 : ${mall.value}")
                         }
                     }
                 }
-                Log.d(TAG, pasteData)
             }
         }
     }
