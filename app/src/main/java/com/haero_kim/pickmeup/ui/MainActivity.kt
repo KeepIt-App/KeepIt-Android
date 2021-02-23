@@ -1,9 +1,14 @@
 package com.haero_kim.pickmeup.ui
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,10 +16,14 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import com.google.android.material.bottomappbar.BottomAppBar
@@ -71,6 +80,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // DataBinding
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(
                 this,
                 R.layout.activity_main
@@ -92,11 +102,15 @@ class MainActivity : AppCompatActivity() {
         registerItemPopupButton = findViewById(R.id.registerItemPopupButton)
         registerItemCancelButton = findViewById(R.id.registerItemCancelButton)
 
-
+        // Button 애니메이션 (효과)
         YoYo.with(Techniques.ZoomIn)
                 .duration(400)
                 .playOn(addButton)
 
+        // Android 8.0 이상 기기일 경우 NotificationChannel 인스턴스를 시스템에 등록
+        createNotificationChannel()
+
+        // RecyclerView Adapter
         val adapter = ItemListAdapter(
                 // OnClickListener
                 {
@@ -115,6 +129,7 @@ class MainActivity : AppCompatActivity() {
             this.setHasFixedSize(true)
         }
 
+        // iOS 스타일의 리사이클러뷰 오버스크롤 바운스 효과 적용
         OverScrollDecoratorHelper.setUpOverScroll(
                 recyclerView,
                 OverScrollDecoratorHelper.ORIENTATION_VERTICAL
@@ -231,7 +246,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        val TAG = "MainActivity"
+        const val TAG = "MainActivity"
+        const val CHANNEL_ID = "NOTIFICATION_CHANNEL"
+        const val notificationId = 5603
     }
 
     /**
@@ -267,6 +284,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 사용자 클립보드에 쇼핑몰 링크가 발견되면 아이템 등록 권유 메세지 표시해줌
+     * - 만약 취소 버튼이 눌리면, 팝업이 다시 뜨지 않도록 SharedPreferences 에 추가
+     */
     private fun showItemRegisterPopup(siteLink: CharSequence, siteName: String) {
         YoYo.with(Techniques.BounceInUp)
                 .duration(600)
@@ -323,7 +344,26 @@ class MainActivity : AppCompatActivity() {
         builder.show()
     }
 
+    /**
+     * Android 8.0 이상에서 알림을 제공하려면 Notification Channel 등록해야함
+     */
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+
+            // Register the channel with the system
+            val notificationManager: NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     override fun onDestroy() {
+        // MemoryLeak 방지를 위해 CompositeDisposable 해제
         this.compositeDisposable.clear()
         super.onDestroy()
     }

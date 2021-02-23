@@ -22,4 +22,6 @@
     <string name="edit">수정</string>
     <string name="detailTitle">자세히 보기</string>
     <string name="setting_title">설정</string>
+    <string name="channel_name">PICK_ME_UP</string>
+    <string name="channel_description">PICK_ME_UP_PUSH</string>
 </resources>

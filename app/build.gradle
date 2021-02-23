@@ -103,4 +103,7 @@ dependencies {
     implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager:4.0.0'
     implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager2:4.0.0'
 
+    // WorkManger (백그라운드 푸시알림 구현 목적) 필요
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
+
 }

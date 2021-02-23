@@ -1,6 +1,7 @@
 package com.haero_kim.pickmeup.ui
 
 import android.app.Activity
+import android.app.PendingIntent
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -17,7 +18,10 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.*
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
@@ -30,8 +34,14 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
+private var itemName: String = ""
+private var itemLink: String = ""
+private var itemPrice: String = ""
+private var itemPriority: Int = 0
+private var itemMemo: String = ""
 
 class AddActivity : AppCompatActivity() {
 
@@ -49,7 +59,6 @@ class AddActivity : AppCompatActivity() {
     lateinit var ratingItemPriority: RatingBar
     lateinit var editTextItemMemo: EditText
     lateinit var completeButton: CardView
-    lateinit var backButton: ImageButton
 
     /**
      * 사용자가 이미지 선택을 완료하면 실행됨
@@ -64,7 +73,7 @@ class AddActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 val resultUri = result.uri
                 val bitmap =
-                    MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
+                        MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
                 itemImage = bitmapToFile(bitmap!!) // Uri
                 imageViewItemImage.setImageURI(itemImage)
 
@@ -126,22 +135,22 @@ class AddActivity : AppCompatActivity() {
         // ImageView 를 눌렀을 때 이미지 추가 액티비티로 이동
         imageViewItemImage.setOnClickListener {
             CropImage.activity()
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .setActivityTitle("이미지 추가")
-                .setCropShape(CropImageView.CropShape.RECTANGLE)
-                .setCropMenuCropButtonTitle("완료")
-                .setRequestedSize(1280, 900)
-                .start(this)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .setActivityTitle("이미지 추가")
+                    .setCropShape(CropImageView.CropShape.RECTANGLE)
+                    .setCropMenuCropButtonTitle("완료")
+                    .setRequestedSize(1280, 900)
+                    .start(this)
         }
 
         // 작성 완료 버튼을 눌렀을 때
         completeButton.setOnClickListener {
-            val itemName = editTextItemName.text.toString().trim()
+            itemName = editTextItemName.text.toString().trim()
             val itemImage = itemImage.toString()  // Uri 를 String 으로 변환한 형태
-            val itemLink = editTextItemLink.text.toString().trim()
-            val itemPrice = editTextItemPrice.text.toString().trim()
-            val itemPriority = ratingItemPriority.rating.toInt()
-            val itemMemo = editTextItemMemo.text.toString().trim()
+            itemLink = editTextItemLink.text.toString().trim()
+            itemPrice = editTextItemPrice.text.toString().trim()
+            itemPriority = ratingItemPriority.rating.toInt()
+            itemMemo = editTextItemMemo.text.toString().trim()
 
             // Valid Check
             // TODO : 코드가 비효율적으로 보이지만, 이렇게 해야 두 EditText 가 모두 비었을 때 둘 다 에러가 적용된다. (더 나은 방법 탐색 필요)
@@ -160,15 +169,23 @@ class AddActivity : AppCompatActivity() {
                     this.setNegativeButton("NO") { _, _ -> }
                     this.setPositiveButton("YES") { _, _ ->
                         val newItem = ItemEntity(
-                            id = itemId,  // 새로운 Item 이면 Null 들어감 (자동 값 적용)
-                            name = itemName,
-                            image = itemImage,
-                            price = itemPrice.toLong(),
-                            link = itemLink,
-                            priority = itemPriority,
-                            note = itemMemo
+                                id = itemId,  // 새로운 Item 이면 Null 들어감 (자동 값 적용)
+                                name = itemName,
+                                image = itemImage,
+                                price = itemPrice.toLong(),
+                                link = itemLink,
+                                priority = itemPriority,
+                                note = itemMemo
                         )
                         itemViewModel.insert(newItem)
+
+                        // 하루에 한 번씩 구매를 유도하는 리마인드 푸시알림을 위해 NotificationWorker 를 WorkRequest 에 포함
+                        val registerNotificationRequest =
+                                PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
+                                        .build()
+
+                        // 시스템에 WorkRequest 제출
+                        WorkManager.getInstance(context).enqueue(registerNotificationRequest)
 
                         // 수정된 내용을 사용자게에 보여줌
                         val intent = Intent(context, ItemDetailActivity::class.java)
@@ -194,7 +211,7 @@ class AddActivity : AppCompatActivity() {
             val y = ev.y.toInt()
             if (!rect.contains(x, y)) {
                 val imm: InputMethodManager =
-                    getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(focusView.windowToken, 0)
                 focusView.clearFocus()
             }
@@ -220,5 +237,41 @@ class AddActivity : AppCompatActivity() {
     companion object {
         const val EDIT_ITEM: String = "EDIT_ITEM"
         const val AUTO_ITEM: String = "AUTO_ITEM"
+    }
+}
+
+/**
+ * 사용자에게 적절한 푸시알림 기능 제공하는 Worker 클래스
+ * - 리마인드가 필요한 아이템이 생성되었을 때, WorkManger 에 Task 추가하도록 함
+ */
+class NotificationWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+    /**
+     * DB에 제거되지 않은 Item 이 남아있을 경우 (아직 구매하지 않은 물품이 있는 경우) Notification 생성
+     */
+    override fun doWork(): Result {
+        createNotification()
+        return Result.success()
+    }
+
+    /**
+     * NotificationCompat.Builder 객체를 사용하여 알림 콘텐츠, 채널 설정
+     */
+    private fun createNotification() {
+        val intent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
+
+        val builder = NotificationCompat.Builder(applicationContext, MainActivity.CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_baseline_arrow_back_24)
+                .setContentTitle("${itemName}을(를) 구매하셨나요?")
+                .setContentText("탭 하여 확인하기")
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        with(NotificationManagerCompat.from(applicationContext)) {
+            notify(MainActivity.notificationId, builder.build())
+        }
     }
 }
