@@ -181,26 +181,29 @@ class AddActivity : AppCompatActivity() {
                         )
                         itemViewModel.insert(newItem)
 
+                        // WorkerManager 는 커스텀 파라미터를 지원하지 않기 때문에 setInputData() 를 통해 데이터를 주입해야함
                         val inputData = Data.Builder()
                                 .putString(ITEM_NAME, itemName)
                                 .build()
 
                         // 하루에 한 번씩 구매를 유도하는 리마인드 푸시알림을 위해 NotificationWorker 를 WorkRequest 에 포함
                         val registerNotificationRequest =
-                                PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
+                                PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
                                         .setInputData(inputData)
-                                        .setInitialDelay(15, TimeUnit.MINUTES)
+                                        .setInitialDelay(24, TimeUnit.HOURS)
                                         .build()
 
                         // 시스템에 WorkRequest 제출
                         WorkManager.getInstance(context).enqueue(registerNotificationRequest)
 
-                        // 수정된 내용을 사용자게에 보여줌
+                        // 수정된 내용을 사용자에게 보여줌
                         val intent = Intent(context, ItemDetailActivity::class.java)
                         intent.putExtra(EXTRA_ITEM, newItem)
 
                         startActivity(intent)
                         finish()
+
+                        TODO("Item 을 Delete 했을 때 WorkManager 태스크를 캔슬할 수 있도록 구현해야 함")
                     }
                 }
                 builder.show()
