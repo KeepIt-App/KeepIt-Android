@@ -27,6 +27,8 @@ import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
+import com.haero_kim.pickmeup.worker.NotificationWorker
+import com.haero_kim.pickmeup.worker.NotificationWorker.Companion.ITEM_NAME
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -179,9 +181,15 @@ class AddActivity : AppCompatActivity() {
                         )
                         itemViewModel.insert(newItem)
 
+                        val inputData = Data.Builder()
+                                .putString(ITEM_NAME, itemName)
+                                .build()
+
                         // 하루에 한 번씩 구매를 유도하는 리마인드 푸시알림을 위해 NotificationWorker 를 WorkRequest 에 포함
                         val registerNotificationRequest =
                                 PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
+                                        .setInputData(inputData)
+                                        .setInitialDelay(15, TimeUnit.MINUTES)
                                         .build()
 
                         // 시스템에 WorkRequest 제출
@@ -190,6 +198,7 @@ class AddActivity : AppCompatActivity() {
                         // 수정된 내용을 사용자게에 보여줌
                         val intent = Intent(context, ItemDetailActivity::class.java)
                         intent.putExtra(EXTRA_ITEM, newItem)
+
                         startActivity(intent)
                         finish()
                     }
@@ -237,41 +246,5 @@ class AddActivity : AppCompatActivity() {
     companion object {
         const val EDIT_ITEM: String = "EDIT_ITEM"
         const val AUTO_ITEM: String = "AUTO_ITEM"
-    }
-}
-
-/**
- * 사용자에게 적절한 푸시알림 기능 제공하는 Worker 클래스
- * - 리마인드가 필요한 아이템이 생성되었을 때, WorkManger 에 Task 추가하도록 함
- */
-class NotificationWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
-    /**
-     * DB에 제거되지 않은 Item 이 남아있을 경우 (아직 구매하지 않은 물품이 있는 경우) Notification 생성
-     */
-    override fun doWork(): Result {
-        createNotification()
-        return Result.success()
-    }
-
-    /**
-     * NotificationCompat.Builder 객체를 사용하여 알림 콘텐츠, 채널 설정
-     */
-    private fun createNotification() {
-        val intent = Intent(applicationContext, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
-
-        val builder = NotificationCompat.Builder(applicationContext, MainActivity.CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_baseline_arrow_back_24)
-                .setContentTitle("${itemName}을(를) 구매하셨나요?")
-                .setContentText("탭 하여 확인하기")
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        with(NotificationManagerCompat.from(applicationContext)) {
-            notify(MainActivity.notificationId, builder.build())
-        }
     }
 }
