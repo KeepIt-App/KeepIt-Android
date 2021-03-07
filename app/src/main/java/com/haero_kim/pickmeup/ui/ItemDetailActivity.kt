@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -102,6 +103,10 @@ class ItemDetailActivity : AppCompatActivity() {
                         this.setNegativeButton("NO") { _, _ -> }
                         this.setPositiveButton("YES") { _, _ ->
                             itemViewModel.delete(item)
+                            val workManager: WorkManager = WorkManager.getInstance(context)
+                            // WorkRequest 등록 시, 아이템 명으로 고유 태그를 달아줬기 때문에
+                            // 아래와 같이 item.name 을 통해 주기적인 푸시알림 작업을 취소할 수 있음
+                            workManager.cancelAllWorkByTag(item.name)
                             finish()
                         }
                     }
