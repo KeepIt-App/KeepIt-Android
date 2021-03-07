@@ -204,7 +204,7 @@ class AddActivity : AppCompatActivity() {
                         startActivity(intent)
                         finish()
 
-                        TODO("Item 을 Delete 했을 때 WorkManager 태스크를 캔슬할 수 있도록 구현해야 함")
+                        // TODO("Item 을 Delete 했을 때 WorkManager 태스크를 캔슬할 수 있도록 구현해야 함")
                     }
                 }
                 builder.show()

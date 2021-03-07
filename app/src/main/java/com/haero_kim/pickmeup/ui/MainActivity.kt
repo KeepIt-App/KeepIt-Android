@@ -301,7 +301,7 @@ class MainActivity : AppCompatActivity() {
 
         registerItemPopupMessage.text = "$siteName 링크가 발견되었습니다!"
 
-        registerItemPopupButton.setOnClickListener {
+        registerItemPopup.setOnClickListener {
             val intent = Intent(this, AddActivity::class.java)
             intent.putExtra(AddActivity.AUTO_ITEM, siteLink)
             startActivity(intent)
