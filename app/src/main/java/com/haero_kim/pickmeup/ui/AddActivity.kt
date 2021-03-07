@@ -191,6 +191,7 @@ class AddActivity : AppCompatActivity() {
                                 PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
                                         .setInputData(inputData)
                                         .setInitialDelay(24, TimeUnit.HOURS)
+                                        .addTag(itemName)  // WorkRequest 에 아이템 명으로 된 고유 태그 명시
                                         .build()
 
                         // 시스템에 WorkRequest 제출

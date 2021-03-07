@@ -22,6 +22,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.daimajia.androidanimations.library.Techniques
@@ -82,8 +83,8 @@ class MainActivity : AppCompatActivity() {
 
         // DataBinding
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(
-                this,
-                R.layout.activity_main
+            this,
+            R.layout.activity_main
         )
         binding.viewModel = itemViewModel
 
@@ -104,24 +105,24 @@ class MainActivity : AppCompatActivity() {
 
         // Button 애니메이션 (효과)
         YoYo.with(Techniques.ZoomIn)
-                .duration(400)
-                .playOn(addButton)
+            .duration(400)
+            .playOn(addButton)
 
         // Android 8.0 이상 기기일 경우 NotificationChannel 인스턴스를 시스템에 등록
         createNotificationChannel()
 
         // RecyclerView Adapter
         val adapter = ItemListAdapter(
-                // OnClickListener
-                {
-                    val intent = Intent(this, ItemDetailActivity::class.java)
-                    intent.putExtra(EXTRA_ITEM, it)
-                    startActivity(intent)
-                },
-                // OnLongClickListener
-                {
-                    deleteDialog(it)
-                })
+            // OnClickListener
+            {
+                val intent = Intent(this, ItemDetailActivity::class.java)
+                intent.putExtra(EXTRA_ITEM, it)
+                startActivity(intent)
+            },
+            // OnLongClickListener
+            {
+                deleteDialog(it)
+            })
 
         recyclerView.apply {
             this.adapter = adapter
@@ -131,8 +132,8 @@ class MainActivity : AppCompatActivity() {
 
         // iOS 스타일의 리사이클러뷰 오버스크롤 바운스 효과 적용
         OverScrollDecoratorHelper.setUpOverScroll(
-                recyclerView,
-                OverScrollDecoratorHelper.ORIENTATION_VERTICAL
+            recyclerView,
+            OverScrollDecoratorHelper.ORIENTATION_VERTICAL
         )
 
         /**
@@ -153,26 +154,26 @@ class MainActivity : AppCompatActivity() {
 
             val editTextChangeObservable = searchEditText.textChanges()
             val searchEditTextSubscription: Disposable =
-                    // 생성한 Observable 에 Operator 추가
-                    editTextChangeObservable
-                            // 마지막 글자 입력 0.8초 후에 onNext 이벤트로 데이터 스트리밍
-                            .debounce(800, TimeUnit.MILLISECONDS)
-                            .subscribeOn(Schedulers.io())
-                            // 구독을 통해 이벤트 응답 처리
-                            .subscribeBy(
-                                    onNext = {
-                                        Log.d("Rx", "onNext : $it")
-                                        runOnUiThread {
-                                            itemViewModel.onChangeQuery(searchQuery = it.toString())
-                                        }
-                                    },
-                                    onComplete = {
-                                        Log.d("Rx", "onComplete")
-                                    },
-                                    onError = {
-                                        Log.d("Rx", "onError : $it")
-                                    }
-                            )
+                // 생성한 Observable 에 Operator 추가
+                editTextChangeObservable
+                    // 마지막 글자 입력 0.8초 후에 onNext 이벤트로 데이터 스트리밍
+                    .debounce(800, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.io())
+                    // 구독을 통해 이벤트 응답 처리
+                    .subscribeBy(
+                        onNext = {
+                            Log.d("Rx", "onNext : $it")
+                            runOnUiThread {
+                                itemViewModel.onChangeQuery(searchQuery = it.toString())
+                            }
+                        },
+                        onComplete = {
+                            Log.d("Rx", "onComplete")
+                        },
+                        onError = {
+                            Log.d("Rx", "onError : $it")
+                        }
+                    )
             // CompositeDisposable 에 추가
             compositeDisposable.add(searchEditTextSubscription)
         }
@@ -224,8 +225,8 @@ class MainActivity : AppCompatActivity() {
                     val isSearchMode = itemViewModel.isSearchMode.get()!!
 
                     YoYo.with(Techniques.FadeInLeft)
-                            .duration(400)
-                            .playOn(searchViewLayout)
+                        .duration(400)
+                        .playOn(searchViewLayout)
 
                     // 검색 버튼 눌렀을 때마다 모드 전환
                     itemViewModel.isSearchMode.set(!isSearchMode)
@@ -269,12 +270,17 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "생성은 됐는데 텍스트가 아님")
             } else {
                 // 클립보드에 PlainText 가 담겨있어 데이터를 가져올 수 있는 경우
-                val itemLink = clipboard.primaryClip?.getItemAt(0)!!.coerceToText(applicationContext)
+                val itemLink =
+                    clipboard.primaryClip?.getItemAt(0)!!.coerceToText(applicationContext)
                 if (!itemLink.isNullOrEmpty()) {
                     pasteData = itemLink.toString()
                     // 쇼핑몰 링크가 감지되면 사용자에게 아이템 등록 권유 메세지 표시 (단, 최근에 사용자에 의해 취소한 이력이 있는 링크라면 띄우지 않음)
                     for (link in ShoppingMallList.shoppingMallList) {
-                        if (pasteData.contains(link.key, true) && !pasteData.contentEquals(prefs.latestCanceledLink as CharSequence)) {
+                        if (pasteData.contains(
+                                link.key,
+                                true
+                            ) && !pasteData.contentEquals(prefs.latestCanceledLink as CharSequence)
+                        ) {
                             Log.d(TAG, "쇼핑몰 링크 감지 : ${link.value}")
                             showItemRegisterPopup(itemLink, link.value)
                         }
@@ -290,8 +296,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun showItemRegisterPopup(siteLink: CharSequence, siteName: String) {
         YoYo.with(Techniques.BounceInUp)
-                .duration(600)
-                .playOn(registerItemPopup)
+            .duration(600)
+            .playOn(registerItemPopup)
 
         registerItemPopupMessage.text = "$siteName 링크가 발견되었습니다!"
 
@@ -303,8 +309,8 @@ class MainActivity : AppCompatActivity() {
 
         registerItemCancelButton.setOnClickListener {
             YoYo.with(Techniques.FadeOutDown)
-                    .duration(400)
-                    .playOn(registerItemPopup)
+                .duration(400)
+                .playOn(registerItemPopup)
 
             // 한 번 더 물어보는 일이 없도록 최근 자동 등록 취소된 링크에 추가
             prefs.latestCanceledLink = siteLink.toString()
@@ -339,6 +345,10 @@ class MainActivity : AppCompatActivity() {
             this.setNegativeButton("NO") { _, _ -> }
             this.setPositiveButton("YES") { _, _ ->
                 itemViewModel.delete(item)
+                val workManager: WorkManager = WorkManager.getInstance(context)
+                // WorkRequest 등록 시, 아이템 명으로 고유 태그를 달아줬기 때문에
+                // 아래와 같이 item.name 을 통해 주기적인 푸시알림 작업을 취소할 수 있음
+                workManager.cancelAllWorkByTag(item.name)
             }
         }
         builder.show()
@@ -357,7 +367,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Register the channel with the system
-            val notificationManager: NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager: NotificationManager =
+                getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
