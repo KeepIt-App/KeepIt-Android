@@ -18,6 +18,7 @@ import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.ui.AddActivity.Companion.EDIT_ITEM
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DecimalFormat
 
