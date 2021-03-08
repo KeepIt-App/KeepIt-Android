@@ -2,12 +2,10 @@ package com.haero_kim.pickmeup.ui
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -16,15 +14,12 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.work.WorkManager
-import androidx.work.Worker
-import androidx.work.WorkerParameters
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import com.google.android.material.bottomappbar.BottomAppBar
@@ -232,7 +227,7 @@ class MainActivity : AppCompatActivity() {
                     itemViewModel.isSearchMode.set(!isSearchMode)
                     true
                 }
-                R.id.delete -> {  // TODO : 삭제 버튼 눌렀을 때 선택 삭제 기능 제공 예정
+                R.id.delete -> {
                     true
                 }
                 else -> false

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PickMeUp</string>
+    <string name="app_name">픽미업</string>
     <string name="fab_string">추가하기</string>
     <string name="search">검색</string>
     <string name="filter">필터</string>
