@@ -25,7 +25,7 @@
 
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/textViewTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -49,7 +49,7 @@
             app:layout_constraintTop_toBottomOf="@+id/title_layout">
 
             <ImageView
-                android:id="@+id/itemImage"
+                android:id="@+id/imageViewItemImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/placeholder"
@@ -68,7 +68,7 @@
             app:layout_constraintTop_toBottomOf="@+id/itemImageCard">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/itemName"
+                android:id="@+id/editTextItemName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nanum_regular"
@@ -91,7 +91,7 @@
             app:layout_constraintTop_toBottomOf="@+id/itemNameLayout">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/itemPrice"
+                android:id="@+id/editTextItemPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/itemPriceHint"
@@ -110,7 +110,7 @@
             app:layout_constraintTop_toBottomOf="@+id/itemPriceLayout">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/itemLink"
+                android:id="@+id/editTextItemLink"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nanum_regular"
@@ -120,7 +120,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <RatingBar
-            android:id="@+id/itemRatingBar"
+            android:id="@+id/ratingItemPriority"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -134,7 +134,7 @@
             app:layout_constraintTop_toBottomOf="@id/itemLinkLayout" />
 
         <EditText
-            android:id="@+id/itemMemo"
+            android:id="@+id/editTextItemMemo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -151,7 +151,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/itemRatingBar" />
+            app:layout_constraintTop_toBottomOf="@id/ratingItemPriority" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/completeButton"
@@ -162,7 +162,7 @@
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/itemMemo">
+            app:layout_constraintTop_toBottomOf="@id/editTextItemMemo">
 
             <LinearLayout
                 android:layout_width="match_parent"

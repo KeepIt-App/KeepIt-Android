@@ -18,11 +18,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-<!--                <View-->
-<!--                    android:id="@+id/banner"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="100dp"-->
-<!--                    android:background="@color/box_stroke" />-->
+                <!--                <View-->
+                <!--                    android:id="@+id/banner"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="100dp"-->
+                <!--                    android:background="@color/box_stroke" />-->
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/mainCard"
@@ -113,8 +113,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingVertical="24dp"
-                        android:paddingHorizontal="32dp">
+                        android:paddingHorizontal="32dp"
+                        android:paddingVertical="24dp">
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -140,8 +140,8 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/itemLinkLayout"
                     android:layout_width="match_parent"
-                    android:layout_below="@+id/memoCard"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/memoCard"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
                     android:layout_marginBottom="100dp"
@@ -152,8 +152,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingVertical="24dp"
-                        android:paddingHorizontal="32dp">
+                        android:paddingHorizontal="32dp"
+                        android:paddingVertical="24dp">
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -206,5 +206,11 @@
             app:srcCompat="@drawable/ic_baseline_share_24" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.haero_kim.pickmeup.viewmodel.ItemViewModel" />
+    </data>
 
 </layout>

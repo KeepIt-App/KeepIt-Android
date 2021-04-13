@@ -10,12 +10,14 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
+import com.haero_kim.pickmeup.databinding.ActivityItemDetailBinding
 import com.haero_kim.pickmeup.ui.AddActivity.Companion.EDIT_ITEM
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
@@ -26,44 +28,32 @@ class ItemDetailActivity : AppCompatActivity() {
 
     // Koin 모듈을 활용한 ViewModel 인스턴스 생성
     private val itemViewModel: ItemViewModel by viewModel()
-
-    private lateinit var bottomAppBar: BottomAppBar
-    private lateinit var shareButton: FloatingActionButton
-    private lateinit var itemImage: ImageView
-    private lateinit var itemName: TextView
-    private lateinit var itemPrice: TextView
-    private lateinit var itemLink: TextView
-    private lateinit var itemMemo: TextView
-    private lateinit var itemPriority: RatingBar
-    private lateinit var itemLinkLayout: CardView
+    private lateinit var binding: ActivityItemDetailBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_item_detail)
 
-        bottomAppBar = findViewById(R.id.bottomAppBar)
-        shareButton = findViewById(R.id.shareButton)
-        itemImage = findViewById(R.id.itemImage)
-        itemName = findViewById(R.id.itemName)
-        itemPrice = findViewById(R.id.itemPrice)
-        itemLink = findViewById(R.id.itemLink)
-        itemMemo = findViewById(R.id.itemMemo)
-        itemPriority = findViewById(R.id.itemRatingBar)
-        itemLinkLayout = findViewById(R.id.itemLinkLayout)
+        // DataBinding
+        binding = DataBindingUtil.setContentView<ActivityItemDetailBinding>(
+            this,
+            R.layout.activity_item_detail
+        )
+
+        binding.viewModel = itemViewModel
 
         val item = intent.getSerializableExtra(EXTRA_ITEM) as ItemEntity
         val decimalFormat = DecimalFormat("#,###")
         val itemPriceFormatted = decimalFormat.format(item.price)
 
-        itemName.text = item.name
-        itemPrice.text = "₩${itemPriceFormatted}원"
+        binding.itemName.text = item.name
+        binding.itemPrice.text = "₩${itemPriceFormatted}원"
 
         if (item.link.isEmpty()) {
-            itemLink.text = "링크가 없습니다"
-            itemLink.setTextColor(ContextCompat.getColor(this, R.color.gray))
+            binding.itemLink.text = "링크가 없습니다"
+            binding.itemLink.setTextColor(ContextCompat.getColor(this, R.color.gray))
         } else {
-            itemLink.text = "등록한 링크로 이동하기"
-            itemLinkLayout.setOnClickListener {
+            binding.itemLink.text = "등록한 링크로 이동하기"
+            binding.itemLinkLayout.setOnClickListener {
                 when {
                     // HTTP Url 이 맞을 때
                     URLUtil.isHttpUrl(item.link) -> {
@@ -83,19 +73,19 @@ class ItemDetailActivity : AppCompatActivity() {
         }
 
         if (item.note.isEmpty()) {
-            itemMemo.text = "메모가 없습니다"
+            binding.itemMemo.text = "메모가 없습니다"
         } else {
-            itemMemo.text = item.note
+            binding.itemMemo.text = item.note
         }
 
-        itemPriority.rating = item.priority.toFloat()
+        binding.itemRatingBar.rating = item.priority.toFloat()
 
         Glide.with(this)
             .load(item.image)
-            .into(itemImage)
+            .into(binding.itemImage)
 
         // BottomAppBar - 삭제 버튼 눌렀을 때
-        bottomAppBar.setOnMenuItemClickListener { menuItem ->
+        binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.delete -> {
                     val builder = AlertDialog.Builder(this)
@@ -119,7 +109,7 @@ class ItemDetailActivity : AppCompatActivity() {
         }
 
         // BottomAppBar - 편집 버튼 눌렀을 때 (편집 화면으로 넘어감)
-        bottomAppBar.setNavigationOnClickListener {
+        binding.bottomAppBar.setNavigationOnClickListener {
             val intent = Intent(this, AddActivity::class.java)
             intent.putExtra(EDIT_ITEM, item)
             startActivity(intent)

@@ -34,9 +34,9 @@ class ItemListAdapter(
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val name = itemView.findViewById<TextView>(R.id.itemName)
-        private val price = itemView.findViewById<TextView>(R.id.itemPrice)
-        private val image = itemView.findViewById<ImageView>(R.id.itemImage)
+        private val name = itemView.findViewById<TextView>(R.id.editTextItemName)
+        private val price = itemView.findViewById<TextView>(R.id.editTextItemPrice)
+        private val image = itemView.findViewById<ImageView>(R.id.imageViewItemImage)
 
         fun bind(item: ItemEntity) {
             YoYo.with(Techniques.ZoomIn)

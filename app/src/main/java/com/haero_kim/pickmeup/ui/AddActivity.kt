@@ -20,6 +20,7 @@ import androidx.cardview.widget.CardView
 import androidx.work.*
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
+import com.haero_kim.pickmeup.databinding.ActivityAddBinding
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
@@ -44,19 +45,10 @@ private var itemMemo: String = ""
 class AddActivity : AppCompatActivity() {
     // Koin 모듈을 활용한 ViewModel 인스턴스 생성
     private val itemViewModel: ItemViewModel by viewModel()
+    lateinit var binding: ActivityAddBinding
 
     var itemId: Long? = null
     private var itemImage: Uri? = null
-    private lateinit var imageViewItemImage: ImageView
-
-    lateinit var titleText: TextView
-    lateinit var editTextItemName: EditText
-    lateinit var editTextItemLink: EditText
-    lateinit var editTextItemPrice: EditText
-    lateinit var ratingItemPriority: RatingBar
-    lateinit var editTextItemMemo: EditText
-    lateinit var completeButton: CardView
-
     /**
      * 사용자가 이미지 선택을 완료하면 실행됨
      */
@@ -72,7 +64,7 @@ class AddActivity : AppCompatActivity() {
                 val bitmap =
                         MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
                 itemImage = bitmapToFile(bitmap!!) // Uri
-                imageViewItemImage.setImageURI(itemImage)
+                binding.imageViewItemImage.setImageURI(itemImage)
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Log.e("Error Image Selecting", "이미지 선택 및 편집 오류")
@@ -106,14 +98,9 @@ class AddActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add)
 
-        titleText = findViewById(R.id.title)
-        editTextItemName = findViewById<EditText>(R.id.itemName)
-        imageViewItemImage = findViewById<ImageView>(R.id.itemImage)
-        editTextItemLink = findViewById<EditText>(R.id.itemLink)
-        editTextItemPrice = findViewById<EditText>(R.id.itemPrice)
-        ratingItemPriority = findViewById<RatingBar>(R.id.itemRatingBar)
-        editTextItemMemo = findViewById<EditText>(R.id.itemMemo)
-        completeButton = findViewById<CardView>(R.id.completeButton)
+        binding = ActivityAddBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         /**
          * 아이템 편집 기능을 통해 들어온 것이라면 기존 정보 적용
@@ -126,11 +113,11 @@ class AddActivity : AppCompatActivity() {
          * 링크 자동 인식 기능을 통해 들어온 것이라면 링크 정보 적용
          */
         if (intent != null && intent.hasExtra(AUTO_ITEM)) {
-            editTextItemLink.setText(intent.getStringExtra(AUTO_ITEM))
+            binding.editTextItemLink.setText(intent.getStringExtra(AUTO_ITEM))
         }
 
         // ImageView 를 눌렀을 때 이미지 추가 액티비티로 이동
-        imageViewItemImage.setOnClickListener {
+        binding.imageViewItemImage.setOnClickListener {
             CropImage.activity()
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .setActivityTitle("이미지 추가")
@@ -141,23 +128,23 @@ class AddActivity : AppCompatActivity() {
         }
 
         // 작성 완료 버튼을 눌렀을 때
-        completeButton.setOnClickListener {
-            itemName = editTextItemName.text.toString().trim()
+        binding.completeButton.setOnClickListener {
+            itemName = binding.editTextItemName.text.toString().trim()
             val itemImage = itemImage.toString()  // Uri 를 String 으로 변환한 형태
-            itemLink = editTextItemLink.text.toString().trim()
-            itemPrice = editTextItemPrice.text.toString().trim()
-            itemPriority = ratingItemPriority.rating.toInt()
-            itemMemo = editTextItemMemo.text.toString().trim()
+            itemLink = binding.editTextItemLink.text.toString().trim()
+            itemPrice = binding.editTextItemPrice.text.toString().trim()
+            itemPriority = binding.ratingItemPriority.rating.toInt()
+            itemMemo = binding.editTextItemMemo.text.toString().trim()
 
             // Valid Check
             // TODO : 코드가 비효율적으로 보이지만, 이렇게 해야 두 EditText 가 모두 비었을 때 둘 다 에러가 적용된다. (더 나은 방법 탐색 필요)
             //  setErrorOnEditText() 는 해당 EditText 에 특정 Error 를 뿌려줌
             if (itemName.isEmpty() || itemPrice.isEmpty()) {
                 if (itemName.isEmpty()) {
-                    setErrorOnEditText(editTextItemName, resources.getText(R.string.itemNameError))
+                    setErrorOnEditText(binding.editTextItemName, resources.getText(R.string.itemNameError))
                 }
                 if (itemPrice.isEmpty()) {
-                    setErrorOnEditText(editTextItemPrice, resources.getText(R.string.itemPriceError))
+                    setErrorOnEditText(binding.editTextItemPrice, resources.getText(R.string.itemPriceError))
                 }
             } else {
                 val builder = AlertDialog.Builder(this)
@@ -231,15 +218,15 @@ class AddActivity : AppCompatActivity() {
      * 아이템 신규 생성이 아닌 편집 기능인 경우 기존 정보 채워줌
      */
     private fun applyExistingInfo(item: ItemEntity) {
-        titleText.text = "수정하기"
+        binding.textViewTitle.text = "수정하기"
         itemId = item.id
-        editTextItemName.setText(item.name)
-        editTextItemLink.setText(item.link)
-        editTextItemPrice.setText(item.price.toString())
-        ratingItemPriority.rating = item.priority.toFloat()
-        editTextItemMemo.setText(item.note)
+        binding.editTextItemName.setText(item.name)
+        binding.editTextItemLink.setText(item.link)
+        binding.editTextItemPrice.setText(item.price.toString())
+        binding.ratingItemPriority.rating = item.priority.toFloat()
+        binding.editTextItemMemo.setText(item.note)
         itemImage = Uri.parse(item.image)
-        imageViewItemImage.setImageURI(itemImage)
+        binding.imageViewItemImage.setImageURI(itemImage)
     }
 
     companion object {

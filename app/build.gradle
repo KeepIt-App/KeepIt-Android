@@ -12,6 +12,9 @@ android {
         enabled = true
     }
 
+    viewBinding {
+        enabled = true
+    }
 
     defaultConfig {
         applicationId "com.haero_kim.pickmeup"
