@@ -42,7 +42,6 @@ private var itemPriority: Int = 0
 private var itemMemo: String = ""
 
 class AddActivity : AppCompatActivity() {
-
     // Koin 모듈을 활용한 ViewModel 인스턴스 생성
     private val itemViewModel: ItemViewModel by viewModel()
 

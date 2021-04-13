@@ -14,7 +14,6 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -49,6 +48,9 @@ class MainActivity : AppCompatActivity() {
     // Koin 모듈을 활용한 ViewModel 인스턴스 생성
     private val itemViewModel: ItemViewModel by viewModel()
 
+    // View Binding 결합 클래스
+    private lateinit var viewBinding: ActivityMainBinding
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var bottomAppBar: BottomAppBar
     private lateinit var textNoticeEmptyList: TextView
@@ -76,12 +78,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        viewBinding = ActivityMainBinding.inflate(layoutInflater)
+        val view = viewBinding.root
+
         // DataBinding
-        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(
+        val dataBinding = DataBindingUtil.setContentView<ActivityMainBinding>(
             this,
             R.layout.activity_main
         )
-        binding.viewModel = itemViewModel
+        dataBinding.viewModel = itemViewModel
 
         recyclerView = findViewById(R.id.recyclerView)
         bottomAppBar = findViewById(R.id.bottomAppBar)
