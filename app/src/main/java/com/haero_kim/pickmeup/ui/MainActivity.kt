@@ -40,6 +40,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
+import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.TimeUnit
 
@@ -47,27 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     // Koin 모듈을 활용한 ViewModel 인스턴스 생성
     private val itemViewModel: ItemViewModel by viewModel()
-
-    // View Binding 결합 클래스
-    private lateinit var viewBinding: ActivityMainBinding
-
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var bottomAppBar: BottomAppBar
-    private lateinit var textNoticeEmptyList: TextView
-    private lateinit var addButton: FloatingActionButton
-
-    private lateinit var buttonSetFilterLatest: Button
-    private lateinit var buttonSetFilterPriority: Button
-    private lateinit var buttonSetFilterPrice: Button
-
-    private lateinit var searchViewLayout: CardView
-    private lateinit var searchEditText: EditText
-    private lateinit var searchEditTextClearButton: ImageButton
-
-    private lateinit var registerItemPopup: CardView
-    private lateinit var registerItemPopupMessage: TextView
-    private lateinit var registerItemPopupButton: LinearLayout
-    private lateinit var registerItemCancelButton: ImageView
+    private lateinit var binding: ActivityMainBinding
 
     // Disposable 을 모두 한번에 관리하는 CompositeDisposable
     // 옵저버블 통합 제거를 위해 사용 (메모리 릭 방지하기 위해 onDestroy() 에서 clear() 필요)
@@ -78,35 +59,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewBinding = ActivityMainBinding.inflate(layoutInflater)
-        val view = viewBinding.root
-
         // DataBinding
-        val dataBinding = DataBindingUtil.setContentView<ActivityMainBinding>(
+        binding = DataBindingUtil.setContentView<ActivityMainBinding>(
             this,
             R.layout.activity_main
         )
-        dataBinding.viewModel = itemViewModel
-
-        recyclerView = findViewById(R.id.recyclerView)
-        bottomAppBar = findViewById(R.id.bottomAppBar)
-        textNoticeEmptyList = findViewById(R.id.noticeEmptyList)
-        addButton = findViewById(R.id.shareButton)
-        buttonSetFilterLatest = findViewById(R.id.sortLatest)
-        buttonSetFilterPriority = findViewById(R.id.sortPriority)
-        buttonSetFilterPrice = findViewById(R.id.sortPrice)
-        searchViewLayout = findViewById(R.id.searchViewLayout)
-        searchEditText = findViewById(R.id.searchView)
-        searchEditTextClearButton = findViewById(R.id.textClearButton)
-        registerItemPopup = findViewById(R.id.registerItemPopup)
-        registerItemPopupMessage = findViewById(R.id.registerItemPopupMessage)
-        registerItemPopupButton = findViewById(R.id.registerItemPopupButton)
-        registerItemCancelButton = findViewById(R.id.registerItemCancelButton)
+        binding.viewModel = itemViewModel
 
         // Button 애니메이션 (효과)
         YoYo.with(Techniques.ZoomIn)
             .duration(400)
-            .playOn(addButton)
+            .playOn(binding.shareButton)
 
         // Android 8.0 이상 기기일 경우 NotificationChannel 인스턴스를 시스템에 등록
         createNotificationChannel()
@@ -124,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 deleteDialog(it)
             })
 
-        recyclerView.apply {
+        binding.recyclerView.apply {
             this.adapter = adapter
             this.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             this.setHasFixedSize(true)
@@ -132,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
         // iOS 스타일의 리사이클러뷰 오버스크롤 바운스 효과 적용
         OverScrollDecoratorHelper.setUpOverScroll(
-            recyclerView,
+            binding.recyclerView,
             OverScrollDecoratorHelper.ORIENTATION_VERTICAL
         )
 
@@ -140,19 +103,19 @@ class MainActivity : AppCompatActivity() {
          * EditText 에 RxJava (feat. RxBinding, RxKotlin) 을 적용하여
          * 사용자의 검색 Query 에 즉각적으로 LiveData 가 변경될 수 있도록 함 (Debounce 를 적용하여 리소스 낭비 방지)
          */
-        searchEditText.apply {
+        binding.searchView.apply {
             this.hint = "검색어를 입력해주세요"
 
             // EditText 에 포커스가 갔을 때 ClearButton 활성화
             this.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
-                    searchEditTextClearButton.visibility = View.VISIBLE
+                    binding.textClearButton.visibility = View.VISIBLE
                 } else {
-                    searchEditTextClearButton.visibility = View.GONE
+                    binding.textClearButton.visibility = View.GONE
                 }
             }
 
-            val editTextChangeObservable = searchEditText.textChanges()
+            val editTextChangeObservable = binding.searchView.textChanges()
             val searchEditTextSubscription: Disposable =
                 // 생성한 Observable 에 Operator 추가
                 editTextChangeObservable
@@ -185,9 +148,9 @@ class MainActivity : AppCompatActivity() {
         itemViewModel.getAll().observe(this, Observer
         { list ->
             if (list.isEmpty()) {
-                textNoticeEmptyList.visibility = View.VISIBLE
+                binding.noticeEmptyList.visibility = View.VISIBLE
             } else {
-                textNoticeEmptyList.visibility = View.GONE
+                binding.noticeEmptyList.visibility = View.GONE
             }
             itemList = list
 
@@ -208,25 +171,25 @@ class MainActivity : AppCompatActivity() {
         })
 
         // ClearButton 눌렀을 때
-        searchEditTextClearButton.setOnClickListener {
-            searchEditText.text.clear()
+        binding.textClearButton.setOnClickListener {
+            binding.searchView.text.clear()
         }
 
         // BottomAppBar - 설정 버튼 눌렀을 때
-        bottomAppBar.setNavigationOnClickListener {
+        binding.bottomAppBar.setNavigationOnClickListener {
             val intent = Intent(this, SettingActivity::class.java)
             startActivity(intent)
         }
 
         // BottomAppBar - 검색, 필터 버튼 눌렀을 때
-        bottomAppBar.setOnMenuItemClickListener { menuItem ->
+        binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.search -> {
                     val isSearchMode = itemViewModel.isSearchMode.get()!!
 
                     YoYo.with(Techniques.FadeInLeft)
                         .duration(400)
-                        .playOn(searchViewLayout)
+                        .playOn(binding.searchViewLayout)
 
                     // 검색 버튼 눌렀을 때마다 모드 전환
                     itemViewModel.isSearchMode.set(!isSearchMode)
@@ -240,7 +203,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // addButton 눌렀을 때 진입
-        addButton.setOnClickListener {
+        binding.shareButton.setOnClickListener {
             val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
         }
@@ -297,25 +260,26 @@ class MainActivity : AppCompatActivity() {
     private fun showItemRegisterPopup(siteLink: CharSequence, siteName: String) {
         YoYo.with(Techniques.BounceInUp)
             .duration(600)
-            .playOn(registerItemPopup)
+            .playOn(binding.registerItemPopup)
 
-        registerItemPopupMessage.text = "$siteName 링크가 발견되었습니다!"
+        binding.registerItemPopupMessage.text = "$siteName 링크가 발견되었습니다!"
 
-        registerItemPopup.setOnClickListener {
+        binding.registerItemPopup.setOnClickListener {
             val intent = Intent(this, AddActivity::class.java)
             intent.putExtra(AddActivity.AUTO_ITEM, siteLink)
             startActivity(intent)
         }
 
-        registerItemCancelButton.setOnClickListener {
+        binding.registerItemCancelButton.setOnClickListener {
             YoYo.with(Techniques.FadeOutDown)
                 .duration(400)
-                .playOn(registerItemPopup)
+                .playOn(binding.registerItemPopup)
 
             // 한 번 더 물어보는 일이 없도록 최근 자동 등록 취소된 링크에 추가
             prefs.latestCanceledLink = siteLink.toString()
         }
-        registerItemPopup.visibility = View.VISIBLE
+
+        binding.registerItemPopup.visibility = View.VISIBLE
     }
 
     /**
