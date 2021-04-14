@@ -1,13 +1,14 @@
 package com.haero_kim.pickmeup.ui
 
+import android.R.attr.path
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Patterns
 import android.webkit.URLUtil
-import android.widget.*
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.work.WorkManager
@@ -20,6 +21,7 @@ import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DecimalFormat
 
+
 class ItemDetailActivity : AppCompatActivity() {
 
     // Koin 모듈을 활용한 ViewModel 인스턴스 생성
@@ -31,8 +33,8 @@ class ItemDetailActivity : AppCompatActivity() {
 
         // DataBinding
         binding = DataBindingUtil.setContentView<ActivityItemDetailBinding>(
-            this,
-            R.layout.activity_item_detail
+                this,
+                R.layout.activity_item_detail
         )
 
         binding.viewModel = itemViewModel
@@ -57,7 +59,7 @@ class ItemDetailActivity : AppCompatActivity() {
                     }
                     // Url 은 맞지만 HTTP 형식의 Url 이 아닐 때
                     !URLUtil.isHttpUrl(item.link) and Patterns.WEB_URL.matcher(item.link)
-                        .matches() -> {
+                            .matches() -> {
                         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://" + item.link)))
                     }
                     // 아예 Url 형태가 아닐 때
@@ -77,8 +79,8 @@ class ItemDetailActivity : AppCompatActivity() {
         binding.itemRatingBar.rating = item.priority.toFloat()
 
         Glide.with(this)
-            .load(item.image)
-            .into(binding.itemImage)
+                .load(item.image)
+                .into(binding.itemImage)
 
         // BottomAppBar - 삭제 버튼 눌렀을 때
         binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
@@ -111,6 +113,34 @@ class ItemDetailActivity : AppCompatActivity() {
             startActivity(intent)
 
             finish()  // 편집 후 복귀했을 때 정보 동기화를 위해 기존 정보 페이지는 닫아줌
+        }
+
+        // 공유 버튼 눌렀을 때
+        binding.shareButton.setOnClickListener {
+            val sharingIntent = Intent(Intent.ACTION_SEND)
+
+            // 링크 등록이 되어있지 않다면, 이미지 존재 여부 체크
+            if (item.link.isBlank()) {
+                // 만약 링크, 이미지가 모두 없다면 공유하기에 부적절함
+                if (item.image.isBlank()) {
+                    Toast.makeText(applicationContext, "공유할 컨텐츠가 부족합니다! 이미지, 링크 등을 추가해보세요!", Toast.LENGTH_LONG).show()
+                } else {
+                    sharingIntent.type = "image/*"
+                    sharingIntent.putExtra(Intent.EXTRA_STREAM, item.image)
+                    sharingIntent.setPackage("com.kakao.talk")
+                    startActivity(sharingIntent) // 결과를 받고싶을 때
+
+                }
+            } else {
+                // TODO 아이템 링크가 존재한다면 일어날 공유 동작 정의
+                sharingIntent.type = "text/plain"
+
+                sharingIntent.putExtra(Intent.EXTRA_TEXT, "hello~ shareText here")
+                sharingIntent.setPackage("com.kakao.talk")
+
+                startActivity(sharingIntent)
+            }
+
         }
     }
 
