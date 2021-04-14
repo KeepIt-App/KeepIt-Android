@@ -8,19 +8,15 @@ import android.util.Patterns
 import android.webkit.URLUtil
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.work.WorkManager
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityItemDetailBinding
 import com.haero_kim.pickmeup.ui.AddActivity.Companion.EDIT_ITEM
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DecimalFormat
 

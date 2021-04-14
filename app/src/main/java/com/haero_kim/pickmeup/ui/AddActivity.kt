@@ -28,6 +28,7 @@ import com.haero_kim.pickmeup.worker.NotificationWorker
 import com.haero_kim.pickmeup.worker.NotificationWorker.Companion.ITEM_NAME
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -125,6 +126,10 @@ class AddActivity : AppCompatActivity() {
                     .setCropMenuCropButtonTitle("완료")
                     .setRequestedSize(1280, 900)
                     .start(this)
+        }
+
+        binding.cancelButton.setOnClickListener {
+            finish()
         }
 
         // 작성 완료 버튼을 눌렀을 때

@@ -12,6 +12,27 @@
         android:padding="24dp"
         tools:context=".ui.AddActivity">
 
+        <EditText
+            android:id="@+id/editTextItemMemo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/custom_input"
+            android:backgroundTint="#E8E8E8"
+            android:ems="10"
+            android:fontFamily="@font/nanum_regular"
+            android:hint="@string/itemMemoHint"
+            android:minHeight="60dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="#5C5C5C"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ratingItemPriority" />
+
+
         <LinearLayout
             android:id="@+id/title_layout"
             android:layout_width="match_parent"
@@ -33,11 +54,91 @@
                 android:paddingEnd="8dp"
                 android:text="@string/add_title"
                 android:textColor="@color/black"
-                android:textSize="24sp"
-                android:textFontWeight="900" />
+                android:textFontWeight="900"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_marginTop="48dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editTextItemMemo">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cancelButton"
+                android:layout_width="1dp"
+                android:layout_weight="0.5"
+                android:layout_height="50dp"
+                android:layout_marginEnd="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/gray"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cancelButton"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/completeButton"
+                android:layout_width="1dp"
+                android:layout_weight="1"
+                android:layout_height="50dp"
+                android:layout_marginStart="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/box_stroke"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/completeButton"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+
+        </LinearLayout>
+
+
+        <RatingBar
+            android:id="@+id/ratingItemPriority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:isIndicator="false"
+            android:numStars="5"
+            android:progressTint="@color/view_volor"
+            android:rating="3"
+            android:stepSize="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/itemLinkLayout" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/itemImageCard"
@@ -76,7 +177,6 @@
                 android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/itemPriceLayout"
@@ -118,69 +218,6 @@
                 android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <RatingBar
-            android:id="@+id/ratingItemPriority"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:isIndicator="false"
-            android:numStars="5"
-            android:progressTint="@color/view_volor"
-            android:rating="3"
-            android:stepSize="1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/itemLinkLayout" />
-
-        <EditText
-            android:id="@+id/editTextItemMemo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/custom_input"
-            android:backgroundTint="#E8E8E8"
-            android:ems="10"
-            android:fontFamily="@font/nanum_regular"
-            android:hint="@string/itemMemoHint"
-            android:minHeight="60dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:textColor="#5C5C5C"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ratingItemPriority" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/completeButton"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="48dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/editTextItemMemo">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/box_stroke"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/completeButton"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
