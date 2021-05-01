@@ -3,6 +3,7 @@ package com.haero_kim.pickmeup.ui
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Rect
@@ -12,13 +13,19 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.Patterns
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.webkit.URLUtil
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.work.*
+import com.anandwana001.ogtagparser.LinkSourceContent
+import com.anandwana001.ogtagparser.LinkViewCallback
+import com.anandwana001.ogtagparser.OgTagParser
+import com.bumptech.glide.Glide
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityAddBinding
@@ -119,7 +126,55 @@ class AddActivity : AppCompatActivity() {
          * 링크 자동 인식 기능을 통해 들어온 것이라면 링크 정보 적용
          */
         if (intent != null && intent.hasExtra(AUTO_ITEM)) {
-            binding.editTextItemLink.setText(intent.getStringExtra(AUTO_ITEM))
+            var itemLink = intent.getStringExtra(AUTO_ITEM) ?: ""
+            binding.editTextItemLink.setText(itemLink)
+            when {
+                Patterns.WEB_URL.matcher(itemLink).matches() -> {
+                    // 만약 http 형식이 아니라면 앞에 'http://' 를 붙여줘야함 ==> ex) www.naver.com 과 같은 상황
+                    if (!URLUtil.isHttpsUrl(itemLink) and !URLUtil.isHttpUrl(itemLink)){
+                        itemLink = "https://" + itemLink
+                    }
+                    // Open Graph 태그를 불러오는 라이브러리 사용
+                    OgTagParser().execute(itemLink, object : LinkViewCallback {
+                        override fun onAfterLoading(linkSourceContent: LinkSourceContent) {
+                            Log.d("TEST", linkSourceContent.ogTitle)
+                            Log.d("TEST", linkSourceContent.ogDescription)
+                            Log.d("TEST", linkSourceContent.images)
+
+                            val siteTitle = linkSourceContent.ogTitle
+                            val siteDescription = linkSourceContent.ogDescription
+                            var siteThumbnail = linkSourceContent.images
+
+                            if (siteTitle.isNotBlank() or siteDescription.isNotBlank() or siteThumbnail.isNotBlank()){
+                                if (siteThumbnail.startsWith("//")) {
+                                    siteThumbnail = "https:" + siteThumbnail
+                                }
+
+                                val builder = AlertDialog.Builder(this@AddActivity)
+                                builder.setMessage("사이트에서 발견한 콘텐츠가 있습니다. 적용하시겠습니까?")
+                                    .setTitle("정보 자동 채우기")
+                                    .setPositiveButton("네") { dialog, id ->
+                                        // Open Graph 를 통해 가져온 정보를 기반으로 레이아웃 적용
+                                        binding.editTextItemName.setText(siteTitle)
+                                        binding.editTextItemMemo.setText(siteDescription)
+                                    }
+                                    .setNegativeButton("아니요") { dialog, id ->
+                                        /* no-op */
+                                    }
+                                builder.create().show()
+                            }
+                        }
+                        override fun onBeforeLoading() {
+                            /* no-op */
+                        }
+                    })
+                }
+                else ->{
+                    binding.itemLinkLayout.setOnClickListener {
+                        Toast.makeText(this, "올바르지 않은 URL 입니다", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
         }
 
         // 가격을 입력하는 EditText 가, 가격 단위에 맞게 ',' 를 자동으로 삽입해주는 동작을 하기 위해 TextWatcher 붙여줌

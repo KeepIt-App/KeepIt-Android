@@ -65,10 +65,8 @@ class ItemDetailActivity : AppCompatActivity() {
             when {
                 Patterns.WEB_URL.matcher(item.link).matches() -> {
                     var itemLink = item.link
-                    // HTTP 및 HTTPS URL 이 맞을 때 기본 링크 사용
-                    if (URLUtil.isHttpsUrl(itemLink) or URLUtil.isHttpUrl(itemLink)){
-
-                    } else {  // 만약 http 형식이 아니라면 앞에 'http://' 를 붙여줘야함 ==> ex) www.naver.com 과 같은 상황
+                    // 만약 http 형식이 아니라면 앞에 'http://' 를 붙여줘야함 ==> ex) www.naver.com 과 같은 상황
+                    if (!URLUtil.isHttpsUrl(itemLink) and !URLUtil.isHttpUrl(itemLink)){
                         itemLink = "https://" + itemLink
                     }
                     binding.itemLinkLayout.setOnClickListener {

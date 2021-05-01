@@ -213,13 +213,6 @@
 
                         </LinearLayout>
 
-                        <View
-                            android:layout_width="2dp"
-                            android:background="#D1D1D1"
-                            android:layout_toLeftOf="@+id/itemLinkImage"
-                            android:layout_height="match_parent"/>
-
-
                         <ImageView
                             android:id="@+id/itemLinkImage"
                             android:layout_alignParentEnd="true"
