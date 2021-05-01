@@ -78,22 +78,31 @@ class ItemDetailActivity : AppCompatActivity() {
                     // Open Graph 태그를 불러오는 라이브러리 사용
                     OgTagParser().execute(itemLink, object : LinkViewCallback {
                         override fun onAfterLoading(linkSourceContent: LinkSourceContent) {
-                            Log.d("TEST", linkSourceContent.ogUrl)
                             Log.d("TEST", linkSourceContent.ogTitle)
                             Log.d("TEST", linkSourceContent.ogDescription)
-                            Log.d("TEST", linkSourceContent.ogSiteName)
-                            Log.d("TEST", linkSourceContent.ogType)
                             Log.d("TEST", linkSourceContent.images)
+
+                            val siteTitle = linkSourceContent.ogTitle
+                            val siteDescription = linkSourceContent.ogDescription
+                            var siteThumbnail = linkSourceContent.images
+
+                            if (siteThumbnail.startsWith("//")) {
+                                siteThumbnail = "https:" + siteThumbnail
+                            }
+
+                            binding.itemLinkTitle.text = siteTitle
+                            binding.itemLinkDescription.text = siteDescription
+
+                            Glide.with(this@ItemDetailActivity)
+                                .load(siteThumbnail)
+                                .placeholder(R.drawable.placeholder)
+                                .into(binding.itemLinkImage)
                         }
 
                         override fun onBeforeLoading() {
-                            // TODO("Not yet implemented")
+                            /* no-op */
                         }
                     })
-
-                    CoroutineScope(Dispatchers.Default).launch {
-
-                    }
                 }
                 else ->{
                     binding.itemLinkLayout.setOnClickListener {

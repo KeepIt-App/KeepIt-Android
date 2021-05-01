@@ -55,8 +55,6 @@
                                 android:ellipsize="end"
                                 android:fontFamily="@font/nanum_extrabold"
                                 android:maxLines="2"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
                                 android:text="NAME"
                                 android:textColor="@color/black"
                                 android:textSize="28sp"
@@ -69,8 +67,6 @@
                                 android:layout_marginTop="8dp"
                                 android:ellipsize="end"
                                 android:maxLines="1"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
                                 android:text="4000"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
@@ -80,7 +76,6 @@
                                 style="@style/Widget.AppCompat.RatingBar.Small"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
                                 android:layout_marginTop="16dp"
                                 android:isIndicator="true"
                                 android:numStars="5"
@@ -107,7 +102,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="32dp"
+                        android:paddingHorizontal="24dp"
                         android:paddingVertical="24dp">
 
                         <ImageView
@@ -146,7 +141,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="32dp"
+                        android:paddingHorizontal="24dp"
                         android:paddingVertical="24dp">
 
                         <ImageView
@@ -181,14 +176,16 @@
                     app:cardElevation="8dp">
 
                     <RelativeLayout
-                        android:paddingStart="32dp"
+                        android:paddingStart="24dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
                         <LinearLayout
+                            android:layout_toLeftOf="@+id/itemLinkImage"
                             android:orientation="vertical"
+                            android:paddingEnd="24dp"
                             android:layout_centerVertical="true"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
                             <TextView
@@ -196,8 +193,10 @@
                                 android:id="@+id/itemLinkTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="itemLinkTitle"
+                                android:text="URL을 불러오는 중..."
                                 android:textSize="16sp"
+                                android:maxLines="1"
+                                android:ellipsize="end"
                                 android:textStyle="bold"
                                 android:textColor="@color/black"/>
 
@@ -205,15 +204,24 @@
                                 android:layout_marginTop="4dp"
                                 android:id="@+id/itemLinkDescription"
                                 android:layout_width="wrap_content"
+                                android:maxLines="1"
+                                android:ellipsize="end"
                                 android:layout_below="@+id/itemLinkTitle"
                                 android:layout_height="wrap_content"
-                                android:text="itemLinkUrl"
+                                android:text="잠시만 기다려주세요."
                                 android:textSize="14sp"/>
 
                         </LinearLayout>
 
+                        <View
+                            android:layout_width="2dp"
+                            android:background="#D1D1D1"
+                            android:layout_toLeftOf="@+id/itemLinkImage"
+                            android:layout_height="match_parent"/>
+
 
                         <ImageView
+                            android:id="@+id/itemLinkImage"
                             android:layout_alignParentEnd="true"
                             android:layout_width="90dp"
                             android:layout_height="90dp"
