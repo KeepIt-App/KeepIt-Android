@@ -9,6 +9,8 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -16,7 +18,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.work.*
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
@@ -28,12 +29,12 @@ import com.haero_kim.pickmeup.worker.NotificationWorker
 import com.haero_kim.pickmeup.worker.NotificationWorker.Companion.ITEM_NAME
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
-import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.text.DecimalFormat
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -47,6 +48,10 @@ class AddActivity : AppCompatActivity() {
     // Koin 모듈을 활용한 ViewModel 인스턴스 생성
     private val itemViewModel: ItemViewModel by viewModel()
     lateinit var binding: ActivityAddBinding
+
+    // 물건의 가격을 입력하는 EditText 에 화폐 단위 표시를 하기위한 DecimalFormat
+    private val decimalFormat = DecimalFormat("#,###")
+    private var formatPriceResult = ""
 
     var itemId: Long? = null
     private var itemImage: Uri? = null
@@ -104,7 +109,7 @@ class AddActivity : AppCompatActivity() {
         setContentView(view)
 
         /**
-         * 아이템 편집 기능을 통해 들어온 것이라면 기존 정보 적용
+         * 아이템 편집 기능을 통해 인텐트 된 것이라면 기존 정보 삽입
          */
         if (intent != null && intent.hasExtra(EDIT_ITEM)) {
             applyExistingInfo(intent.getSerializableExtra(EDIT_ITEM) as ItemEntity)
@@ -116,6 +121,22 @@ class AddActivity : AppCompatActivity() {
         if (intent != null && intent.hasExtra(AUTO_ITEM)) {
             binding.editTextItemLink.setText(intent.getStringExtra(AUTO_ITEM))
         }
+
+        // 가격을 입력하는 EditText 가, 가격 단위에 맞게 ',' 를 자동으로 삽입해주는 동작을 하기 위해 TextWatcher 붙여줌
+        binding.editTextItemPrice.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrBlank() && s.toString() != formatPriceResult) {
+                    formatPriceResult = decimalFormat.format(s.toString().replace(",".toRegex(), "").toDouble())
+                    binding.editTextItemPrice.run{
+                        setText(formatPriceResult)
+                        setSelection(formatPriceResult.length)
+                    }
+                }
+            }
+        })
 
         // ImageView 를 눌렀을 때 이미지 추가 액티비티로 이동
         binding.imageViewItemImage.setOnClickListener {
@@ -146,10 +167,16 @@ class AddActivity : AppCompatActivity() {
             //  setErrorOnEditText() 는 해당 EditText 에 특정 Error 를 뿌려줌
             if (itemName.isEmpty() || itemPrice.isEmpty()) {
                 if (itemName.isEmpty()) {
-                    setErrorOnEditText(binding.editTextItemName, resources.getText(R.string.itemNameError))
+                    setErrorOnEditText(
+                        binding.editTextItemName,
+                        resources.getText(R.string.itemNameError)
+                    )
                 }
                 if (itemPrice.isEmpty()) {
-                    setErrorOnEditText(binding.editTextItemPrice, resources.getText(R.string.itemPriceError))
+                    setErrorOnEditText(
+                        binding.editTextItemPrice,
+                        resources.getText(R.string.itemPriceError)
+                    )
                 }
             } else {
                 val builder = AlertDialog.Builder(this)
@@ -158,13 +185,13 @@ class AddActivity : AppCompatActivity() {
                     this.setNegativeButton("NO") { _, _ -> }
                     this.setPositiveButton("YES") { _, _ ->
                         val newItem = ItemEntity(
-                                id = itemId,  // 새로운 Item 이면 Null 들어감 (자동 값 적용)
-                                name = itemName,
-                                image = itemImage,
-                                price = itemPrice.toLong(),
-                                link = itemLink,
-                                priority = itemPriority,
-                                note = itemMemo
+                            id = itemId,  // 새로운 Item 이면 Null 들어감 (자동 값 적용)
+                            name = itemName,
+                            image = itemImage,
+                            price = itemPrice.toLong(),
+                            link = itemLink,
+                            priority = itemPriority,
+                            note = itemMemo
                         )
                         itemViewModel.insert(newItem)
 
@@ -220,7 +247,7 @@ class AddActivity : AppCompatActivity() {
     }
 
     /**
-     * 아이템 신규 생성이 아닌 편집 기능인 경우 기존 정보 채워줌
+     * 아이템 신규 생성이 아닌 편집 기능인 경우 기존 정보 채워주는 메소드
      */
     private fun applyExistingInfo(item: ItemEntity) {
         binding.textViewTitle.text = "수정하기"
