@@ -4,7 +4,9 @@ import android.R.attr.path
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
+import android.view.View
 import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -12,13 +14,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.work.WorkManager
+import com.anandwana001.ogtagparser.LinkSourceContent
+import com.anandwana001.ogtagparser.LinkViewCallback
+import com.anandwana001.ogtagparser.OgTagParser
 import com.bumptech.glide.Glide
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityItemDetailBinding
 import com.haero_kim.pickmeup.ui.AddActivity.Companion.EDIT_ITEM
+import com.haero_kim.pickmeup.util.OpenGraphParser
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.logger.KOIN_TAG
 import java.text.DecimalFormat
 
 
@@ -46,24 +56,47 @@ class ItemDetailActivity : AppCompatActivity() {
         binding.itemName.text = item.name
         binding.itemPrice.text = "₩${itemPriceFormatted}원"
 
+
+        // ItemLink Layout Handling
         if (item.link.isEmpty()) {
-            binding.itemLink.text = "링크가 없습니다"
-            binding.itemLink.setTextColor(ContextCompat.getColor(this, R.color.gray))
+            binding.noItemLinkLayout.visibility = View.VISIBLE
+            binding.itemLinkLayout.visibility = View.GONE  // URL 썸네일 레이아웃 숨김
         } else {
-            binding.itemLink.text = "등록한 링크로 이동하기"
-            binding.itemLinkLayout.setOnClickListener {
-                when {
-                    // HTTP Url 이 맞을 때
-                    URLUtil.isHttpUrl(item.link) -> {
-                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(item.link)))
+            when {
+                Patterns.WEB_URL.matcher(item.link).matches() -> {
+                    var itemLink = item.link
+                    // HTTP 및 HTTPS URL 이 맞을 때 기본 링크 사용
+                    if (URLUtil.isHttpsUrl(itemLink) or URLUtil.isHttpUrl(itemLink)){
+
+                    } else {  // 만약 http 형식이 아니라면 앞에 'http://' 를 붙여줘야함 ==> ex) www.naver.com 과 같은 상황
+                        itemLink = "https://" + itemLink
                     }
-                    // Url 은 맞지만 HTTP 형식의 Url 이 아닐 때
-                    !URLUtil.isHttpUrl(item.link) and Patterns.WEB_URL.matcher(item.link)
-                            .matches() -> {
-                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://" + item.link)))
+                    binding.itemLinkLayout.setOnClickListener {
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(itemLink)))
                     }
-                    // 아예 Url 형태가 아닐 때
-                    else -> {
+
+                    // Open Graph 태그를 불러오는 라이브러리 사용
+                    OgTagParser().execute(itemLink, object : LinkViewCallback {
+                        override fun onAfterLoading(linkSourceContent: LinkSourceContent) {
+                            Log.d("TEST", linkSourceContent.ogUrl)
+                            Log.d("TEST", linkSourceContent.ogTitle)
+                            Log.d("TEST", linkSourceContent.ogDescription)
+                            Log.d("TEST", linkSourceContent.ogSiteName)
+                            Log.d("TEST", linkSourceContent.ogType)
+                            Log.d("TEST", linkSourceContent.images)
+                        }
+
+                        override fun onBeforeLoading() {
+                            // TODO("Not yet implemented")
+                        }
+                    })
+
+                    CoroutineScope(Dispatchers.Default).launch {
+
+                    }
+                }
+                else ->{
+                    binding.itemLinkLayout.setOnClickListener {
                         Toast.makeText(this, "올바르지 않은 URL 입니다", Toast.LENGTH_LONG).show()
                     }
                 }
@@ -78,9 +111,11 @@ class ItemDetailActivity : AppCompatActivity() {
 
         binding.itemRatingBar.rating = item.priority.toFloat()
 
-        Glide.with(this)
+        if (!item.image.isBlank() && item.image != "null"){
+            Glide.with(this)
                 .load(item.image)
                 .into(binding.itemImage)
+        }
 
         // BottomAppBar - 삭제 버튼 눌렀을 때
         binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->

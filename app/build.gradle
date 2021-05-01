@@ -112,4 +112,6 @@ dependencies {
     // WorkManger (백그라운드 푸시알림 구현 목적) 필요
     implementation "androidx.work:work-runtime-ktx:2.5.0"
 
+    // Open Graph Tag Parser
+    implementation 'com.github.anandwana001:ogTagParser:1.0.1'
 }

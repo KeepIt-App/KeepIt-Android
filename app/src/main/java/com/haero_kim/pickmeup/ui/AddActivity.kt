@@ -159,6 +159,7 @@ class AddActivity : AppCompatActivity() {
             val itemImage = itemImage.toString()  // Uri 를 String 으로 변환한 형태
             itemLink = binding.editTextItemLink.text.toString().trim()
             itemPrice = binding.editTextItemPrice.text.toString().trim()
+            itemPrice = binding.editTextItemPrice.text.toString().replace(",", "")
             itemPriority = binding.ratingItemPriority.rating.toInt()
             itemMemo = binding.editTextItemMemo.text.toString().trim()
 
