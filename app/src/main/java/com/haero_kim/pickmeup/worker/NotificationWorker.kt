@@ -8,7 +8,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.haero_kim.pickmeup.R
-import com.haero_kim.pickmeup.ui.MainActivity
+import com.haero_kim.pickmeup.view.MainActivity
 
 
 /**

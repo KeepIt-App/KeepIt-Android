@@ -13,6 +13,9 @@ import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import java.text.DecimalFormat
 
+/**
+ * 메인화면에 보여지는 ItemList RecyclerView 어댑터
+ */
 class ItemListAdapter(
         val itemClick: (ItemEntity) -> Unit,
         val itemLongClick: (ItemEntity) -> Unit

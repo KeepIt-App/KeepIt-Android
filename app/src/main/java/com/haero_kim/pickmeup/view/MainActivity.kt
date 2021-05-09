@@ -1,4 +1,4 @@
-package com.haero_kim.pickmeup.ui
+package com.haero_kim.pickmeup.view
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -23,7 +23,7 @@ import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.adapter.ItemListAdapter
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityMainBinding
-import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
+import com.haero_kim.pickmeup.view.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.util.ShoppingMallList
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_LATEST
@@ -35,7 +35,6 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
-import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.TimeUnit
 

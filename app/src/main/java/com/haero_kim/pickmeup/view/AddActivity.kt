@@ -1,9 +1,8 @@
-package com.haero_kim.pickmeup.ui
+package com.haero_kim.pickmeup.view
 
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Rect
@@ -25,11 +24,10 @@ import androidx.work.*
 import com.anandwana001.ogtagparser.LinkSourceContent
 import com.anandwana001.ogtagparser.LinkViewCallback
 import com.anandwana001.ogtagparser.OgTagParser
-import com.bumptech.glide.Glide
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityAddBinding
-import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
+import com.haero_kim.pickmeup.view.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import com.haero_kim.pickmeup.worker.NotificationWorker
@@ -247,7 +245,7 @@ class AddActivity : AppCompatActivity() {
                             price = itemPrice.toLong(),
                             link = itemLink,
                             priority = itemPriority,
-                            note = itemMemo
+                            memo = itemMemo
                         )
                         itemViewModel.insert(newItem)
 
@@ -312,7 +310,7 @@ class AddActivity : AppCompatActivity() {
         binding.editTextItemLink.setText(item.link)
         binding.editTextItemPrice.setText(item.price.toString())
         binding.ratingItemPriority.rating = item.priority.toFloat()
-        binding.editTextItemMemo.setText(item.note)
+        binding.editTextItemMemo.setText(item.memo)
         itemImage = Uri.parse(item.image)
         binding.imageViewItemImage.setImageURI(itemImage)
     }

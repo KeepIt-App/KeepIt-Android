@@ -1,14 +1,12 @@
 package com.haero_kim.pickmeup.viewmodel
 
 import android.app.Application
-import android.content.Intent
 import android.text.TextUtils
 import androidx.arch.core.util.Function
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
 import com.haero_kim.pickmeup.MyApplication
 import com.haero_kim.pickmeup.data.ItemEntity
-import com.haero_kim.pickmeup.ui.AddActivity
 
 
 class ItemViewModel(application: Application) : AndroidViewModel(application) {

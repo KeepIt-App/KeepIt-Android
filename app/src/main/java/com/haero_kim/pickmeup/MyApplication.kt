@@ -11,6 +11,9 @@ import org.koin.android.ext.koin.androidFileProperties
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
+/**
+ * 앱 실행 시 가장 먼저 진입
+ */
 class MyApplication : Application() {
     init {
         instance = this

@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@color/background"
         android:padding="24dp"
-        tools:context=".ui.AddActivity">
+        tools:context=".view.AddActivity">
 
         <EditText
             android:id="@+id/editTextItemMemo"

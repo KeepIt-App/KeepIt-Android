@@ -1,6 +1,5 @@
-package com.haero_kim.pickmeup.ui
+package com.haero_kim.pickmeup.view
 
-import android.R.attr.path
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,7 +10,6 @@ import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.work.WorkManager
 import com.anandwana001.ogtagparser.LinkSourceContent
@@ -21,14 +19,9 @@ import com.bumptech.glide.Glide
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityItemDetailBinding
-import com.haero_kim.pickmeup.ui.AddActivity.Companion.EDIT_ITEM
-import com.haero_kim.pickmeup.util.OpenGraphParser
+import com.haero_kim.pickmeup.view.AddActivity.Companion.EDIT_ITEM
 import com.haero_kim.pickmeup.viewmodel.ItemViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.logger.KOIN_TAG
 import java.text.DecimalFormat
 
 
@@ -92,9 +85,9 @@ class ItemDetailActivity : AppCompatActivity() {
                             binding.itemLinkDescription.text = siteDescription
 
                             Glide.with(this@ItemDetailActivity)
-                                .load(siteThumbnail)
-                                .placeholder(R.drawable.placeholder)
-                                .into(binding.itemLinkImage)
+                                    .load(siteThumbnail)
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(binding.itemLinkImage)
                         }
 
                         override fun onBeforeLoading() {
@@ -110,10 +103,10 @@ class ItemDetailActivity : AppCompatActivity() {
             }
         }
 
-        if (item.note.isEmpty()) {
+        if (item.memo.isEmpty()) {
             binding.itemMemo.text = "메모가 없습니다"
         } else {
-            binding.itemMemo.text = item.note
+            binding.itemMemo.text = item.memo
         }
 
         binding.itemRatingBar.rating = item.priority.toFloat()
@@ -157,29 +150,29 @@ class ItemDetailActivity : AppCompatActivity() {
             finish()  // 편집 후 복귀했을 때 정보 동기화를 위해 기존 정보 페이지는 닫아줌
         }
 
-        // 공유 버튼 눌렀을 때
+        // 공유 버튼 눌렀을 때 (카카오톡 공유 동작)
         binding.shareButton.setOnClickListener {
             val sharingIntent = Intent(Intent.ACTION_SEND)
-
             // 링크 등록이 되어있지 않다면, 이미지 존재 여부 체크
             if (item.link.isBlank()) {
                 // 만약 링크, 이미지가 모두 없다면 공유하기에 부적절함
                 if (item.image.isBlank()) {
                     Toast.makeText(applicationContext, "공유할 컨텐츠가 부족합니다! 이미지, 링크 등을 추가해보세요!", Toast.LENGTH_LONG).show()
                 } else {
-                    sharingIntent.type = "image/*"
-                    sharingIntent.putExtra(Intent.EXTRA_STREAM, item.image)
-                    sharingIntent.setPackage("com.kakao.talk")
+                    sharingIntent.apply {
+                        type = "image/*"
+                        putExtra(Intent.EXTRA_STREAM, Uri.parse(item.image))
+                        Log.d("TEST", Uri.parse(item.image).toString())
+                        setPackage("com.kakao.talk")
+                    }
                     startActivity(sharingIntent) // 결과를 받고싶을 때
-
                 }
             } else {
-                // TODO 아이템 링크가 존재한다면 일어날 공유 동작 정의
-                sharingIntent.type = "text/plain"
-
-                sharingIntent.putExtra(Intent.EXTRA_TEXT, "hello~ shareText here")
-                sharingIntent.setPackage("com.kakao.talk")
-
+                sharingIntent.apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, "[${item.name}]\n\n${item.link}")
+                    setPackage("com.kakao.talk")
+                }
                 startActivity(sharingIntent)
             }
 

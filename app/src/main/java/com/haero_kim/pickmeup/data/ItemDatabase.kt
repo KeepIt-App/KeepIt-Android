@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 // Entity 정의 및 SQLite 버전 지정
-@Database(entities = [ItemEntity::class, ItemFtsEntity::class], version = 6, exportSchema = false)
+@Database(entities = [ItemEntity::class, ItemFtsEntity::class], version = 7, exportSchema = false)
 abstract class ItemDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
 
