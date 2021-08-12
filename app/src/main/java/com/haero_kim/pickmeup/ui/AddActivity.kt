@@ -19,12 +19,12 @@ import android.view.inputmethod.InputMethodManager
 import android.webkit.URLUtil
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.work.*
 import com.anandwana001.ogtagparser.LinkSourceContent
 import com.anandwana001.ogtagparser.LinkViewCallback
 import com.anandwana001.ogtagparser.OgTagParser
 import com.haero_kim.pickmeup.R
+import com.haero_kim.pickmeup.base.BaseActivity
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityAddBinding
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
@@ -48,10 +48,10 @@ private var itemPrice: String = ""
 private var itemPriority: Int = 0
 private var itemMemo: String = ""
 
-class AddActivity : AppCompatActivity() {
-    // Koin 모듈을 활용한 ViewModel 인스턴스 생성
-    private val itemViewModel: ItemViewModel by viewModel()
-    lateinit var binding: ActivityAddBinding
+class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
+    override val layoutResourceId: Int
+        get() = R.layout.activity_add
+    override val viewModel: ItemViewModel by viewModel()
 
     // 물건의 가격을 입력하는 EditText 에 화폐 단위 표시를 하기위한 DecimalFormat
     private val decimalFormat = DecimalFormat("#,###")
@@ -59,54 +59,15 @@ class AddActivity : AppCompatActivity() {
 
     var itemId: Long? = null
     private var itemImage: Uri? = null
-    /**
-     * 사용자가 이미지 선택을 완료하면 실행됨
-     */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
 
-        // 업로드를 위한 사진이 선택 및 편집되면 Uri 형태로 결과가 반환됨
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            val result = CropImage.getActivityResult(data)
-
-            if (resultCode == Activity.RESULT_OK) {
-                val resultUri = result.uri
-                val bitmap =
-                        MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
-                itemImage = bitmapToFile(bitmap!!) // Uri
-                binding.imageViewItemImage.setImageURI(itemImage)
-
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Log.e("Error Image Selecting", "이미지 선택 및 편집 오류")
-            }
-        }
+    override fun initStartView() {
+        binding.viewModel = this.viewModel
     }
 
-    /**
-     * Bitmap 이미지를 Local 에 저장하고, URI 를 반환함
-     **/
-    private fun bitmapToFile(bitmap: Bitmap): Uri {
-        val wrapper = ContextWrapper(this)
-        val randomNumber = Random.nextInt(0, 1000000000).toString()
-        // Bitmap 파일 저장을 위한 File 객체
-        var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
-        file = File(file, "item_${randomNumber}.jpg")
-        try {
-            // Bitmap 파일을 JPEG 형태로 압축해서 출력
-            val stream: OutputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            stream.flush()
-            stream.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Log.e("Error Saving Image", e.message!!)
-        }
-        return Uri.parse(file.absolutePath)
+    override fun initDataBinding() {
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add)
+    override fun initAfterBinding() {
 
         binding = ActivityAddBinding.inflate(layoutInflater)
         val view = binding.root
@@ -193,12 +154,12 @@ class AddActivity : AppCompatActivity() {
         // ImageView 를 눌렀을 때 이미지 추가 액티비티로 이동
         binding.imageViewItemImage.setOnClickListener {
             CropImage.activity()
-                    .setGuidelines(CropImageView.Guidelines.ON)
-                    .setActivityTitle("이미지 추가")
-                    .setCropShape(CropImageView.CropShape.RECTANGLE)
-                    .setCropMenuCropButtonTitle("완료")
-                    .setRequestedSize(1280, 900)
-                    .start(this)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setActivityTitle("이미지 추가")
+                .setCropShape(CropImageView.CropShape.RECTANGLE)
+                .setCropMenuCropButtonTitle("완료")
+                .setRequestedSize(1280, 900)
+                .start(this)
         }
 
         binding.cancelButton.setOnClickListener {
@@ -244,20 +205,20 @@ class AddActivity : AppCompatActivity() {
                             priority = itemPriority,
                             memo = itemMemo
                         )
-                        itemViewModel.insert(newItem)
+                        viewModel.insert(newItem)
 
                         // WorkerManager 는 커스텀 파라미터를 지원하지 않기 때문에 setInputData() 를 통해 데이터를 주입해야함
                         val inputData = Data.Builder()
-                                .putString(ITEM_NAME, itemName)
-                                .build()
+                            .putString(ITEM_NAME, itemName)
+                            .build()
 
                         // 하루에 한 번씩 구매를 유도하는 리마인드 푸시알림을 위해 NotificationWorker 를 WorkRequest 에 포함
                         val registerNotificationRequest =
-                                PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
-                                        .setInputData(inputData)
-                                        .setInitialDelay(24, TimeUnit.HOURS)
-                                        .addTag(itemName)  // WorkRequest 에 아이템 명으로 된 고유 태그 명시
-                                        .build()
+                            PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
+                                .setInputData(inputData)
+                                .setInitialDelay(24, TimeUnit.HOURS)
+                                .addTag(itemName)  // WorkRequest 에 아이템 명으로 된 고유 태그 명시
+                                .build()
 
                         // 시스템에 WorkRequest 제출
                         WorkManager.getInstance(context).enqueue(registerNotificationRequest)
@@ -275,6 +236,57 @@ class AddActivity : AppCompatActivity() {
                 builder.show()
             }
         }
+    }
+
+    /**
+     * 사용자가 이미지 선택을 완료하면 실행됨
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // 업로드를 위한 사진이 선택 및 편집되면 Uri 형태로 결과가 반환됨
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            val result = CropImage.getActivityResult(data)
+
+            if (resultCode == Activity.RESULT_OK) {
+                val resultUri = result.uri
+                val bitmap =
+                        MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
+                itemImage = bitmapToFile(bitmap!!) // Uri
+                binding.imageViewItemImage.setImageURI(itemImage)
+
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Log.e("Error Image Selecting", "이미지 선택 및 편집 오류")
+            }
+        }
+    }
+
+    /**
+     * Bitmap 이미지를 Local 에 저장하고, URI 를 반환함
+     **/
+    private fun bitmapToFile(bitmap: Bitmap): Uri {
+        val wrapper = ContextWrapper(this)
+        val randomNumber = Random.nextInt(0, 1000000000).toString()
+        // Bitmap 파일 저장을 위한 File 객체
+        var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
+        file = File(file, "item_${randomNumber}.jpg")
+        try {
+            // Bitmap 파일을 JPEG 형태로 압축해서 출력
+            val stream: OutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            stream.flush()
+            stream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Log.e("Error Saving Image", e.message!!)
+        }
+        return Uri.parse(file.absolutePath)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_add)
+
     }
 
     /**

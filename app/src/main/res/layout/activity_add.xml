@@ -223,5 +223,10 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
+    <data>
+        <variable
+            name="viewModel"
+            type="com.haero_kim.pickmeup.ui.ItemViewModel" />
+    </data>
 
 </layout>
