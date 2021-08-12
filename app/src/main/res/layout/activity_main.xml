@@ -62,7 +62,7 @@
                             android:gravity="center"
                             android:onClick="@{() -> viewModel.onClickSetFilterLatest()}"
                             android:text="@string/filter_latest"
-                            android:textColor="@{viewModel.isSortedByLatest()?ContextCompat.getColor(viewModel.application, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
+                            android:textColor="@{viewModel.isSortedByLatest()?ContextCompat.getColor(context, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
                             android:textSize="14sp"
                             android:textStyle='@{viewModel.isSortedByLatest()?"bold":"normal"}' />
 
@@ -76,7 +76,7 @@
                             android:gravity="center"
                             android:onClick="@{() -> viewModel.onClickSetFilterPriority()}"
                             android:text="@string/filter_priority"
-                            android:textColor="@{viewModel.isSortedByPriority()?ContextCompat.getColor(viewModel.application, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
+                            android:textColor="@{viewModel.isSortedByPriority()?ContextCompat.getColor(context, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
                             android:textSize="14sp"
                             android:textStyle='@{viewModel.isSortedByPriority()?"bold":"normal"}' />
 
@@ -91,7 +91,7 @@
                             android:gravity="center"
                             android:onClick="@{() -> viewModel.onClickSetFilterPrice()}"
                             android:text="@string/filter_price"
-                            android:textColor="@{viewModel.isSortedByPrice()?ContextCompat.getColor(viewModel.application, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
+                            android:textColor="@{viewModel.isSortedByPrice()?ContextCompat.getColor(context, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
                             android:textSize="14sp"
                             android:textStyle='@{viewModel.isSortedByPrice()?"bold":"normal"}' />
                     </RelativeLayout>

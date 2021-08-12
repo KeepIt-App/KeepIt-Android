@@ -4,15 +4,14 @@ import android.text.TextUtils
 import androidx.arch.core.util.Function
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
-import com.haero_kim.pickmeup.MyApplication
 import com.haero_kim.pickmeup.base.BaseViewModel
 import com.haero_kim.pickmeup.data.ItemEntity
+import com.haero_kim.pickmeup.data.ItemRepository
 
 
-class ItemViewModel: BaseViewModel() {
+class ItemViewModel(private val repository: ItemRepository): BaseViewModel() {
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
-    private val repository = MyApplication.getRepository()
 
     // Data Binding 을 위한 Boolean 변수들 (TextStyle, TextColor 지정에 필요)
     var isSortedByLatest: ObservableField<Boolean> = ObservableField<Boolean>(true)

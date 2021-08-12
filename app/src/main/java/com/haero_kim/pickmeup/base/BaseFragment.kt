@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import com.team_gdb.pentatonic.util.ViewUtil
+import com.haero_kim.pickmeup.util.ViewUtil
 
 abstract class BaseFragment<T : ViewDataBinding, R : BaseViewModel> : Fragment() {
 

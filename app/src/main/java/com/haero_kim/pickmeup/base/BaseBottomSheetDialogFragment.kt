@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.team_gdb.pentatonic.util.ViewUtil
+import com.haero_kim.pickmeup.util.ViewUtil
 
 abstract class BaseBottomSheetDialogFragment<T : ViewDataBinding, R : BaseViewModel> :
     BottomSheetDialogFragment(){

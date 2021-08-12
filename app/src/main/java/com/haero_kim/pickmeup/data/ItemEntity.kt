@@ -1,7 +1,5 @@
 package com.haero_kim.pickmeup.data
 
-import android.os.Parcel
-import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -31,6 +29,4 @@ data class ItemEntity(
         @ColumnInfo(name = "memo")
         var memo: String
 
-) : Serializable {
-    constructor() : this(null, "", "", 0, "", 1, "")
-}
+) : Serializable

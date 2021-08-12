@@ -6,14 +6,8 @@ import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.work.WorkManager
 import com.daimajia.androidanimations.library.Techniques
@@ -30,7 +24,6 @@ import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_LATEST
 import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_PRICE
 import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_PRIORITY
 import com.jakewharton.rxbinding4.widget.textChanges
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -48,47 +41,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
     private lateinit var itemListAdapter: ItemListAdapter
 
     override fun initStartView() {
-    }
-
-    override fun initDataBinding() {
-        /**
-         * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
-         * 받아온 LiveData 를 적절히 정렬(가공) 하여 RecyclerView Adapter 에 적용
-         */
-        viewModel.getAll().observe(this, Observer
-        { list ->
-            if (list.isEmpty()) {
-                binding.noticeEmptyList.visibility = View.VISIBLE
-            } else {
-                binding.noticeEmptyList.visibility = View.GONE
-            }
-            itemList = list
-
-            // 필터에 따라 정렬된 리스트를 어댑터로 보낼 것
-            viewModel.sortFilter.observe(this, Observer { filter ->
-                when (filter) {
-                    SORT_BY_LATEST -> {
-                        itemListAdapter.setItems(sortByLatest(itemList))
-                    }
-                    SORT_BY_PRIORITY -> {
-                        itemListAdapter.setItems(sortByPriority(itemList))
-                    }
-                    SORT_BY_PRICE -> {
-                        itemListAdapter.setItems(sortByPrice(itemList))
-                    }
-                }
-            })
-        })
-    }
-
-    override fun initAfterBinding() {
-        // Button 애니메이션 (효과)
-        YoYo.with(Techniques.ZoomIn)
-            .duration(400)
-            .playOn(binding.shareButton)
-
-        // Android 8.0 이상 기기일 경우 NotificationChannel 인스턴스를 시스템에 등록
-        createNotificationChannel()
+        binding.viewModel = viewModel
 
         // RecyclerView Adapter
         itemListAdapter = ItemListAdapter(
@@ -104,10 +57,50 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
             })
 
         binding.recyclerView.apply {
-            this.adapter = adapter
+            this.adapter = itemListAdapter
             this.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             this.setHasFixedSize(true)
         }
+    }
+
+    override fun initDataBinding() {
+        /**
+         * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
+         * 받아온 LiveData 를 적절히 정렬(가공) 하여 RecyclerView Adapter 에 적용
+         */
+        viewModel.getAll().observe(this) { list ->
+            if (list.isEmpty()) {
+                binding.noticeEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.noticeEmptyList.visibility = View.GONE
+            }
+            itemList = list
+
+            // 필터에 따라 정렬된 리스트를 어댑터로 보낼 것
+            viewModel.sortFilter.observe(this) { filter ->
+                when (filter) {
+                    SORT_BY_LATEST -> {
+                        itemListAdapter.setItems(sortByLatest(itemList))
+                    }
+                    SORT_BY_PRIORITY -> {
+                        itemListAdapter.setItems(sortByPriority(itemList))
+                    }
+                    SORT_BY_PRICE -> {
+                        itemListAdapter.setItems(sortByPrice(itemList))
+                    }
+                }
+            }
+        }
+    }
+
+    override fun initAfterBinding() {
+        // Button 애니메이션 (효과)
+        YoYo.with(Techniques.ZoomIn)
+            .duration(400)
+            .playOn(binding.shareButton)
+
+        // Android 8.0 이상 기기일 경우 NotificationChannel 인스턴스를 시스템에 등록
+        createNotificationChannel()
 
         // iOS 스타일의 리사이클러뷰 오버스크롤 바운스 효과 적용
         OverScrollDecoratorHelper.setUpOverScroll(
@@ -141,16 +134,16 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
                     // 구독을 통해 이벤트 응답 처리
                     .subscribeBy(
                         onNext = {
-                            Log.d("Rx", "onNext : $it")
+                            Timber.d("onNext : $it")
                             runOnUiThread {
                                 viewModel.onChangeQuery(searchQuery = it.toString())
                             }
                         },
                         onComplete = {
-                            Log.d("Rx", "onComplete")
+                            Timber.d("onComplete")
                         },
                         onError = {
-                            Log.d("Rx", "onError : $it")
+                            Timber.i("onError : $it")
                         }
                     )
             // CompositeDisposable 에 추가
@@ -197,7 +190,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
     }
 
     companion object {
-        const val TAG = "MainActivity"
         const val CHANNEL_ID = "NOTIFICATION_CHANNEL"
         const val notificationId = 5603
     }
@@ -215,9 +207,9 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
 
             // 클립보드에 아무것도 없거나 PlainText 가 아닌 데이터가 들어있을 경우 예외처리
             if (!clipboard.hasPrimaryClip()) {
-                Timber.d( "클립보드 비어있음")
+                Timber.d("클립보드 비어있음")
             } else if ((clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN)) == false) {
-                Timber.d( "생성은 됐는데 텍스트가 아님")
+                Timber.d("생성은 됐는데 텍스트가 아님")
             } else {
                 // 클립보드에 PlainText 가 담겨있어 데이터를 가져올 수 있는 경우
                 val itemLink =
@@ -231,7 +223,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
                                 true
                             ) && !pasteData.contentEquals(prefs.latestCanceledLink as CharSequence)
                         ) {
-                            Timber.d( "쇼핑몰 링크 감지 : ${link.value}")
+                            Timber.d("쇼핑몰 링크 감지 : ${link.value}")
                             showItemRegisterPopup(itemLink, link.value)
                         }
                     }
