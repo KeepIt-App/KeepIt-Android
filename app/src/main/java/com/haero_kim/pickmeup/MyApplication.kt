@@ -43,7 +43,6 @@ class MyApplication : Application() {
         super.onCreate()
 
         startKoin {
-            androidLogger()
             androidContext(this@MyApplication)
             androidFileProperties()
             modules(listOf(repositoryModule, viewModelModule))

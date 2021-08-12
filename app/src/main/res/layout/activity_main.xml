@@ -147,7 +147,7 @@
                         android:layout_marginHorizontal="8dp"
                         android:clipToPadding="false"
                         android:paddingBottom="150dp"
-                        tools:listitem="@layout/recycler_item" />
+                        tools:listitem="@layout/item_list" />
 
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
