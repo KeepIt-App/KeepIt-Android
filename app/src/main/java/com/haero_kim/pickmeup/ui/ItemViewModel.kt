@@ -1,15 +1,15 @@
 package com.haero_kim.pickmeup.ui
 
-import android.app.Application
 import android.text.TextUtils
 import androidx.arch.core.util.Function
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
 import com.haero_kim.pickmeup.MyApplication
+import com.haero_kim.pickmeup.base.BaseViewModel
 import com.haero_kim.pickmeup.data.ItemEntity
 
 
-class ItemViewModel(application: Application) : AndroidViewModel(application) {
+class ItemViewModel: BaseViewModel() {
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val repository = MyApplication.getRepository()

@@ -112,4 +112,7 @@ dependencies {
 
     // Open Graph Tag Parser
     implementation 'com.github.anandwana001:ogTagParser:1.0.1'
+
+    // Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }

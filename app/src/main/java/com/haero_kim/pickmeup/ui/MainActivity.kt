@@ -21,6 +21,7 @@ import com.daimajia.androidanimations.library.YoYo
 import com.haero_kim.pickmeup.MyApplication.Companion.prefs
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.adapter.ItemListAdapter
+import com.haero_kim.pickmeup.base.BaseActivity
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityMainBinding
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
@@ -35,30 +36,52 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
+    override val layoutResourceId: Int
+        get() = R.layout.activity_main
+    override val viewModel: ItemViewModel by viewModel()
 
-    // Koin 모듈을 활용한 ViewModel 인스턴스 생성
-    private val itemViewModel: ItemViewModel by viewModel()
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var itemList: List<ItemEntity>  // 픽미업 아이템 리스트
+    private lateinit var itemListAdapter: ItemListAdapter
 
-    // Disposable 을 모두 한번에 관리하는 CompositeDisposable
-    // 옵저버블 통합 제거를 위해 사용 (메모리 릭 방지하기 위해 onDestroy() 에서 clear() 필요)
-    private var compositeDisposable = CompositeDisposable()
+    override fun initStartView() {
+    }
 
-    private lateinit var itemList: List<ItemEntity>
+    override fun initDataBinding() {
+        /**
+         * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
+         * 받아온 LiveData 를 적절히 정렬(가공) 하여 RecyclerView Adapter 에 적용
+         */
+        viewModel.getAll().observe(this, Observer
+        { list ->
+            if (list.isEmpty()) {
+                binding.noticeEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.noticeEmptyList.visibility = View.GONE
+            }
+            itemList = list
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+            // 필터에 따라 정렬된 리스트를 어댑터로 보낼 것
+            viewModel.sortFilter.observe(this, Observer { filter ->
+                when (filter) {
+                    SORT_BY_LATEST -> {
+                        itemListAdapter.setItems(sortByLatest(itemList))
+                    }
+                    SORT_BY_PRIORITY -> {
+                        itemListAdapter.setItems(sortByPriority(itemList))
+                    }
+                    SORT_BY_PRICE -> {
+                        itemListAdapter.setItems(sortByPrice(itemList))
+                    }
+                }
+            })
+        })
+    }
 
-        // DataBinding
-        binding = DataBindingUtil.setContentView<ActivityMainBinding>(
-            this,
-            R.layout.activity_main
-        )
-        binding.viewModel = itemViewModel
-
+    override fun initAfterBinding() {
         // Button 애니메이션 (효과)
         YoYo.with(Techniques.ZoomIn)
             .duration(400)
@@ -68,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         createNotificationChannel()
 
         // RecyclerView Adapter
-        val adapter = ItemListAdapter(
+        itemListAdapter = ItemListAdapter(
             // OnClickListener
             {
                 val intent = Intent(this, ItemDetailActivity::class.java)
@@ -120,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                         onNext = {
                             Log.d("Rx", "onNext : $it")
                             runOnUiThread {
-                                itemViewModel.onChangeQuery(searchQuery = it.toString())
+                                viewModel.onChangeQuery(searchQuery = it.toString())
                             }
                         },
                         onComplete = {
@@ -131,37 +154,8 @@ class MainActivity : AppCompatActivity() {
                         }
                     )
             // CompositeDisposable 에 추가
-            compositeDisposable.add(searchEditTextSubscription)
+            addDisposable(searchEditTextSubscription)
         }
-
-        /**
-         * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
-         * 받아온 LiveData 를 적절히 정렬(가공) 하여 RecyclerView Adapter 에 적용
-         */
-        itemViewModel.getAll().observe(this, Observer
-        { list ->
-            if (list.isEmpty()) {
-                binding.noticeEmptyList.visibility = View.VISIBLE
-            } else {
-                binding.noticeEmptyList.visibility = View.GONE
-            }
-            itemList = list
-
-            // 필터에 따라 정렬된 리스트를 어댑터로 보낼 것
-            itemViewModel.sortFilter.observe(this, Observer { filter ->
-                when (filter) {
-                    SORT_BY_LATEST -> {
-                        adapter.setItems(sortByLatest(itemList))
-                    }
-                    SORT_BY_PRIORITY -> {
-                        adapter.setItems(sortByPriority(itemList))
-                    }
-                    SORT_BY_PRICE -> {
-                        adapter.setItems(sortByPrice(itemList))
-                    }
-                }
-            })
-        })
 
         // ClearButton 눌렀을 때
         binding.textClearButton.setOnClickListener {
@@ -178,14 +172,14 @@ class MainActivity : AppCompatActivity() {
         binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.search -> {
-                    val isSearchMode = itemViewModel.isSearchMode.get()!!
+                    val isSearchMode = viewModel.isSearchMode.get()!!
 
                     YoYo.with(Techniques.FadeInLeft)
                         .duration(400)
                         .playOn(binding.searchViewLayout)
 
                     // 검색 버튼 눌렀을 때마다 모드 전환
-                    itemViewModel.isSearchMode.set(!isSearchMode)
+                    viewModel.isSearchMode.set(!isSearchMode)
                     true
                 }
                 R.id.delete -> {
@@ -221,9 +215,9 @@ class MainActivity : AppCompatActivity() {
 
             // 클립보드에 아무것도 없거나 PlainText 가 아닌 데이터가 들어있을 경우 예외처리
             if (!clipboard.hasPrimaryClip()) {
-                Log.d(TAG, "클립보드 비어있음")
+                Timber.d( "클립보드 비어있음")
             } else if ((clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN)) == false) {
-                Log.d(TAG, "생성은 됐는데 텍스트가 아님")
+                Timber.d( "생성은 됐는데 텍스트가 아님")
             } else {
                 // 클립보드에 PlainText 가 담겨있어 데이터를 가져올 수 있는 경우
                 val itemLink =
@@ -237,7 +231,7 @@ class MainActivity : AppCompatActivity() {
                                 true
                             ) && !pasteData.contentEquals(prefs.latestCanceledLink as CharSequence)
                         ) {
-                            Log.d(TAG, "쇼핑몰 링크 감지 : ${link.value}")
+                            Timber.d( "쇼핑몰 링크 감지 : ${link.value}")
                             showItemRegisterPopup(itemLink, link.value)
                         }
                     }
@@ -301,7 +295,7 @@ class MainActivity : AppCompatActivity() {
             this.setMessage("삭제하시겠습니까?")
             this.setNegativeButton("NO") { _, _ -> }
             this.setPositiveButton("YES") { _, _ ->
-                itemViewModel.delete(item)
+                viewModel.delete(item)
                 val workManager: WorkManager = WorkManager.getInstance(context)
                 // WorkRequest 등록 시, 아이템 명으로 고유 태그를 달아줬기 때문에
                 // 아래와 같이 item.name 을 통해 주기적인 푸시알림 작업을 취소할 수 있음
@@ -315,24 +309,16 @@ class MainActivity : AppCompatActivity() {
      * Android 8.0 이상에서 알림을 제공하려면 Notification Channel 등록해야함
      */
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_name)
-            val descriptionText = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        val name = getString(R.string.channel_name)
+        val descriptionText = getString(R.string.channel_description)
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
         }
-    }
 
-    override fun onDestroy() {
-        // MemoryLeak 방지를 위해 CompositeDisposable 해제
-        this.compositeDisposable.clear()
-        super.onDestroy()
+        // Register the channel with the system
+        val notificationManager: NotificationManager =
+            getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 }

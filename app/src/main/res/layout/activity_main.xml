@@ -237,15 +237,10 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <data>
-
         <import type="android.view.View" />
-
         <import type="androidx.core.content.ContextCompat" />
-
         <import type="android.graphics.Typeface" />
-
         <import type="com.haero_kim.pickmeup.R" />
-
         <import type="android.app.Application" />
 
         <variable
