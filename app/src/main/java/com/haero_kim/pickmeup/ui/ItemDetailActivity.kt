@@ -54,6 +54,7 @@ class ItemDetailActivity : AppCompatActivity() {
             binding.noItemLinkLayout.visibility = View.VISIBLE
             binding.itemLinkLayout.visibility = View.GONE  // URL 썸네일 레이아웃 숨김
         } else {
+            binding.noItemLinkLayout.visibility = View.GONE
             when {
                 Patterns.WEB_URL.matcher(item.link).matches() -> {
                     var itemLink = item.link

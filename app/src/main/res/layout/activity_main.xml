@@ -231,6 +231,7 @@
             android:id="@+id/shareButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:backgroundTint="@color/fab_color"
             android:contentDescription="@string/add_item"
             app:layout_anchor="@+id/bottomAppBar"
             app:srcCompat="@drawable/ic_baseline_add_24" />
