@@ -3,6 +3,9 @@ package com.haero_kim.pickmeup.data
 import android.app.Application
 import androidx.lifecycle.LiveData
 import com.haero_kim.pickmeup.MyApplication
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class ItemRepository(application: Application) {
@@ -31,13 +34,11 @@ class ItemRepository(application: Application) {
     }
 
     // Room DB 를 메인 쓰레드에서 접근하게 되면 크래쉬 발생 우려
-    // - 따라서 별도의 Thread 를 생성하여 접근하는 것이 좋음
     fun insert(itemEntity: ItemEntity) {
         try {
-            val thread = Thread {
+            CoroutineScope(Dispatchers.IO).launch {
                 itemDao.insert(itemEntity)
             }
-            thread.start()
         } catch (e: Exception) {
 
         }
@@ -45,10 +46,9 @@ class ItemRepository(application: Application) {
 
     fun delete(itemEntity: ItemEntity) {
         try {
-            val thread = Thread {
+            CoroutineScope(Dispatchers.IO).launch {
                 itemDao.delete(itemEntity)
             }
-            thread.start()
         } catch (e: Exception) {
 
         }

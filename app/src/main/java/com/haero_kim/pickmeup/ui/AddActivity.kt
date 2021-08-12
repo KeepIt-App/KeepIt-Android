@@ -1,4 +1,4 @@
-package com.haero_kim.pickmeup.view
+package com.haero_kim.pickmeup.ui
 
 import android.app.Activity
 import android.content.Context
@@ -27,9 +27,8 @@ import com.anandwana001.ogtagparser.OgTagParser
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityAddBinding
-import com.haero_kim.pickmeup.view.ItemDetailActivity.Companion.EXTRA_ITEM
+import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
-import com.haero_kim.pickmeup.viewmodel.ItemViewModel
 import com.haero_kim.pickmeup.worker.NotificationWorker
 import com.haero_kim.pickmeup.worker.NotificationWorker.Companion.ITEM_NAME
 import com.theartofdev.edmodo.cropper.CropImage
@@ -217,8 +216,6 @@ class AddActivity : AppCompatActivity() {
             itemMemo = binding.editTextItemMemo.text.toString().trim()
 
             // Valid Check
-            // TODO : 코드가 비효율적으로 보이지만, 이렇게 해야 두 EditText 가 모두 비었을 때 둘 다 에러가 적용된다. (더 나은 방법 탐색 필요)
-            //  setErrorOnEditText() 는 해당 EditText 에 특정 Error 를 뿌려줌
             if (itemName.isEmpty() || itemPrice.isEmpty()) {
                 if (itemName.isEmpty()) {
                     setErrorOnEditText(

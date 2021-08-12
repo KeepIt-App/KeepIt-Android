@@ -1,4 +1,4 @@
-package com.haero_kim.pickmeup.viewmodel
+package com.haero_kim.pickmeup.ui
 
 import android.app.Application
 import android.text.TextUtils

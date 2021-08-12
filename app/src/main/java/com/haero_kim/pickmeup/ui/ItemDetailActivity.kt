@@ -1,4 +1,4 @@
-package com.haero_kim.pickmeup.view
+package com.haero_kim.pickmeup.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -19,8 +19,7 @@ import com.bumptech.glide.Glide
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityItemDetailBinding
-import com.haero_kim.pickmeup.view.AddActivity.Companion.EDIT_ITEM
-import com.haero_kim.pickmeup.viewmodel.ItemViewModel
+import com.haero_kim.pickmeup.ui.AddActivity.Companion.EDIT_ITEM
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DecimalFormat
 

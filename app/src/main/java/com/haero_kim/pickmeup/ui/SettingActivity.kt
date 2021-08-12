@@ -1,4 +1,4 @@
-package com.haero_kim.pickmeup.view
+package com.haero_kim.pickmeup.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

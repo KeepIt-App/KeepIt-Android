@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background"
-        tools:context=".view.MainActivity">
+        tools:context=".ui.MainActivity">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -250,7 +250,7 @@
 
         <variable
             name="viewModel"
-            type="com.haero_kim.pickmeup.viewmodel.ItemViewModel" />
+            type="com.haero_kim.pickmeup.ui.ItemViewModel" />
     </data>
 
 

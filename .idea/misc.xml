@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.36018518518518516" />
+        <entry key="app/src/main/res/layout-v28/activity_setting.xml" value="0.21217105263157895" />
+        <entry key="app/src/main/res/layout/activity_setting.xml" value="0.10423400129282483" />
+        <entry key="app/src/main/res/layout/recycler_item.xml" value="0.10423400129282483" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

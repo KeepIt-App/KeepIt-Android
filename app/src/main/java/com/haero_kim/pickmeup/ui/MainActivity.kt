@@ -1,4 +1,4 @@
-package com.haero_kim.pickmeup.view
+package com.haero_kim.pickmeup.ui
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -23,12 +23,11 @@ import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.adapter.ItemListAdapter
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityMainBinding
-import com.haero_kim.pickmeup.view.ItemDetailActivity.Companion.EXTRA_ITEM
+import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.util.ShoppingMallList
-import com.haero_kim.pickmeup.viewmodel.ItemViewModel
-import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_LATEST
-import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_PRICE
-import com.haero_kim.pickmeup.viewmodel.ItemViewModel.Companion.SORT_BY_PRIORITY
+import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_LATEST
+import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_PRICE
+import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_PRIORITY
 import com.jakewharton.rxbinding4.widget.textChanges
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
