@@ -42,16 +42,16 @@ import java.text.DecimalFormat
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
-private var itemName: String = ""
-private var itemLink: String = ""
-private var itemPrice: String = ""
-private var itemPriority: Int = 0
-private var itemMemo: String = ""
-
 class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
     override val layoutResourceId: Int
         get() = R.layout.activity_add
     override val viewModel: ItemViewModel by viewModel()
+
+    private var itemName: String = ""
+    private var itemLink: String = ""
+    private var itemPrice: String = ""
+    private var itemPriority: Int = 0
+    private var itemMemo: String = ""
 
     // 물건의 가격을 입력하는 EditText 에 화폐 단위 표시를 하기위한 DecimalFormat
     private val decimalFormat = DecimalFormat("#,###")
@@ -62,17 +62,13 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
 
     override fun initStartView() {
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner = this
     }
 
     override fun initDataBinding() {
     }
 
     override fun initAfterBinding() {
-
-        binding = ActivityAddBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
-
         /**
          * 아이템 편집 기능을 통해 인텐트 된 것이라면 기존 정보 삽입
          */
@@ -89,7 +85,7 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
             when {
                 Patterns.WEB_URL.matcher(itemLink).matches() -> {
                     // 만약 http 형식이 아니라면 앞에 'http://' 를 붙여줘야함 ==> ex) www.naver.com 과 같은 상황
-                    if (!URLUtil.isHttpsUrl(itemLink) and !URLUtil.isHttpUrl(itemLink)){
+                    if (!URLUtil.isHttpsUrl(itemLink) and !URLUtil.isHttpUrl(itemLink)) {
                         itemLink = "https://" + itemLink
                     }
                     // Open Graph 태그를 불러오는 라이브러리 사용
@@ -103,7 +99,7 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
                             val siteDescription = linkSourceContent.ogDescription
                             var siteThumbnail = linkSourceContent.images
 
-                            if (siteTitle.isNotBlank() or siteDescription.isNotBlank() or siteThumbnail.isNotBlank()){
+                            if (siteTitle.isNotBlank() or siteDescription.isNotBlank() or siteThumbnail.isNotBlank()) {
                                 if (siteThumbnail.startsWith("//")) {
                                     siteThumbnail = "https:" + siteThumbnail
                                 }
@@ -122,12 +118,13 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
                                 builder.create().show()
                             }
                         }
+
                         override fun onBeforeLoading() {
                             /* no-op */
                         }
                     })
                 }
-                else ->{
+                else -> {
                     binding.itemLinkLayout.setOnClickListener {
                         Toast.makeText(this, "올바르지 않은 URL 입니다", Toast.LENGTH_LONG).show()
                     }
@@ -142,8 +139,9 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (!s.isNullOrBlank() && s.toString() != formatPriceResult) {
-                    formatPriceResult = decimalFormat.format(s.toString().replace(",".toRegex(), "").toDouble())
-                    binding.editTextItemPrice.run{
+                    formatPriceResult =
+                        decimalFormat.format(s.toString().replace(",".toRegex(), "").toDouble())
+                    binding.editTextItemPrice.run {
                         setText(formatPriceResult)
                         setSelection(formatPriceResult.length)
                     }
@@ -251,7 +249,7 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
             if (resultCode == Activity.RESULT_OK) {
                 val resultUri = result.uri
                 val bitmap =
-                        MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
+                    MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
                 itemImage = bitmapToFile(bitmap!!) // Uri
                 binding.imageViewItemImage.setImageURI(itemImage)
 
@@ -301,7 +299,7 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
             val y = ev.y.toInt()
             if (!rect.contains(x, y)) {
                 val imm: InputMethodManager =
-                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(focusView.windowToken, 0)
                 focusView.clearFocus()
             }

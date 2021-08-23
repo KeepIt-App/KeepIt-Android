@@ -228,7 +228,7 @@
             app:navigationIcon="@drawable/ic_baseline_settings_24" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/shareButton"
+            android:id="@+id/addButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:backgroundTint="@color/fab_color"

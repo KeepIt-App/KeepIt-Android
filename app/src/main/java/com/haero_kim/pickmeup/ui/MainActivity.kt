@@ -6,6 +6,7 @@ import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -42,6 +43,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
 
     override fun initStartView() {
         binding.viewModel = viewModel
+
+        Log.d("Main", "여기부터야!, 이건 메인이긴 함")
 
         // RecyclerView Adapter
         itemListAdapter = ItemListAdapter(
@@ -97,7 +100,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
         // Button 애니메이션 (효과)
         YoYo.with(Techniques.ZoomIn)
             .duration(400)
-            .playOn(binding.shareButton)
+            .playOn(binding.addButton)
 
         // Android 8.0 이상 기기일 경우 NotificationChannel 인스턴스를 시스템에 등록
         createNotificationChannel()
@@ -183,7 +186,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
         }
 
         // addButton 눌렀을 때 진입
-        binding.shareButton.setOnClickListener {
+        binding.addButton.setOnClickListener {
             val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
         }
