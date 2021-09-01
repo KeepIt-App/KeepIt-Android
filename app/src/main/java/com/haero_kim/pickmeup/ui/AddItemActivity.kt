@@ -53,17 +53,15 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
     private var itemPrice: String = ""
     private var itemPriority: Int = 0
     private var itemMemo: String = ""
+    var itemId: Long? = null
+    private var itemImage: Uri? = null
 
     // 물건의 가격을 입력하는 EditText 에 화폐 단위 표시를 하기위한 DecimalFormat
     private val decimalFormat = DecimalFormat("#,###")
     private var formatPriceResult = ""
 
-    var itemId: Long? = null
-    private var itemImage: Uri? = null
-
     override fun initStartView() {
         binding.viewModel = this.viewModel
-
     }
 
     override fun initDataBinding() {
@@ -92,10 +90,6 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
                     // Open Graph 태그를 불러오는 라이브러리 사용
                     OgTagParser().execute(itemLink, object : LinkViewCallback {
                         override fun onAfterLoading(linkSourceContent: LinkSourceContent) {
-                            Log.d("TEST", linkSourceContent.ogTitle)
-                            Log.d("TEST", linkSourceContent.ogDescription)
-                            Log.d("TEST", linkSourceContent.images)
-
                             val siteTitle = linkSourceContent.ogTitle
                             val siteDescription = linkSourceContent.ogDescription
                             var siteThumbnail = linkSourceContent.images

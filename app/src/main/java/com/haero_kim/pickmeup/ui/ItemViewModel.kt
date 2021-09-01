@@ -9,7 +9,7 @@ import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.data.ItemRepository
 
 
-class ItemViewModel(private val repository: ItemRepository): BaseViewModel() {
+class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
@@ -18,14 +18,15 @@ class ItemViewModel(private val repository: ItemRepository): BaseViewModel() {
     var isSortedByPriority: ObservableField<Boolean> = ObservableField<Boolean>(false)
     var isSortedByPrice: ObservableField<Boolean> = ObservableField<Boolean>(false)
 
-    var sortFilter: MutableLiveData<Int> = MutableLiveData<Int>(1)
+    var sortFilter: MutableLiveData<Int> = MutableLiveData<Int>()
 
-    var isSearchMode: ObservableField<Boolean> = ObservableField<Boolean>(false)
+    var isSearchMode: MutableLiveData<Boolean> = MutableLiveData(false)
 
     /**
      * 현재 사용자가 선택한 필터에 따른 알맞은 리스트 반환
      */
-    fun getAll(): LiveData<List<ItemEntity>> = Transformations.switchMap<CharSequence?, List<ItemEntity>>(
+    fun getAll(): LiveData<List<ItemEntity>> =
+        Transformations.switchMap<CharSequence?, List<ItemEntity>>(
             savedStateHandle.getLiveData("QUERY", null),
             Function<CharSequence?, LiveData<List<ItemEntity>>> { query: CharSequence? ->
                 if (TextUtils.isEmpty(query)) {
@@ -34,7 +35,7 @@ class ItemViewModel(private val repository: ItemRepository): BaseViewModel() {
                     return@Function repository.searchItem("*$query*")
                 }
             }
-    )
+        )
 
     fun onChangeQuery(searchQuery: String) {
         setQuery(searchQuery)

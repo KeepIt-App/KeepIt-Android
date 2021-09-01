@@ -23,7 +23,9 @@ import com.haero_kim.pickmeup.util.ShoppingMallList
 import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_LATEST
 import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_PRICE
 import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_PRIORITY
+import com.jakewharton.rxbinding4.widget.textChanges
 import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -40,9 +42,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
 
     override fun initStartView() {
         binding.viewModel = this.viewModel
-
-        Timber.d("여기부터야!, 이건 메인이긴 함")
-
         // RecyclerView Adapter
         itemListAdapter = ItemListAdapter(
             // OnClickListener
@@ -75,19 +74,20 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
                 binding.noticeEmptyList.visibility = View.GONE
             }
             itemList = list
+            itemListAdapter.setItems(itemList)
+        }
 
-            // 필터에 따라 정렬된 리스트를 어댑터로 보낼 것
-            viewModel.sortFilter.observe(this) { filter ->
-                when (filter) {
-                    SORT_BY_LATEST -> {
-                        itemListAdapter.setItems(sortByLatest(itemList))
-                    }
-                    SORT_BY_PRIORITY -> {
-                        itemListAdapter.setItems(sortByPriority(itemList))
-                    }
-                    SORT_BY_PRICE -> {
-                        itemListAdapter.setItems(sortByPrice(itemList))
-                    }
+        // 필터에 따라 정렬된 리스트를 어댑터로 보낼 것
+        viewModel.sortFilter.observe(this) { filter ->
+            when (filter) {
+                SORT_BY_LATEST -> {
+                    itemListAdapter.setItems(sortByLatest(itemList))
+                }
+                SORT_BY_PRIORITY -> {
+                    itemListAdapter.setItems(sortByPriority(itemList))
+                }
+                SORT_BY_PRICE -> {
+                    itemListAdapter.setItems(sortByPrice(itemList))
                 }
             }
         }
@@ -108,10 +108,51 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
             OverScrollDecoratorHelper.ORIENTATION_VERTICAL
         )
 
-        /**
-         * EditText 에 RxJava (feat. RxBinding, RxKotlin) 을 적용하여
-         * 사용자의 검색 Query 에 즉각적으로 LiveData 가 변경될 수 있도록 함 (Debounce 를 적용하여 리소스 낭비 방지)
-         */
+        // EditText 에 RxBinding 이용하여 디바운스 적용
+        setDebounceOnEditText()
+
+        // ClearButton 눌렀을 때
+        binding.textClearButton.setOnClickListener {
+            binding.searchView.text.clear()
+        }
+
+        // BottomAppBar - 설정 버튼 눌렀을 때
+        binding.bottomAppBar.setNavigationOnClickListener {
+            val intent = Intent(this, SettingActivity::class.java)
+            startActivity(intent)
+        }
+
+        // BottomAppBar - 검색, 필터 버튼 눌렀을 때
+        binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.search -> {
+                    YoYo.with(Techniques.FadeInLeft)
+                        .duration(400)
+                        .playOn(binding.searchViewLayout)
+                    val isSearchMode = viewModel.isSearchMode.value
+                    // 검색 버튼 눌렀을 때마다 모드 전환
+                    viewModel.isSearchMode.postValue(!isSearchMode!!)
+                    true
+                }
+                R.id.delete -> {
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // addButton 눌렀을 때 진입
+        binding.addButton.setOnClickListener {
+            val intent = Intent(this, AddItemActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    /**
+     * EditText 에 RxJava (feat. RxBinding, RxKotlin) 을 적용하여
+     * 사용자의 검색 Query 에 즉각적으로 LiveData 가 변경될 수 있도록 함 (Debounce 를 적용하여 쿼리 낭비 방지)
+     */
+    private fun setDebounceOnEditText() {
         binding.searchView.apply {
             this.hint = "검색어를 입력해주세요"
 
@@ -148,44 +189,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
                     )
             // CompositeDisposable 에 추가
             addDisposable(searchEditTextSubscription)
-        }
-
-        // ClearButton 눌렀을 때
-        binding.textClearButton.setOnClickListener {
-            binding.searchView.text.clear()
-        }
-
-        // BottomAppBar - 설정 버튼 눌렀을 때
-        binding.bottomAppBar.setNavigationOnClickListener {
-            val intent = Intent(this, SettingActivity::class.java)
-            startActivity(intent)
-        }
-
-        // BottomAppBar - 검색, 필터 버튼 눌렀을 때
-        binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.search -> {
-                    val isSearchMode = viewModel.isSearchMode.get()!!
-
-                    YoYo.with(Techniques.FadeInLeft)
-                        .duration(400)
-                        .playOn(binding.searchViewLayout)
-
-                    // 검색 버튼 눌렀을 때마다 모드 전환
-                    viewModel.isSearchMode.set(!isSearchMode)
-                    true
-                }
-                R.id.delete -> {
-                    true
-                }
-                else -> false
-            }
-        }
-
-        // addButton 눌렀을 때 진입
-        binding.addButton.setOnClickListener {
-            val intent = Intent(this, AddItemActivity::class.java)
-            startActivity(intent)
         }
     }
 
@@ -264,7 +267,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
     /**
      * 필터에 따른 각종 정렬 메소드 (등록 순, 중요도 순, 가격 순)
      */
-
     private fun sortByLatest(itemList: List<ItemEntity>): List<ItemEntity> {
         return itemList.sortedByDescending { it.id }
     }
