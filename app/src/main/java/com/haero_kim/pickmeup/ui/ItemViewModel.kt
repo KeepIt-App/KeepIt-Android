@@ -26,7 +26,7 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
 
     var sortFilter: MutableLiveData<Int> = MutableLiveData<Int>()
 
-    var isSearchMode: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isSearchMode: ObservableField<Boolean> = ObservableField(false)
 
     val itemName: MutableLiveData<String> = MutableLiveData()
     val itemLink: MutableLiveData<String> = MutableLiveData()

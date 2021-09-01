@@ -31,7 +31,6 @@ import com.haero_kim.pickmeup.databinding.ActivityAddItemBinding
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
 import com.haero_kim.pickmeup.worker.NotificationWorker
-import com.haero_kim.pickmeup.worker.NotificationWorker.Companion.ITEM_NAME
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -57,6 +56,7 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
 
     override fun initStartView() {
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner = this
     }
 
     override fun initDataBinding() {
@@ -102,70 +102,11 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
          * 링크 자동 인식 기능을 통해 들어온 것이라면 링크 정보 적용
          */
         if (intent != null && intent.hasExtra(AUTO_ITEM)) {
-            var itemLink = intent.getStringExtra(AUTO_ITEM) ?: ""
-            binding.editTextItemLink.setText(itemLink)
-            when {
-                Patterns.WEB_URL.matcher(itemLink).matches() -> {
-                    // 만약 http 형식이 아니라면 앞에 'http://' 를 붙여줘야함 ==> ex) www.naver.com 과 같은 상황
-                    if (!URLUtil.isHttpsUrl(itemLink) and !URLUtil.isHttpUrl(itemLink)) {
-                        itemLink = "https://" + itemLink
-                    }
-                    // Open Graph 태그를 불러오는 라이브러리 사용
-                    OgTagParser().execute(itemLink, object : LinkViewCallback {
-                        override fun onAfterLoading(linkSourceContent: LinkSourceContent) {
-                            val siteTitle = linkSourceContent.ogTitle
-                            val siteDescription = linkSourceContent.ogDescription
-                            var siteThumbnail = linkSourceContent.images
-
-                            if (siteTitle.isNotBlank() or siteDescription.isNotBlank() or siteThumbnail.isNotBlank()) {
-                                if (siteThumbnail.startsWith("//")) {
-                                    siteThumbnail = "https:" + siteThumbnail
-                                }
-
-                                val builder = AlertDialog.Builder(this@AddItemActivity)
-                                builder.setMessage("사이트에서 발견한 콘텐츠가 있습니다. 적용하시겠습니까?")
-                                    .setTitle("정보 자동 채우기")
-                                    .setPositiveButton("네") { dialog, id ->
-                                        // Open Graph 를 통해 가져온 정보를 기반으로 레이아웃 적용
-                                        binding.editTextItemName.setText(siteTitle)
-                                        binding.editTextItemMemo.setText(siteDescription)
-                                    }
-                                    .setNegativeButton("아니요") { dialog, id ->
-                                        /* no-op */
-                                    }
-                                builder.create().show()
-                            }
-                        }
-
-                        override fun onBeforeLoading() {
-                            /* no-op */
-                        }
-                    })
-                }
-                else -> {
-                    binding.itemLinkLayout.setOnClickListener {
-                        Toast.makeText(this, "올바르지 않은 URL 입니다", Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
+            applyAutoFillForm()
         }
 
         // 가격을 입력하는 EditText 가, 가격 단위에 맞게 ',' 를 자동으로 삽입해주는 동작을 하기 위해 TextWatcher 붙여줌
-        binding.editTextItemPrice.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (!s.isNullOrBlank() && s.toString() != formatPriceResult) {
-                    formatPriceResult =
-                        decimalFormat.format(s.toString().replace(",".toRegex(), "").toDouble())
-                    binding.editTextItemPrice.run {
-                        setText(formatPriceResult)
-                        setSelection(formatPriceResult.length)
-                    }
-                }
-            }
-        })
+        binding.editTextItemPrice.addTextChangedListener(applyPriceFormat)
 
         // ImageView 를 눌렀을 때 이미지 추가 액티비티로 이동
         binding.imageViewItemImage.setOnClickListener {
@@ -184,35 +125,29 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
 
         // 작성 완료 버튼을 눌렀을 때
         binding.completeButton.setOnClickListener {
-            val itemImage = itemImage.toString()  // Uri 를 String 으로 변환한 형태
-            // Valid Check
-            when {
-                viewModel.itemName.value!!.isEmpty() -> {
-                    setErrorOnEditText(
-                        binding.editTextItemName,
-                        resources.getText(R.string.itemNameError)
-                    )
-                }
-                viewModel.itemPrice.value!!.isEmpty() -> {
-                    setErrorOnEditText(
-                        binding.editTextItemPrice,
-                        resources.getText(R.string.itemPriceError)
-                    )
-                }
-                else -> {
-                    val builder = AlertDialog.Builder(this)
-                    builder.apply {
-                        this.setMessage(resources.getText(R.string.completeDialog))
-                        this.setNegativeButton("NO") { _, _ -> }
-                        this.setPositiveButton("YES") { _, _ ->
-                            viewModel.addItem(itemImage)
-                        }
-                    }
-                    builder.show()
+            checkFormAndAddItem()
+        }
+    }
+
+    /**
+     * 화폐 단위를 자동으로 매겨주는 TextWatcher
+     */
+    private val applyPriceFormat = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun afterTextChanged(s: Editable?) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (!s.isNullOrBlank() && s.toString() != formatPriceResult) {
+                formatPriceResult =
+                    decimalFormat.format(s.toString().replace(",".toRegex(), "").toDouble())
+                binding.editTextItemPrice.run {
+                    setText(formatPriceResult)
+                    setSelection(formatPriceResult.length)
                 }
             }
         }
     }
+
 
     /**
      * 사용자가 이미지 선택을 완료하면 실행됨
@@ -259,6 +194,56 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
         return Uri.parse(file.absolutePath)
     }
 
+    private fun applyAutoFillForm() {
+        var itemLink = intent.getStringExtra(AUTO_ITEM) ?: ""
+        binding.editTextItemLink.setText(itemLink)
+        when {
+            Patterns.WEB_URL.matcher(itemLink).matches() -> {
+                // 만약 http 형식이 아니라면 앞에 'http://' 를 붙여줘야함 ==> ex) www.naver.com 과 같은 상황
+                if (!URLUtil.isHttpsUrl(itemLink) and !URLUtil.isHttpUrl(itemLink)) {
+                    itemLink = "https://" + itemLink
+                }
+                // Open Graph 태그를 불러오는 라이브러리 사용
+                OgTagParser().execute(itemLink, object : LinkViewCallback {
+                    override fun onAfterLoading(linkSourceContent: LinkSourceContent) {
+                        val siteTitle = linkSourceContent.ogTitle
+                        val siteDescription = linkSourceContent.ogDescription
+                        var siteThumbnail = linkSourceContent.images
+
+                        if (siteTitle.isNotBlank() or siteDescription.isNotBlank() or siteThumbnail.isNotBlank()) {
+                            if (siteThumbnail.startsWith("//")) {
+                                siteThumbnail = "https:" + siteThumbnail
+                            }
+
+                            val builder = AlertDialog.Builder(this@AddItemActivity)
+                            builder.setMessage("사이트에서 발견한 콘텐츠가 있습니다. 적용하시겠습니까?")
+                                .setTitle("정보 자동 채우기")
+                                .setPositiveButton("네") { dialog, id ->
+                                    // Open Graph 를 통해 가져온 정보를 기반으로 레이아웃 적용
+                                    binding.editTextItemName.setText(siteTitle)
+                                    binding.editTextItemMemo.setText(siteDescription)
+                                }
+                                .setNegativeButton("아니요") { dialog, id ->
+                                    /* no-op */
+                                }
+                            builder.create().show()
+                        }
+                    }
+
+                    override fun onBeforeLoading() {
+                        /* no-op */
+                    }
+                })
+            }
+            else -> {
+                binding.itemLinkLayout.setOnClickListener {
+                    Toast.makeText(this, "올바르지 않은 URL 입니다", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+
     /**
      * EditText 가 아닌 곳을 터치하면 키보드 내림
      */
@@ -277,6 +262,36 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
             }
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    private fun checkFormAndAddItem() {
+        val itemImage = itemImage.toString()  // Uri 를 String 으로 변환한 형태
+        // Valid Check
+        when {
+            viewModel.itemName.value!!.isEmpty() -> {
+                setErrorOnEditText(
+                    binding.editTextItemName,
+                    resources.getText(R.string.itemNameError)
+                )
+            }
+            viewModel.itemPrice.value!!.isEmpty() -> {
+                setErrorOnEditText(
+                    binding.editTextItemPrice,
+                    resources.getText(R.string.itemPriceError)
+                )
+            }
+            else -> {
+                val builder = AlertDialog.Builder(this)
+                builder.apply {
+                    this.setMessage(resources.getText(R.string.completeDialog))
+                    this.setNegativeButton("NO") { _, _ -> }
+                    this.setPositiveButton("YES") { _, _ ->
+                        viewModel.addItem(itemImage)
+                    }
+                }
+                builder.show()
+            }
+        }
     }
 
     /**

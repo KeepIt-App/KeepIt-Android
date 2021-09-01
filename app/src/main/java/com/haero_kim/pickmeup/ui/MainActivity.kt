@@ -129,9 +129,9 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
                     YoYo.with(Techniques.FadeInLeft)
                         .duration(400)
                         .playOn(binding.searchViewLayout)
-                    val isSearchMode = viewModel.isSearchMode.value
+                    val isSearchMode = viewModel.isSearchMode.get()
                     // 검색 버튼 눌렀을 때마다 모드 전환
-                    viewModel.isSearchMode.postValue(!isSearchMode!!)
+                    viewModel.isSearchMode.set(!isSearchMode!!)
                     true
                 }
                 R.id.delete -> {
