@@ -13,9 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PickMeUp"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".ui.TestActivity"
-            android:exported="true" />
         <activity android:name=".ui.SettingActivity" />
         <activity android:name=".ui.ItemDetailActivity" />
         <activity android:name=".ui.AddItemActivity" />

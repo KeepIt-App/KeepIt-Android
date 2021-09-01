@@ -4,9 +4,15 @@ import android.text.TextUtils
 import androidx.arch.core.util.Function
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
+import androidx.work.Data
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.haero_kim.pickmeup.base.BaseViewModel
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.data.ItemRepository
+import com.haero_kim.pickmeup.util.Event
+import com.haero_kim.pickmeup.worker.NotificationWorker
+import java.util.concurrent.TimeUnit
 
 
 class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
@@ -21,6 +27,14 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
     var sortFilter: MutableLiveData<Int> = MutableLiveData<Int>()
 
     var isSearchMode: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val itemName: MutableLiveData<String> = MutableLiveData()
+    val itemLink: MutableLiveData<String> = MutableLiveData()
+    val itemPrice: MutableLiveData<String> = MutableLiveData()
+    val itemPriority: MutableLiveData<Float> = MutableLiveData()
+    val itemMemo: MutableLiveData<String> = MutableLiveData()
+
+    val itemAddComplete: MutableLiveData<Event<ItemEntity>> = MutableLiveData()
 
     /**
      * 현재 사용자가 선택한 필터에 따른 알맞은 리스트 반환
@@ -52,6 +66,22 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
     fun delete(itemEntity: ItemEntity) {
         repository.delete(itemEntity)
     }
+
+    fun addItem(itemImage: String) {
+        val newItem = ItemEntity(
+            id = null,  // 새로운 Item 이면 Null 들어감 (자동 값 적용)
+            name = itemName.value!!,
+            image = itemImage,
+            price = itemPrice.value!!.replace(",", "").toLong(),
+            link = itemLink.value.toString(),
+            priority = itemPriority.value!!.toInt(),
+            memo = itemMemo.value.toString()
+        )
+
+        insert(newItem)
+        itemAddComplete.postValue(Event(newItem))
+    }
+
 
     /**
      * 최신 순 정렬 버튼을 눌렀을 때 동작

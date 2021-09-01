@@ -48,11 +48,6 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
         get() = R.layout.activity_add_item
     override val viewModel: ItemViewModel by viewModel()
 
-    private var itemName: String = ""
-    private var itemLink: String = ""
-    private var itemPrice: String = ""
-    private var itemPriority: Int = 0
-    private var itemMemo: String = ""
     var itemId: Long? = null
     private var itemImage: Uri? = null
 
@@ -65,6 +60,34 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
     }
 
     override fun initDataBinding() {
+        viewModel.itemAddComplete.observe(this) {
+            val item = it.getContentIfNotHandled()
+            // WorkerManager 는 커스텀 파라미터를 지원하지 않기 때문에 setInputData() 를 통해 데이터를 주입해야함
+            val inputData = Data.Builder()
+                .putString(NotificationWorker.ITEM_NAME, item?.name)
+                .build()
+
+            // 하루에 한 번씩 구매를 유도하는 리마인드 푸시알림을 위해 NotificationWorker 를 WorkRequest 에 포함
+            val registerNotificationRequest =
+                PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
+                    .setInputData(inputData)
+                    .setInitialDelay(24, TimeUnit.HOURS)
+                    .addTag(item!!.name)  // WorkRequest 에 아이템 명으로 된 고유 태그 명시
+                    .build()
+
+            // 시스템에 WorkRequest 제출
+            WorkManager.getInstance(this).enqueue(registerNotificationRequest)
+
+            // 수정된 내용을 사용자에게 보여줌
+            val intent = Intent(this, ItemDetailActivity::class.java)
+            intent.putExtra(EXTRA_ITEM, item)
+
+            startActivity(intent)
+            finish()
+
+            // TODO("Item 을 Delete 했을 때 WorkManager 태스크를 캔슬할 수 있도록 구현해야 함")
+        }
+
     }
 
     override fun initAfterBinding() {
@@ -161,72 +184,32 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
 
         // 작성 완료 버튼을 눌렀을 때
         binding.completeButton.setOnClickListener {
-            itemName = binding.editTextItemName.text.toString().trim()
             val itemImage = itemImage.toString()  // Uri 를 String 으로 변환한 형태
-            itemLink = binding.editTextItemLink.text.toString().trim()
-            itemPrice = binding.editTextItemPrice.text.toString().trim()
-            itemPrice = binding.editTextItemPrice.text.toString().replace(",", "")
-            itemPriority = binding.ratingItemPriority.rating.toInt()
-            itemMemo = binding.editTextItemMemo.text.toString().trim()
-
             // Valid Check
-            if (itemName.isEmpty() || itemPrice.isEmpty()) {
-                if (itemName.isEmpty()) {
+            when {
+                viewModel.itemName.value!!.isEmpty() -> {
                     setErrorOnEditText(
                         binding.editTextItemName,
                         resources.getText(R.string.itemNameError)
                     )
                 }
-                if (itemPrice.isEmpty()) {
+                viewModel.itemPrice.value!!.isEmpty() -> {
                     setErrorOnEditText(
                         binding.editTextItemPrice,
                         resources.getText(R.string.itemPriceError)
                     )
                 }
-            } else {
-                val builder = AlertDialog.Builder(this)
-                builder.apply {
-                    this.setMessage(resources.getText(R.string.completeDialog))
-                    this.setNegativeButton("NO") { _, _ -> }
-                    this.setPositiveButton("YES") { _, _ ->
-                        val newItem = ItemEntity(
-                            id = itemId,  // 새로운 Item 이면 Null 들어감 (자동 값 적용)
-                            name = itemName,
-                            image = itemImage,
-                            price = itemPrice.toLong(),
-                            link = itemLink,
-                            priority = itemPriority,
-                            memo = itemMemo
-                        )
-                        viewModel.insert(newItem)
-
-                        // WorkerManager 는 커스텀 파라미터를 지원하지 않기 때문에 setInputData() 를 통해 데이터를 주입해야함
-                        val inputData = Data.Builder()
-                            .putString(ITEM_NAME, itemName)
-                            .build()
-
-                        // 하루에 한 번씩 구매를 유도하는 리마인드 푸시알림을 위해 NotificationWorker 를 WorkRequest 에 포함
-                        val registerNotificationRequest =
-                            PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
-                                .setInputData(inputData)
-                                .setInitialDelay(24, TimeUnit.HOURS)
-                                .addTag(itemName)  // WorkRequest 에 아이템 명으로 된 고유 태그 명시
-                                .build()
-
-                        // 시스템에 WorkRequest 제출
-                        WorkManager.getInstance(context).enqueue(registerNotificationRequest)
-
-                        // 수정된 내용을 사용자에게 보여줌
-                        val intent = Intent(context, ItemDetailActivity::class.java)
-                        intent.putExtra(EXTRA_ITEM, newItem)
-
-                        startActivity(intent)
-                        finish()
-
-                        // TODO("Item 을 Delete 했을 때 WorkManager 태스크를 캔슬할 수 있도록 구현해야 함")
+                else -> {
+                    val builder = AlertDialog.Builder(this)
+                    builder.apply {
+                        this.setMessage(resources.getText(R.string.completeDialog))
+                        this.setNegativeButton("NO") { _, _ -> }
+                        this.setPositiveButton("YES") { _, _ ->
+                            viewModel.addItem(itemImage)
+                        }
                     }
+                    builder.show()
                 }
-                builder.show()
             }
         }
     }
