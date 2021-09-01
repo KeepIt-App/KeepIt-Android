@@ -6,7 +6,6 @@ import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -24,9 +23,7 @@ import com.haero_kim.pickmeup.util.ShoppingMallList
 import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_LATEST
 import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_PRICE
 import com.haero_kim.pickmeup.ui.ItemViewModel.Companion.SORT_BY_PRIORITY
-import com.jakewharton.rxbinding4.widget.textChanges
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -42,9 +39,9 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
     private lateinit var itemListAdapter: ItemListAdapter
 
     override fun initStartView() {
-        binding.viewModel = viewModel
+        binding.viewModel = this.viewModel
 
-        Log.d("Main", "여기부터야!, 이건 메인이긴 함")
+        Timber.d("여기부터야!, 이건 메인이긴 함")
 
         // RecyclerView Adapter
         itemListAdapter = ItemListAdapter(
@@ -187,7 +184,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
 
         // addButton 눌렀을 때 진입
         binding.addButton.setOnClickListener {
-            val intent = Intent(this, AddActivity::class.java)
+            val intent = Intent(this, AddItemActivity::class.java)
             startActivity(intent)
         }
     }
@@ -247,8 +244,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
         binding.registerItemPopupMessage.text = "$siteName 링크가 발견되었습니다!"
 
         binding.registerItemPopup.setOnClickListener {
-            val intent = Intent(this, AddActivity::class.java)
-            intent.putExtra(AddActivity.AUTO_ITEM, siteLink)
+            val intent = Intent(this, AddItemActivity::class.java)
+            intent.putExtra(AddItemActivity.AUTO_ITEM, siteLink)
             startActivity(intent)
         }
 

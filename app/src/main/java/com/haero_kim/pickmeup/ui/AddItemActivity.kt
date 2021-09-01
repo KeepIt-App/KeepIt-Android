@@ -7,7 +7,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
-import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,16 +16,18 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.URLUtil
-import android.widget.*
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.work.*
+import androidx.work.Data
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.anandwana001.ogtagparser.LinkSourceContent
 import com.anandwana001.ogtagparser.LinkViewCallback
 import com.anandwana001.ogtagparser.OgTagParser
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.base.BaseActivity
 import com.haero_kim.pickmeup.data.ItemEntity
-import com.haero_kim.pickmeup.databinding.ActivityAddBinding
+import com.haero_kim.pickmeup.databinding.ActivityAddItemBinding
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
 import com.haero_kim.pickmeup.worker.NotificationWorker
@@ -42,9 +43,9 @@ import java.text.DecimalFormat
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
-class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
+class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
     override val layoutResourceId: Int
-        get() = R.layout.activity_add
+        get() = R.layout.activity_add_item
     override val viewModel: ItemViewModel by viewModel()
 
     private var itemName: String = ""
@@ -62,7 +63,7 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
 
     override fun initStartView() {
         binding.viewModel = this.viewModel
-        binding.lifecycleOwner = this
+
     }
 
     override fun initDataBinding() {
@@ -104,7 +105,7 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
                                     siteThumbnail = "https:" + siteThumbnail
                                 }
 
-                                val builder = AlertDialog.Builder(this@AddActivity)
+                                val builder = AlertDialog.Builder(this@AddItemActivity)
                                 builder.setMessage("사이트에서 발견한 콘텐츠가 있습니다. 적용하시겠습니까?")
                                     .setTitle("정보 자동 채우기")
                                     .setPositiveButton("네") { dialog, id ->
@@ -279,12 +280,6 @@ class AddActivity : BaseActivity<ActivityAddBinding, ItemViewModel>() {
             Log.e("Error Saving Image", e.message!!)
         }
         return Uri.parse(file.absolutePath)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add)
-
     }
 
     /**

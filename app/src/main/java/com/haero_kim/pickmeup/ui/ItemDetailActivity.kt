@@ -19,7 +19,7 @@ import com.bumptech.glide.Glide
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityItemDetailBinding
-import com.haero_kim.pickmeup.ui.AddActivity.Companion.EDIT_ITEM
+import com.haero_kim.pickmeup.ui.AddItemActivity.Companion.EDIT_ITEM
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DecimalFormat
 
@@ -143,7 +143,7 @@ class ItemDetailActivity : AppCompatActivity() {
 
         // BottomAppBar - 편집 버튼 눌렀을 때 (편집 화면으로 넘어감)
         binding.bottomAppBar.setNavigationOnClickListener {
-            val intent = Intent(this, AddActivity::class.java)
+            val intent = Intent(this, AddItemActivity::class.java)
             intent.putExtra(EDIT_ITEM, item)
             startActivity(intent)
 
