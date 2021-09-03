@@ -108,6 +108,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
             OverScrollDecoratorHelper.ORIENTATION_VERTICAL
         )
 
+
         // EditText 에 RxBinding 이용하여 디바운스 적용
         setDebounceOnEditText()
 
