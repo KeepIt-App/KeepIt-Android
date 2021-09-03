@@ -24,6 +24,7 @@ import androidx.work.WorkManager
 import com.anandwana001.ogtagparser.LinkSourceContent
 import com.anandwana001.ogtagparser.LinkViewCallback
 import com.anandwana001.ogtagparser.OgTagParser
+import com.bumptech.glide.Glide
 import com.haero_kim.pickmeup.R
 import com.haero_kim.pickmeup.base.BaseActivity
 import com.haero_kim.pickmeup.data.ItemEntity
@@ -34,6 +35,7 @@ import com.haero_kim.pickmeup.worker.NotificationWorker
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -222,6 +224,9 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
                                     // Open Graph 를 통해 가져온 정보를 기반으로 레이아웃 적용
                                     binding.editTextItemName.setText(siteTitle)
                                     binding.editTextItemMemo.setText(siteDescription)
+
+                                    viewModel.itemName.postValue(siteTitle)
+                                    viewModel.itemMemo.postValue(siteDescription)
                                 }
                                 .setNegativeButton("아니요") { dialog, id ->
                                     /* no-op */
@@ -298,15 +303,20 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
      * 아이템 신규 생성이 아닌 편집 기능인 경우 기존 정보 채워주는 메소드
      */
     private fun applyExistingInfo(item: ItemEntity) {
-        binding.textViewTitle.text = "수정하기"
-        itemId = item.id
-        binding.editTextItemName.setText(item.name)
-        binding.editTextItemLink.setText(item.link)
-        binding.editTextItemPrice.setText(item.price.toString())
-        binding.ratingItemPriority.rating = item.priority.toFloat()
-        binding.editTextItemMemo.setText(item.memo)
         itemImage = Uri.parse(item.image)
-        binding.imageViewItemImage.setImageURI(itemImage)
+        Log.d("씨발", item.image)
+        Glide.with(this)
+            .load(item.image)
+            .into(binding.imageViewItemImage)
+
+        itemId = item.id
+        binding.textViewTitle.text = "수정하기"
+
+        viewModel.itemName.postValue(item.name)
+        viewModel.itemLink.postValue(item.link)
+        viewModel.itemPrice.postValue(item.price.toString())
+        viewModel.itemPriority.postValue(item.priority.toFloat())
+        viewModel.itemMemo.postValue(item.memo)
     }
 
     companion object {
