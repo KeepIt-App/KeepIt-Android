@@ -304,7 +304,6 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
      */
     private fun applyExistingInfo(item: ItemEntity) {
         itemImage = Uri.parse(item.image)
-        Log.d("씨발", item.image)
         Glide.with(this)
             .load(item.image)
             .into(binding.imageViewItemImage)

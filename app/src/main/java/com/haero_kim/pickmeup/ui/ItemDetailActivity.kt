@@ -23,6 +23,7 @@ import com.haero_kim.pickmeup.base.BaseActivity
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityItemDetailBinding
 import com.haero_kim.pickmeup.ui.AddItemActivity.Companion.EDIT_ITEM
+import kotlinx.coroutines.Job
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DecimalFormat
 
@@ -171,6 +172,11 @@ class ItemDetailActivity : BaseActivity<ActivityItemDetailBinding, ItemViewModel
 
                         binding.itemLinkTitle.text = siteTitle
                         binding.itemLinkDescription.text = siteDescription
+
+                        // 로딩이 완료되지 않았는데 액티비티가 종료된 경우
+                        if (this@ItemDetailActivity.isFinishing) {
+                            return
+                        }
 
                         Glide.with(this@ItemDetailActivity)
                             .load(siteThumbnail)
