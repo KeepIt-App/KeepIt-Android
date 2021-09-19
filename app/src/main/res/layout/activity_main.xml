@@ -242,12 +242,12 @@
         <import type="android.view.View" />
         <import type="androidx.core.content.ContextCompat" />
         <import type="android.graphics.Typeface" />
-        <import type="com.haero_kim.pickmeup.R" />
+        <import type="com.haero_kim.keepit.R" />
         <import type="android.app.Application" />
 
         <variable
             name="viewModel"
-            type="com.haero_kim.pickmeup.ui.ItemViewModel" />
+            type="com.haero_kim.keepit.ui.ItemViewModel" />
     </data>
 
 

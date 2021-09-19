@@ -229,7 +229,7 @@
 
         <variable
             name="viewModel"
-            type="com.haero_kim.pickmeup.ui.ItemViewModel" />
+            type="com.haero_kim.keepit.ui.ItemViewModel" />
     </data>
 
 </layout>
