@@ -30,7 +30,7 @@ import com.haero_kim.pickmeup.base.BaseActivity
 import com.haero_kim.pickmeup.data.ItemEntity
 import com.haero_kim.pickmeup.databinding.ActivityAddItemBinding
 import com.haero_kim.pickmeup.ui.ItemDetailActivity.Companion.EXTRA_ITEM
-import com.haero_kim.pickmeup.util.Util.Companion.setErrorOnEditText
+import com.haero_kim.pickmeup.util.ViewUtil.setErrorOnEditText
 import com.haero_kim.pickmeup.worker.NotificationWorker
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -49,7 +49,7 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
         get() = R.layout.activity_add_item
     override val viewModel: ItemViewModel by viewModel()
 
-    var itemId: Long? = null
+    private var itemId: Long? = null
     private var itemImage: Uri? = null
 
     // 물건의 가격을 입력하는 EditText 에 화폐 단위 표시를 하기위한 DecimalFormat

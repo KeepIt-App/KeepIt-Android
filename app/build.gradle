@@ -118,4 +118,7 @@ dependencies {
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    // Alerter
+    implementation 'com.github.tapadoo:alerter:7.2.4'
 }
