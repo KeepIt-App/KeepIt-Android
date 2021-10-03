@@ -217,6 +217,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
             val intent = Intent(this, AddItemActivity::class.java)
             intent.putExtra(AddItemActivity.AUTO_ITEM, siteLink)
             startActivity(intent)
+            binding.registerItemPopup.visibility = View.GONE
         }
 
         binding.registerItemCancelButton.setOnClickListener {

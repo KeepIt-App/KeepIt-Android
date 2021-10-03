@@ -20,6 +20,7 @@ import com.anandwana001.ogtagparser.LinkSourceContent
 import com.anandwana001.ogtagparser.LinkViewCallback
 import com.anandwana001.ogtagparser.OgTagParser
 import com.bumptech.glide.Glide
+import com.haero_kim.keepit.MyApplication
 import com.haero_kim.keepit.R
 import com.haero_kim.keepit.base.BaseActivity
 import com.haero_kim.keepit.data.ItemEntity

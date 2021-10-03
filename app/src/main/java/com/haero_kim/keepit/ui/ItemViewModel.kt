@@ -6,6 +6,7 @@ import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
+import com.haero_kim.keepit.MyApplication.Companion.prefs
 import com.haero_kim.keepit.base.BaseViewModel
 import com.haero_kim.keepit.data.ItemEntity
 import com.haero_kim.keepit.data.ItemRepository
@@ -82,6 +83,10 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
             priority = (itemPriority.value ?: 0).toInt(),
             memo = itemMemo.value ?: ""
         )
+
+        // 해당 링크에 대한 아이템 추가 권유 팝업창 다시 뜨지 않도록 함
+        prefs.latestCanceledLink = newItem.link
+
         insert(newItem)
         itemAddComplete.postValue(Event(newItem))
     }
