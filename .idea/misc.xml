@@ -12,10 +12,12 @@
         <entry key="app/src/main/res/layout/activity_add_item.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_item_detail.xml" value="0.18" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.18" />
-        <entry key="app/src/main/res/layout/activity_setting.xml" value="0.10423400129282483" />
+        <entry key="app/src/main/res/layout/activity_setting.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_test.xml" value="0.213768115942029" />
         <entry key="app/src/main/res/layout/item_list.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/recycler_item.xml" value="0.10423400129282483" />
+        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.22418478260869565" />
+        <entry key="app/src/main/res/xml/settings_container.xml" value="0.29270833333333335" />
       </map>
     </option>
   </component>

@@ -25,4 +25,12 @@
     <string name="channel_name">KEEP_IT</string>
     <string name="channel_description">KEEP_IT_PUSH</string>
     <string name="cancelButton">취소하기</string>
+
+    <string name="info_header">앱 정보</string>
+    <string name="feedback_header">피드백</string>
+
+    <string name="app_info">KeepIt!</string>
+    <string name="app_vesion">asdf</string>
+
+    <string name="email_title">이메일 보내기</string>
 </resources>

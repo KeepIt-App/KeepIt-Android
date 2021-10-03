@@ -1,68 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/background"
         android:orientation="vertical"
-        tools:context=".ui.SettingActivity">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/title_layout"
+        <RelativeLayout
+            android:layout_marginTop="@dimen/page_title_margin_top"
+            android:layout_marginHorizontal="24dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="36dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_back_button"
+                app:tint="@color/black" />
 
             <TextView
-                android:id="@+id/textViewTitle"
-                android:layout_width="match_parent"
+                android:id="@+id/titleTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:text="@string/setting_title"
+                android:layout_centerVertical="true"
                 android:textColor="@color/black"
+                android:layout_marginStart="8dp"
                 android:textFontWeight="900"
-                android:textSize="24sp" />
+                android:layout_toEndOf="@+id/backButton"
+                android:text="정보"
+                android:textSize="@dimen/page_title_text_size" />
+        </RelativeLayout>
 
-        </LinearLayout>
+        <FrameLayout
+            android:layout_marginHorizontal="16dp"
+            android:background="@color/white"
+            android:id="@+id/settingFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context=".ui.SettingActivity">
 
-        <androidx.cardview.widget.CardView
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="24dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="24dp"
-
-            android:layout_width="match_parent">
-
-            <LinearLayout
-                android:padding="24dp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:text="앱 정보"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"
-                    android:textFontWeight="900"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
+        </FrameLayout>
 
     </LinearLayout>
-
 </layout>
