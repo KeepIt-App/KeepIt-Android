@@ -126,15 +126,15 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
     private fun registerWorkManager(item: ItemEntity) {
         // WorkerManager 는 커스텀 파라미터를 지원하지 않기 때문에 setInputData() 를 통해 데이터를 주입해야함
         val inputData = Data.Builder()
-            .putString(NotificationWorker.ITEM_NAME, item?.name)
+            .putString(NotificationWorker.ITEM_NAME, item.name)
             .build()
 
-        // 하루에 한 번씩 구매를 유도하는 리마인드 푸시알림을 위해 NotificationWorker 를 WorkRequest 에 포함
+        // 하루에 2회 구매를 유도하는 리마인드 푸시알림을 위해 NotificationWorker 를 WorkRequest 에 포함
         val registerNotificationRequest =
-            PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
+            PeriodicWorkRequestBuilder<NotificationWorker>(12, TimeUnit.HOURS)
                 .setInputData(inputData)
-                .setInitialDelay(24, TimeUnit.HOURS)
-                .addTag(item!!.name)  // WorkRequest 에 아이템 명으로 된 고유 태그 명시
+                .setInitialDelay(12, TimeUnit.HOURS)
+                .addTag(item.id.toString())  // WorkRequest 에 아이템 ID로 된 고유 태그 명시
                 .build()
 
         // 시스템에 WorkRequest 제출
@@ -251,9 +251,7 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
             this.setMessage(resources.getText(R.string.completeDialog))
             this.setNegativeButton("NO") { _, _ -> }
             this.setPositiveButton("YES") { _, _ ->
-                if (intent != null && intent.hasExtra(EDIT_ITEM)) {
-                    viewModel.addItem(itemImage)
-                }
+                viewModel.addItem(itemImage)
             }
         }
         builder.show()

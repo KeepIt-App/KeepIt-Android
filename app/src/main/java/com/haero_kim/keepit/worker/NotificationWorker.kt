@@ -37,11 +37,11 @@ class NotificationWorker(context: Context, workerParams: WorkerParameters) : Wor
 
         val builder = NotificationCompat.Builder(applicationContext, MainActivity.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_arrow_back_24)
-                .setContentTitle("${itemName}을(를) 구매하셨나요?")
-                .setContentText("탭 하여 확인하기")
+                .setContentTitle("🤔 ${itemName}을(를) 구매하셨나요?!")
+                .setContentText("탭 하여 자세히 보기")
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
 
         with(NotificationManagerCompat.from(applicationContext)) {
             notify(MainActivity.notificationId, builder.build())
