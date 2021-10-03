@@ -47,7 +47,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-
                 <TextView
                     android:id="@+id/textViewTitle"
                     android:layout_width="match_parent"
@@ -62,69 +61,22 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
-                android:orientation="horizontal"
+            <Button
+                android:stateListAnimator="@null"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editTextItemMemo">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cancelButton"
-                    android:layout_width="1dp"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_weight="0.5"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/gray"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/cancelButton"
-                            android:textColor="@color/white"
-                            android:textSize="18sp" />
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/completeButton"
-                    android:layout_width="1dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/box_stroke"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/completeButton"
-                            android:textColor="@color/white"
-                            android:textSize="18sp" />
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@id/editTextItemMemo"
+                android:layout_marginTop="48dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/completeButton"
+                android:text="@string/completeButton"
+                android:enabled="false"
+                android:elevation="0dp"
+                android:textFontWeight="700"
+                android:background="@drawable/selector_button"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
             <RatingBar
                 android:id="@+id/ratingItemPriority"

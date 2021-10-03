@@ -2,6 +2,8 @@ package com.haero_kim.keepit.util
 
 import android.view.View
 import android.widget.EditText
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import com.jakewharton.rxbinding4.widget.textChanges
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -35,4 +37,18 @@ fun EditText.setDebounceOnEditText(whenQueryChanged: (String) -> Unit): Disposab
                 }
             )
     return searchEditTextSubscription
+}
+
+fun <T, K, R> LiveData<T>.combineWith(
+    liveData: LiveData<K>,
+    block: (T?, K?) -> R
+): LiveData<R> {
+    val result = MediatorLiveData<R>()
+    result.addSource(this) {
+        result.value = block(this.value, liveData.value)
+    }
+    result.addSource(liveData) {
+        result.value = block(this.value, liveData.value)
+    }
+    return result
 }

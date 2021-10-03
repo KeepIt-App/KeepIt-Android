@@ -2,12 +2,16 @@ package com.haero_kim.keepit.ui
 
 import android.text.TextUtils
 import androidx.arch.core.util.Function
+import androidx.databinding.BaseObservable
+import androidx.databinding.Bindable
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
 import com.haero_kim.keepit.base.BaseViewModel
 import com.haero_kim.keepit.data.ItemEntity
 import com.haero_kim.keepit.data.ItemRepository
 import com.haero_kim.keepit.util.Event
+import com.haero_kim.keepit.util.combineWith
+import timber.log.Timber
 
 
 class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
@@ -26,12 +30,16 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
     var isSearchMode: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val itemName: MutableLiveData<String> = MutableLiveData()
-    val itemLink: MutableLiveData<String> = MutableLiveData()
     val itemPrice: MutableLiveData<String> = MutableLiveData()
+    val itemLink: MutableLiveData<String> = MutableLiveData()
     val itemPriority: MutableLiveData<Float> = MutableLiveData()
     val itemMemo: MutableLiveData<String> = MutableLiveData()
 
     val itemAddComplete: MutableLiveData<Event<ItemEntity>> = MutableLiveData()
+
+    val isValidForm = itemName.combineWith(itemPrice) { itemName, itemPrice ->
+        !itemName.isNullOrBlank() && !itemPrice.isNullOrBlank()
+    }
 
     /**
      * 현재 사용자가 선택한 필터에 따른 알맞은 리스트 반환

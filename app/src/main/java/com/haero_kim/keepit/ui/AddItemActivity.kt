@@ -5,16 +5,11 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Rect
 import android.net.Uri
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
-import android.view.MotionEvent
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -30,7 +25,6 @@ import com.haero_kim.keepit.base.BaseActivity
 import com.haero_kim.keepit.data.ItemEntity
 import com.haero_kim.keepit.databinding.ActivityAddItemBinding
 import com.haero_kim.keepit.ui.ItemDetailActivity.Companion.EXTRA_ITEM
-import com.haero_kim.keepit.util.ViewUtil.setErrorOnEditText
 import com.haero_kim.keepit.worker.NotificationWorker
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -51,7 +45,6 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
 
     private var itemId: Long? = null
     private var itemImage: Uri? = null
-
 
     override fun initStartView() {
         binding.viewModel = this.viewModel
@@ -81,10 +74,13 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
             finish()
         }
 
+        viewModel.isValidForm.observe(this) { valid ->
+            binding.completeButton.isEnabled = valid
+        }
     }
 
     override fun initAfterBinding() {
-        // 가격을 입력하는 EditText 가, 가격 단위에 맞게 ',' 를 자동으로 삽입해주는 동작을 하기 위해 TextWatcher 붙여줌
+        // 가격을 입력하는 EditText 가, 가격 단위에 맞게 ',' 를 자동으로 삽해주는 동작을 하기 위해 TextWatcher 붙여줌
         binding.editTextItemPrice.addTextChangedListener(applyPriceFormat)
 
         // ImageView 를 눌렀을 때 이미지 추가 액티비티로 이동
@@ -98,13 +94,9 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
                 .start(this)
         }
 
-        binding.cancelButton.setOnClickListener {
-            finish()
-        }
-
         // 작성 완료 버튼을 눌렀을 때
         binding.completeButton.setOnClickListener {
-            checkFormAndAddItem()
+            addItem()
         }
     }
 
@@ -252,34 +244,17 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
         }
     }
 
-    private fun checkFormAndAddItem() {
+    private fun addItem() {
         val itemImage = itemImage.toString()  // Uri 를 String 으로 변환한 형태
-        // Valid Check
-        when {
-            viewModel.itemName.value!!.isEmpty() -> {
-                setErrorOnEditText(
-                    binding.editTextItemName,
-                    resources.getText(R.string.itemNameError)
-                )
-            }
-            viewModel.itemPrice.value!!.isEmpty() -> {
-                setErrorOnEditText(
-                    binding.editTextItemPrice,
-                    resources.getText(R.string.itemPriceError)
-                )
-            }
-            else -> {
-                val builder = AlertDialog.Builder(this)
-                builder.apply {
-                    this.setMessage(resources.getText(R.string.completeDialog))
-                    this.setNegativeButton("NO") { _, _ -> }
-                    this.setPositiveButton("YES") { _, _ ->
-                        viewModel.addItem(itemImage)
-                    }
-                }
-                builder.show()
+        val builder = AlertDialog.Builder(this)
+        builder.apply {
+            this.setMessage(resources.getText(R.string.completeDialog))
+            this.setNegativeButton("NO") { _, _ -> }
+            this.setPositiveButton("YES") { _, _ ->
+                viewModel.addItem(itemImage)
             }
         }
+        builder.show()
     }
 
     /**
@@ -294,11 +269,11 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
         itemId = item.id
         binding.textViewTitle.text = "수정하기"
 
-        viewModel.itemName.postValue(item.name)
-        viewModel.itemLink.postValue(item.link)
-        viewModel.itemPrice.postValue(item.price.toString())
-        viewModel.itemPriority.postValue(item.priority.toFloat())
-        viewModel.itemMemo.postValue(item.memo)
+        viewModel.itemName.value = item.name
+        viewModel.itemLink.value = item.link
+        viewModel.itemPrice.value = item.price.toString()
+        viewModel.itemPriority.value = item.priority.toFloat()
+        viewModel.itemMemo.value = item.memo
     }
 
     companion object {

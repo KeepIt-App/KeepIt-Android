@@ -33,9 +33,8 @@ class MyApplication : Application() {
     }
 
     override fun onCreate() {
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
+        Timber.plant(Timber.DebugTree())
+
 
         // SharedPreferences 가 가장 먼저 생성되어야 데이터 저장에 문제 발생 안함
         prefs = MySharedPreferences(applicationContext)
