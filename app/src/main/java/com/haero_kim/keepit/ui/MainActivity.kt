@@ -23,6 +23,7 @@ import com.haero_kim.keepit.util.ShoppingMallList
 import com.haero_kim.keepit.ui.ItemViewModel.Companion.SORT_BY_LATEST
 import com.haero_kim.keepit.ui.ItemViewModel.Companion.SORT_BY_PRICE
 import com.haero_kim.keepit.ui.ItemViewModel.Companion.SORT_BY_PRIORITY
+import com.haero_kim.keepit.util.setDebounceOnEditText
 import com.jakewharton.rxbinding4.widget.textChanges
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -42,6 +43,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
 
     override fun initStartView() {
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner = this
+
         // RecyclerView Adapter
         itemListAdapter = ItemListAdapter(
             // OnClickListener
@@ -60,6 +63,21 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
             this.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             this.setHasFixedSize(true)
         }
+
+        // Button 애니메이션 (효과)
+        YoYo.with(Techniques.ZoomIn)
+            .duration(400)
+            .playOn(binding.addButton)
+
+        // Android 8.0 이상 기기일 경우 NotificationChannel 인스턴스를 시스템에 등록
+        createNotificationChannel()
+
+        // iOS 스타일의 리사이클러뷰 오버스크롤 바운스 효과 적용
+        OverScrollDecoratorHelper.setUpOverScroll(
+            binding.recyclerView,
+            OverScrollDecoratorHelper.ORIENTATION_VERTICAL
+        )
+
     }
 
     override fun initDataBinding() {
@@ -67,12 +85,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
          * Item List 를 LiveData 형태로 받아오나, 사용자가 선택한 필터에 따라
          * 받아온 LiveData 를 적절히 정렬(가공) 하여 RecyclerView Adapter 에 적용
          */
-        viewModel.getAll().observe(this) { list ->
-            if (list.isEmpty()) {
-                binding.noticeEmptyList.visibility = View.VISIBLE
-            } else {
-                binding.noticeEmptyList.visibility = View.GONE
-            }
+        viewModel.getItemList().observe(this) { list ->
+            binding.noticeEmptyList.visibility = if (list.isEmpty()) View.VISIBLE else View.VISIBLE
             itemList = list
             itemListAdapter.setItems(itemList)
         }
@@ -94,23 +108,20 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
     }
 
     override fun initAfterBinding() {
-        // Button 애니메이션 (효과)
-        YoYo.with(Techniques.ZoomIn)
-            .duration(400)
-            .playOn(binding.addButton)
+        binding.searchView.apply {
+            this.hint = "검색어를 입력해주세요"
 
-        // Android 8.0 이상 기기일 경우 NotificationChannel 인스턴스를 시스템에 등록
-        createNotificationChannel()
-
-        // iOS 스타일의 리사이클러뷰 오버스크롤 바운스 효과 적용
-        OverScrollDecoratorHelper.setUpOverScroll(
-            binding.recyclerView,
-            OverScrollDecoratorHelper.ORIENTATION_VERTICAL
-        )
-
-
-        // EditText 에 RxBinding 이용하여 디바운스 적용
-        setDebounceOnEditText()
+            // EditText 에 포커스가 갔을 때 ClearButton 활성화
+            this.setOnFocusChangeListener { v, hasFocus ->
+                binding.textClearButton.visibility = if (hasFocus) View.VISIBLE else View.GONE
+            }
+            // EditText 쿼리 디바운싱 적용 (RxJava, RxBinding)
+            addDisposable(setDebounceOnEditText {
+                runOnUiThread {
+                    viewModel.onChangeQuery(searchQuery = it)
+                }
+            })
+        }
 
         // ClearButton 눌렀을 때
         binding.textClearButton.setOnClickListener {
@@ -130,9 +141,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
                     YoYo.with(Techniques.FadeInLeft)
                         .duration(400)
                         .playOn(binding.searchViewLayout)
-                    val isSearchMode = viewModel.isSearchMode.get()
                     // 검색 버튼 눌렀을 때마다 모드 전환
-                    viewModel.isSearchMode.set(!isSearchMode!!)
+                    viewModel.isSearchMode.value = !viewModel.isSearchMode.value!!
                     true
                 }
                 R.id.delete -> {
@@ -146,50 +156,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
         binding.addButton.setOnClickListener {
             val intent = Intent(this, AddItemActivity::class.java)
             startActivity(intent)
-        }
-    }
-
-    /**
-     * EditText 에 RxJava (feat. RxBinding, RxKotlin) 을 적용하여
-     * 사용자의 검색 Query 에 즉각적으로 LiveData 가 변경될 수 있도록 함 (Debounce 를 적용하여 쿼리 낭비 방지)
-     */
-    private fun setDebounceOnEditText() {
-        binding.searchView.apply {
-            this.hint = "검색어를 입력해주세요"
-
-            // EditText 에 포커스가 갔을 때 ClearButton 활성화
-            this.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    binding.textClearButton.visibility = View.VISIBLE
-                } else {
-                    binding.textClearButton.visibility = View.GONE
-                }
-            }
-
-            val editTextChangeObservable = binding.searchView.textChanges()
-            val searchEditTextSubscription: Disposable =
-                // 생성한 Observable 에 Operator 추가
-                editTextChangeObservable
-                    // 마지막 글자 입력 0.8초 후에 onNext 이벤트로 데이터 스트리밍
-                    .debounce(800, TimeUnit.MILLISECONDS)
-                    .subscribeOn(Schedulers.io())
-                    // 구독을 통해 이벤트 응답 처리
-                    .subscribeBy(
-                        onNext = {
-                            Timber.d("onNext : $it")
-                            runOnUiThread {
-                                viewModel.onChangeQuery(searchQuery = it.toString())
-                            }
-                        },
-                        onComplete = {
-                            Timber.d("onComplete")
-                        },
-                        onError = {
-                            Timber.i("onError : $it")
-                        }
-                    )
-            // CompositeDisposable 에 추가
-            addDisposable(searchEditTextSubscription)
         }
     }
 
