@@ -44,7 +44,6 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
         get() = R.layout.activity_add_item
     override val viewModel: ItemViewModel by viewModel()
 
-    private var itemId: Long? = null
     private var itemImage: Uri? = null
 
     override fun initStartView() {
@@ -252,7 +251,9 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
             this.setMessage(resources.getText(R.string.completeDialog))
             this.setNegativeButton("NO") { _, _ -> }
             this.setPositiveButton("YES") { _, _ ->
-                viewModel.addItem(itemImage)
+                if (intent != null && intent.hasExtra(EDIT_ITEM)) {
+                    viewModel.addItem(itemImage)
+                }
             }
         }
         builder.show()
@@ -267,9 +268,9 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
             .load(item.image)
             .into(binding.imageViewItemImage)
 
-        itemId = item.id
         binding.textViewTitle.text = "수정하기"
 
+        viewModel.itemId.value = item.id
         viewModel.itemName.value = item.name
         viewModel.itemLink.value = item.link
         viewModel.itemPrice.value = item.price.toString()

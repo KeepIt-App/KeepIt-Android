@@ -30,6 +30,7 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
     // 검색 모드 여부에 따른 UI 변화 (EditText Visibility)
     var isSearchMode: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    val itemId: MutableLiveData<Long> = MutableLiveData()
     val itemName: MutableLiveData<String> = MutableLiveData()
     val itemPrice: MutableLiveData<String> = MutableLiveData()
     val itemLink: MutableLiveData<String> = MutableLiveData()
@@ -75,7 +76,7 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
 
     fun addItem(itemImage: String) {
         val newItem = ItemEntity(
-            id = null,  // 새로운 Item 이면 Null 들어감 (자동 값 적용)
+            id = itemId.value,  // 새로운 Item 이면 Null 들어감 (자동 값 적용)
             name = itemName.value!!,
             image = itemImage,
             price = itemPrice.value!!.replace(",", "").toLong(),
@@ -85,7 +86,8 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
         )
 
         // 해당 링크에 대한 아이템 추가 권유 팝업창 다시 뜨지 않도록 함
-        prefs.latestCanceledLink = newItem.link
+        // - null 검사하는 이유 : 기존 아이템을 수정한 것인지 구분하기 위함
+        if (itemId.value == null) prefs.latestCanceledLink = newItem.link
 
         insert(newItem)
         itemAddComplete.postValue(Event(newItem))
