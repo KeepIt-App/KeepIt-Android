@@ -18,6 +18,7 @@ import com.haero_kim.keepit.base.BaseActivity
 import com.haero_kim.keepit.data.ItemEntity
 import com.haero_kim.keepit.databinding.ActivityItemDetailBinding
 import com.haero_kim.keepit.ui.AddItemActivity.Companion.EDIT_ITEM
+import com.haero_kim.keepit.util.ViewUtil.playFailureAlert
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DecimalFormat
 
@@ -53,13 +54,7 @@ class ItemDetailActivity : BaseActivity<ActivityItemDetailBinding, ItemViewModel
             binding.noItemLinkLayout.visibility = View.GONE
             openGraphParsing()
         }
-
-        if (item.memo.isEmpty()) {
-            binding.itemMemo.text = "메모가 없습니다"
-        } else {
-            binding.itemMemo.text = item.memo
-        }
-
+        binding.itemMemo.text = if (item.memo.isEmpty()) "등록된 메모가 없습니다" else item.memo
         binding.itemRatingBar.rating = item.priority.toFloat()
 
         if (item.image.isNotBlank() && item.image != "null") {
@@ -84,7 +79,7 @@ class ItemDetailActivity : BaseActivity<ActivityItemDetailBinding, ItemViewModel
 
         // 공유 버튼 눌렀을 때 (카카오톡 공유 동작)
         binding.shareButton.setOnClickListener {
-            shareKakaoTalk()
+            shareToKakaoTalk()
         }
     }
 
@@ -111,25 +106,11 @@ class ItemDetailActivity : BaseActivity<ActivityItemDetailBinding, ItemViewModel
         }
     }
 
-    private fun shareKakaoTalk() {
+    private fun shareToKakaoTalk() {
         val sharingIntent = Intent(Intent.ACTION_SEND)
-        // 링크 등록이 되어있지 않다면, 이미지 존재 여부 체크
+        // 링크 등록이 되어있지 않다면
         if (item.link.isBlank()) {
-            // 만약 링크, 이미지가 모두 없다면 공유하기에 부적절함
-            if (item.image.isBlank()) {
-                Toast.makeText(
-                    applicationContext,
-                    "공유할 컨텐츠가 부족합니다! 이미지, 링크 등을 추가해보세요!",
-                    Toast.LENGTH_LONG
-                ).show()
-            } else {
-                sharingIntent.apply {
-                    type = "image/*"
-                    putExtra(Intent.EXTRA_STREAM, Uri.parse(item.image))
-                    setPackage("com.kakao.talk")
-                }
-                startActivity(sharingIntent) // 결과를 받고싶을 때
-            }
+            playFailureAlert(this, "공유할 컨텐츠가 부족합니다! 쇼핑몰 링크를 추가해보세요!")
         } else {
             sharingIntent.apply {
                 type = "text/plain"
@@ -156,26 +137,23 @@ class ItemDetailActivity : BaseActivity<ActivityItemDetailBinding, ItemViewModel
                 // Open Graph 태그를 불러오는 라이브러리 사용
                 OgTagParser().execute(itemLink, object : LinkViewCallback {
                     override fun onAfterLoading(linkSourceContent: LinkSourceContent) {
-                        val siteTitle = linkSourceContent.ogTitle
-                        val siteDescription = linkSourceContent.ogDescription
                         var siteThumbnail = linkSourceContent.images
-
                         if (siteThumbnail.startsWith("//")) {
                             siteThumbnail = "https:" + siteThumbnail
                         }
-
-                        binding.itemLinkTitle.text = siteTitle
-                        binding.itemLinkDescription.text = siteDescription
-
-                        // 로딩이 완료되지 않았는데 액티비티가 종료된 경우
-                        if (this@ItemDetailActivity.isFinishing) {
-                            return
-                        }
-
                         Glide.with(this@ItemDetailActivity)
                             .load(siteThumbnail)
                             .placeholder(R.drawable.placeholder)
                             .into(binding.itemLinkImage)
+
+                        binding.itemLinkTitle.text = linkSourceContent.ogTitle
+                        binding.itemLinkDescription.text = linkSourceContent.ogDescription
+
+                        // 로딩이 완료되지 않았는데 액티비티가 종료된 경우
+                        // - 해당 코드가 없을 시 메모리 릭 발생 가능
+                        if (this@ItemDetailActivity.isFinishing) {
+                            return
+                        }
                     }
 
                     override fun onBeforeLoading() {

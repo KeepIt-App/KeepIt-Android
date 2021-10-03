@@ -71,7 +71,7 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
             image = itemImage,
             price = itemPrice.value!!.replace(",", "").toLong(),
             link = itemLink.value ?: "",
-            priority = itemPriority.value!!.toInt(),
+            priority = (itemPriority.value ?: 0).toInt(),
             memo = itemMemo.value ?: ""
         )
         insert(newItem)
