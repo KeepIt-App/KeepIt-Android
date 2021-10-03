@@ -86,7 +86,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
          * 받아온 LiveData 를 적절히 정렬(가공) 하여 RecyclerView Adapter 에 적용
          */
         viewModel.getItemList().observe(this) { list ->
-            binding.noticeEmptyList.visibility = if (list.isEmpty()) View.VISIBLE else View.VISIBLE
+            binding.noticeEmptyList.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             itemList = list
             itemListAdapter.setItems(itemList)
         }
