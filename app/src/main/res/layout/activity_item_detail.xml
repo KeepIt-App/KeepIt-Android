@@ -37,8 +37,10 @@
                         android:layout_marginTop="24dp">
 
                         <TextView
+                            android:paddingEnd="8dp"
+                            android:layout_toLeftOf="@+id/itemRatingBar"
                             android:id="@+id/itemName"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:ellipsize="end"
@@ -51,12 +53,13 @@
 
 
                         <RatingBar
-                            android:layout_centerVertical="true"
+                            android:layout_alignParentTop="true"
                             android:layout_alignParentEnd="true"
                             android:id="@+id/itemRatingBar"
                             style="@style/Widget.AppCompat.RatingBar.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
                             android:isIndicator="true"
                             android:numStars="5"
                             android:progressTint="@color/view_volor"
