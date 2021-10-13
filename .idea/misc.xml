@@ -7,9 +7,10 @@
         <entry key="app/src/main/res/drawable-v24/background_gray_button.xml" value="0.19427083333333334" />
         <entry key="app/src/main/res/drawable-v24/background_regular_button.xml" value="0.19427083333333334" />
         <entry key="app/src/main/res/drawable-v24/selector_button.xml" value="0.19427083333333334" />
+        <entry key="app/src/main/res/drawable/dash_border.xml" value="0.21666666666666667" />
         <entry key="app/src/main/res/layout-v28/activity_setting.xml" value="0.21217105263157895" />
         <entry key="app/src/main/res/layout/activity_add.xml" value="0.22" />
-        <entry key="app/src/main/res/layout/activity_add_item.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_add_item.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_item_detail.xml" value="0.18" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.18" />
         <entry key="app/src/main/res/layout/activity_setting.xml" value="0.22" />

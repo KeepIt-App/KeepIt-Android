@@ -14,7 +14,9 @@
 
     <color name="main_color">#5F90A8</color>
 
-<!--    EditText-->
+    <color name="gray_icon">#9AA2A9</color>
+
+    <!--    EditText-->
     <color name="box_stroke">#4C636E</color>
     <color name="error_stroke">#970000</color>
 

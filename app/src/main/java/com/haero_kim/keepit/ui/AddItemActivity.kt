@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
+import android.view.View
 import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -84,7 +85,7 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
         binding.editTextItemPrice.addTextChangedListener(applyPriceFormat)
 
         // ImageView 를 눌렀을 때 이미지 추가 액티비티로 이동
-        binding.imageViewItemImage.setOnClickListener {
+        binding.addImageButton.setOnClickListener {
             CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .setActivityTitle("이미지 추가")
@@ -157,6 +158,8 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
                 val bitmap =
                     MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri)
                 itemImage = bitmapToFile(bitmap!!) // Uri
+                binding.addImageButton.visibility = View.GONE
+                binding.imageViewItemImageLayout.visibility = View.VISIBLE
                 binding.imageViewItemImage.setImageURI(itemImage)
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
@@ -233,9 +236,12 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
                     // Open Graph 를 통해 가져온 정보를 기반으로 레이아웃 적용
                     viewModel.itemName.value = siteTitle
                     viewModel.itemMemo.value = siteDescription
+                    binding.addImageButton.visibility = View.GONE
+                    binding.imageViewItemImageLayout.visibility = View.VISIBLE
                     Glide.with(this)
                         .load(itemImage)
                         .into(binding.imageViewItemImage)
+
                 }
                 .setNegativeButton("아니요") { dialog, id ->
                     /* no-op */
