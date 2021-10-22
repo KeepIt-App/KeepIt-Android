@@ -68,8 +68,10 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
             registerWorkManager(item!!)
 
             // 수정된 내용을 사용자에게 보여줌
-            val intent = Intent(this, ItemDetailActivity::class.java)
-            intent.putExtra(EXTRA_ITEM, item)
+//            val intent = Intent(this, ItemDetailActivity::class.java)
+//            intent.putExtra(EXTRA_ITEM, item)
+
+            val intent = Intent(this, MainActivity::class.java)
 
             startActivity(intent)
             finish()
@@ -268,6 +270,8 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
      */
     private fun applyExistingInfo(item: ItemEntity) {
         itemImage = Uri.parse(item.image)
+        binding.addImageButton.visibility = View.GONE
+        binding.imageViewItemImageLayout.visibility = View.VISIBLE
         Glide.with(this)
             .load(item.image)
             .into(binding.imageViewItemImage)
