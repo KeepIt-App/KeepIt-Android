@@ -104,6 +104,16 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
                 .start(this)
         }
 
+        binding.imageViewItemImageLayout.setOnClickListener {
+            CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setActivityTitle("이미지 추가")
+                .setCropShape(CropImageView.CropShape.RECTANGLE)
+                .setCropMenuCropButtonTitle("완료")
+                .setRequestedSize(1280, 900)
+                .start(this)
+        }
+
         // 작성 완료 버튼을 눌렀을 때
         binding.completeButton.setOnClickListener {
             addItem()
@@ -277,11 +287,16 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
      */
     private fun applyExistingInfo(item: ItemEntity) {
         itemImage = Uri.parse(item.image)
-        binding.addImageButton.visibility = View.GONE
-        binding.imageViewItemImageLayout.visibility = View.VISIBLE
-        Glide.with(this)
-            .load(item.image)
-            .into(binding.imageViewItemImage)
+        if (item.image != "null"){
+            binding.addImageButton.visibility = View.GONE
+            binding.imageViewItemImageLayout.visibility = View.VISIBLE
+            Glide.with(this)
+                .load(item.image)
+                .into(binding.imageViewItemImage)
+        } else {
+            binding.addImageButton.visibility = View.VISIBLE
+            binding.imageViewItemImageLayout.visibility = View.GONE
+        }
 
         binding.textViewTitle.text = "수정하기"
 

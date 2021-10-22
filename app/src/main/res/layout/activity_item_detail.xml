@@ -156,7 +156,7 @@
                                 android:id="@+id/itemLinkTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="URL을 불러오는 중..."
+                                android:text="올바르지 않은 URL 입니다."
                                 android:textSize="16sp"
                                 android:maxLines="1"
                                 android:ellipsize="end"
@@ -171,7 +171,7 @@
                                 android:ellipsize="end"
                                 android:layout_below="@+id/itemLinkTitle"
                                 android:layout_height="wrap_content"
-                                android:text="잠시만 기다려주세요."
+                                android:text="올바른 URL 을 입력해주세요."
                                 android:textSize="14sp"/>
 
                         </LinearLayout>
