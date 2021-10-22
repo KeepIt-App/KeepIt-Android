@@ -129,4 +129,8 @@ dependencies {
 
     // Alerter
     implementation 'com.github.tapadoo:alerter:7.2.4'
+
+    // Toasty
+    implementation 'com.github.GrenderG:Toasty:1.5.2'
+
 }

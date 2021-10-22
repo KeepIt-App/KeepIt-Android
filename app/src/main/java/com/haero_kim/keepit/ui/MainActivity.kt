@@ -7,6 +7,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.work.WorkManager
@@ -25,6 +26,7 @@ import com.haero_kim.keepit.ui.ItemViewModel.Companion.SORT_BY_PRICE
 import com.haero_kim.keepit.ui.ItemViewModel.Companion.SORT_BY_PRIORITY
 import com.haero_kim.keepit.util.setDebounceOnEditText
 import com.jakewharton.rxbinding4.widget.textChanges
+import es.dmoral.toasty.Toasty
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -191,7 +193,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
                         if (pasteData.contains(
                                 link.key,
                                 true
-                            ) && !pasteData.contentEquals(prefs.latestCanceledLink as CharSequence)
+                            ) && pasteData != prefs.latestCanceledLink
                         ) {
                             Timber.d("쇼핑몰 링크 감지 : ${link.value}")
                             showItemRegisterPopup(itemLink, link.value)
@@ -217,6 +219,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
             val intent = Intent(this, AddItemActivity::class.java)
             intent.putExtra(AddItemActivity.AUTO_ITEM, siteLink)
             startActivity(intent)
+
+            // 해당 링크에 대한 아이템 추가 권유 팝업창 다시 뜨지 않도록 함
+            prefs.latestCanceledLink = siteLink.toString()
+
             binding.registerItemPopup.visibility = View.GONE
         }
 
@@ -258,6 +264,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, ItemViewModel>() {
             this.setNegativeButton("NO") { _, _ -> }
             this.setPositiveButton("YES") { _, _ ->
                 viewModel.delete(item)
+                Toasty.success(this@MainActivity, "아이템이 삭제되었습니다", Toast.LENGTH_SHORT, true).show()
                 val workManager: WorkManager = WorkManager.getInstance(context)
                 // WorkRequest 등록 시, 아이템 명으로 고유 태그를 달아줬기 때문에
                 // 아래와 같이 item.name 을 통해 주기적인 푸시알림 작업을 취소할 수 있음

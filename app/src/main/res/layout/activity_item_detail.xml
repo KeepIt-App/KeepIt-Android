@@ -214,7 +214,7 @@
             app:backgroundTint="@color/fab_color"
             android:contentDescription="@string/add_item"
             app:layout_anchor="@+id/bottomAppBar"
-            app:srcCompat="@drawable/ic_baseline_share_24" />
+            app:srcCompat="@drawable/kakaotalk_logo" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -85,10 +85,6 @@ class ItemViewModel(private val repository: ItemRepository) : BaseViewModel() {
             memo = itemMemo.value ?: ""
         )
 
-        // 해당 링크에 대한 아이템 추가 권유 팝업창 다시 뜨지 않도록 함
-        // - null 검사하는 이유 : 기존 아이템을 수정한 것인지 구분하기 위함
-        if (itemId.value == null) prefs.latestCanceledLink = newItem.link
-
         insert(newItem)
         itemAddComplete.postValue(Event(newItem))
     }

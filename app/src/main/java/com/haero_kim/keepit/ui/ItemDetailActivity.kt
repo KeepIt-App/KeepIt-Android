@@ -19,6 +19,7 @@ import com.haero_kim.keepit.data.ItemEntity
 import com.haero_kim.keepit.databinding.ActivityItemDetailBinding
 import com.haero_kim.keepit.ui.AddItemActivity.Companion.EDIT_ITEM
 import com.haero_kim.keepit.util.ViewUtil.playFailureAlert
+import es.dmoral.toasty.Toasty
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DecimalFormat
 
@@ -96,6 +97,7 @@ class ItemDetailActivity : BaseActivity<ActivityItemDetailBinding, ItemViewModel
                         // WorkRequest 등록 시, 아이템 명으로 고유 태그를 달아줬기 때문에
                         // 아래와 같이 item.name 을 통해 주기적인 푸시알림 작업을 취소할 수 있음
                         workManager.cancelAllWorkByTag(item.id.toString())
+                        Toasty.success(this@ItemDetailActivity, "아이템이 삭제되었습니다", Toast.LENGTH_SHORT, true).show()
                         finish()
                     }
                 }

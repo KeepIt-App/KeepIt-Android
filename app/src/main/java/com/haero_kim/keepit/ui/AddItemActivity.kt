@@ -30,6 +30,7 @@ import com.haero_kim.keepit.ui.ItemDetailActivity.Companion.EXTRA_ITEM
 import com.haero_kim.keepit.worker.NotificationWorker
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import es.dmoral.toasty.Toasty
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.io.File
@@ -70,6 +71,12 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
             // 수정된 내용을 사용자에게 보여줌
 //            val intent = Intent(this, ItemDetailActivity::class.java)
 //            intent.putExtra(EXTRA_ITEM, item)
+
+            if (intent.hasExtra(EDIT_ITEM)) {
+                Toasty.success(this, "아이템 수정이 완료되었습니다", Toast.LENGTH_SHORT, true).show()
+            } else {
+                Toasty.success(this, "아이템 등록이 완료되었습니다", Toast.LENGTH_SHORT, true).show()
+            }
 
             val intent = Intent(this, MainActivity::class.java)
 
