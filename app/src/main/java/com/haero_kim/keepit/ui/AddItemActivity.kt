@@ -141,9 +141,9 @@ class AddItemActivity : BaseActivity<ActivityAddItemBinding, ItemViewModel>() {
 
         // 하루에 2회 구매를 유도하는 리마인드 푸시알림을 위해 NotificationWorker 를 WorkRequest 에 포함
         val registerNotificationRequest =
-            PeriodicWorkRequestBuilder<NotificationWorker>(12, TimeUnit.HOURS)
+            PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
                 .setInputData(inputData)
-                .setInitialDelay(12, TimeUnit.HOURS)
+                .setInitialDelay(15, TimeUnit.MINUTES)
                 .addTag(item.id.toString())  // WorkRequest 에 아이템 ID로 된 고유 태그 명시
                 .build()
 

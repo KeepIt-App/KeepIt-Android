@@ -23,134 +23,128 @@
                 android:textSize="16sp"
                 android:visibility="gone" />
 
-            <androidx.core.widget.NestedScrollView
+            <LinearLayout
+                android:clipToPadding="false"
+                android:layout_marginBottom="70dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingBottom="100dp">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginEnd="24dp"
+                        android:fontFamily="@font/nanum_extrabold"
+                        android:text="@string/main_title"
+                        android:textColor="@color/black"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/sortLatest"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@+id/sortPriority"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:onClick="@{() -> viewModel.onClickSetFilterLatest()}"
+                        android:text="@string/filter_latest"
+                        android:textColor="@{viewModel.isSortedByLatest()?ContextCompat.getColor(context, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
+                        android:textSize="14sp"
+                        android:textStyle='@{viewModel.isSortedByLatest()?"bold":"normal"}' />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/sortPriority"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@+id/sortPrice"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:onClick="@{() -> viewModel.onClickSetFilterPriority()}"
+                        android:text="@string/filter_priority"
+                        android:textColor="@{viewModel.isSortedByPriority()?ContextCompat.getColor(context, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
+                        android:textSize="14sp"
+                        android:textStyle='@{viewModel.isSortedByPriority()?"bold":"normal"}' />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/sortPrice"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="16dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:onClick="@{() -> viewModel.onClickSetFilterPrice()}"
+                        android:text="@string/filter_price"
+                        android:textColor="@{viewModel.isSortedByPrice()?ContextCompat.getColor(context, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
+                        android:textSize="14sp"
+                        android:textStyle='@{viewModel.isSortedByPrice()?"bold":"normal"}' />
+                </RelativeLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/searchViewLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="@{viewModel.isSearchMode()?View.VISIBLE:View.GONE}"
+                    app:cardCornerRadius="18dp"
+                    app:cardUseCompatPadding="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/searchView"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:background="@android:color/transparent"
+                            android:drawableStart="@drawable/ic_baseline_search_24"
+                            android:drawablePadding="8dp"
+                            android:gravity="center_vertical"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:textSize="14sp" />
+
+                        <ImageButton
+                            android:id="@+id/textClearButton"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:layout_marginHorizontal="12dp"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:src="@drawable/ic_baseline_cancel_24"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_marginHorizontal="8dp"
+                    android:clipToPadding="false"
+                    tools:listitem="@layout/item_list" />
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="24dp"
-                        android:layout_marginBottom="8dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="24dp"
-                            android:layout_marginEnd="24dp"
-                            android:fontFamily="@font/nanum_extrabold"
-                            android:text="@string/main_title"
-                            android:textColor="@color/black"
-                            android:textSize="25sp"
-                            android:textStyle="bold" />
-
-                        <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/sortLatest"
-                            android:layout_width="60dp"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toStartOf="@+id/sortPriority"
-                            android:background="?attr/selectableItemBackground"
-                            android:gravity="center"
-                            android:onClick="@{() -> viewModel.onClickSetFilterLatest()}"
-                            android:text="@string/filter_latest"
-                            android:textColor="@{viewModel.isSortedByLatest()?ContextCompat.getColor(context, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
-                            android:textSize="14sp"
-                            android:textStyle='@{viewModel.isSortedByLatest()?"bold":"normal"}' />
-
-                        <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/sortPriority"
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toStartOf="@+id/sortPrice"
-                            android:background="?attr/selectableItemBackground"
-                            android:gravity="center"
-                            android:onClick="@{() -> viewModel.onClickSetFilterPriority()}"
-                            android:text="@string/filter_priority"
-                            android:textColor="@{viewModel.isSortedByPriority()?ContextCompat.getColor(context, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
-                            android:textSize="14sp"
-                            android:textStyle='@{viewModel.isSortedByPriority()?"bold":"normal"}' />
-
-                        <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/sortPrice"
-                            android:layout_width="60dp"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginEnd="16dp"
-                            android:background="?attr/selectableItemBackground"
-                            android:gravity="center"
-                            android:onClick="@{() -> viewModel.onClickSetFilterPrice()}"
-                            android:text="@string/filter_price"
-                            android:textColor="@{viewModel.isSortedByPrice()?ContextCompat.getColor(context, R.color.main_color):ContextCompat.getColor(context, R.color.gray)}"
-                            android:textSize="14sp"
-                            android:textStyle='@{viewModel.isSortedByPrice()?"bold":"normal"}' />
-                    </RelativeLayout>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/searchViewLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:visibility="@{viewModel.isSearchMode()?View.VISIBLE:View.GONE}"
-                        app:cardCornerRadius="18dp"
-                        app:cardUseCompatPadding="true">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
-
-                            <EditText
-                                android:id="@+id/searchView"
-                                android:layout_width="0dp"
-                                android:layout_height="50dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_weight="1"
-                                android:background="@android:color/transparent"
-                                android:drawableStart="@drawable/ic_baseline_search_24"
-                                android:drawablePadding="8dp"
-                                android:gravity="center_vertical"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:textSize="14sp" />
-
-                            <ImageButton
-                                android:id="@+id/textClearButton"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_gravity="center"
-                                android:layout_marginHorizontal="12dp"
-                                android:background="@null"
-                                android:gravity="center"
-                                android:src="@drawable/ic_baseline_cancel_24"
-                                android:visibility="gone" />
-
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginHorizontal="8dp"
-                        android:clipToPadding="false"
-                        android:paddingBottom="150dp"
-                        tools:listitem="@layout/item_list" />
-
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
+            </LinearLayout>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/registerItemPopup"
@@ -223,7 +217,6 @@
             android:paddingBottom="5dp"
             app:fabAlignmentMode="end"
             app:fabCradleMargin="8dp"
-            app:hideOnScroll="true"
             app:menu="@menu/main_bottom_app_bar"
             app:navigationIcon="@drawable/ic_baseline_settings_24" />
 
