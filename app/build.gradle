@@ -100,7 +100,6 @@ dependencies {
     implementation 'me.everything:overscroll-decor-android:1.1.0'
     implementation 'com.github.woxingxiao:BounceScrollView:1.5'
 
-
     // RxJava (메인) , RxKotlin (코틀린에서 사용되는 익스텐션), RxAndroid (Thread 와 Scheduler 연동) 필요
     implementation "io.reactivex.rxjava3:rxjava:3.0.9"
     implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"

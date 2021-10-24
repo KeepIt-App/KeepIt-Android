@@ -11,6 +11,9 @@ interface ItemDao {
     @Query("SELECT item.* FROM item JOIN itemFts ON (item.name = itemFts.name) WHERE itemFts MATCH :query")
     fun searchByName(query: String?): LiveData<List<ItemEntity>>
 
+    @Query("SELECT * FROM item WHERE item.name LIKE :query")
+    fun searchExactlyMatchByName(query: String?): List<ItemEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(itemEntity: ItemEntity)
 
