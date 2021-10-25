@@ -8,6 +8,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.haero_kim.keepit.MyApplication
+import com.haero_kim.keepit.R
 import com.haero_kim.keepit.data.ItemDatabase
 import com.haero_kim.keepit.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
@@ -57,8 +58,8 @@ class NotificationWorker(context: Context, workerParams: WorkerParameters) :
             PendingIntent.getActivity(applicationContext, 0, intent, 0)
 
         val builder = NotificationCompat.Builder(applicationContext, MainActivity.CHANNEL_ID)
-            .setSmallIcon(android.R.mipmap.sym_def_app_icon)
-            .setContentTitle("🤔 ${itemName}을(를) 구매하셨나요?!")
+            .setSmallIcon(R.drawable.keepit_logo)
+            .setContentTitle("🤔 ${itemName},구매하셨나요?!")
             .setContentText("탭 하여 자세히 보기")
             .setContentIntent(pendingIntent)
 
