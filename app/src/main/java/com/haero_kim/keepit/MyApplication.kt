@@ -2,6 +2,7 @@ package com.haero_kim.keepit
 
 import android.app.Application
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.library.BuildConfig
 import com.haero_kim.keepit.data.ItemRepository
 import com.haero_kim.keepit.di.repositoryModule
@@ -34,6 +35,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         Timber.plant(Timber.DebugTree())
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
 
         // SharedPreferences 가 가장 먼저 생성되어야 데이터 저장에 문제 발생 안함
