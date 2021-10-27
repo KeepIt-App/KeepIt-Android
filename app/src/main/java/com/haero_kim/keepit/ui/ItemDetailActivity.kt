@@ -21,6 +21,7 @@ import com.haero_kim.keepit.ui.AddItemActivity.Companion.EDIT_ITEM
 import com.haero_kim.keepit.util.ViewUtil.playFailureAlert
 import es.dmoral.toasty.Toasty
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.Exception
 import java.text.DecimalFormat
 
 
@@ -114,12 +115,16 @@ class ItemDetailActivity : BaseActivity<ActivityItemDetailBinding, ItemViewModel
         if (item.link.isBlank()) {
             playFailureAlert(this, "공유할 컨텐츠가 부족합니다! 쇼핑몰 링크를 추가해보세요!")
         } else {
-            sharingIntent.apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "[${item.name}]\n\n${item.link}")
-                setPackage("com.kakao.talk")
+            try {  // 카카오톡 어플이 없는 경우 대비
+                sharingIntent.apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, "[${item.name}]\n\n${item.link}")
+                    setPackage("com.kakao.talk")
+                }
+                startActivity(sharingIntent)
+            } catch (e: Exception) {
+                playFailureAlert(this, "카카오톡 앱이 설치되어 있지 않습니다!")
             }
-            startActivity(sharingIntent)
         }
 
     }
