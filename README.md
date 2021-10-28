@@ -1,3 +1,5 @@
+![목업2 복사본](https://user-images.githubusercontent.com/30336663/139281001-ee925bfa-e391-4556-9f3c-a597caad6d31.png)
+
 # KeepIt!
 다운로드 링크
 - https://play.google.com/store/apps/details?id=com.haero_kim.pickmeup
